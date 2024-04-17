@@ -68,26 +68,39 @@ function drawEvent(event) {
         lastXY = cords; //used for fallback in mouseDragEvent()
     }
 }
-//TODO: fallback functionality for fast mouse movements. (i.e. save last pixel pos and draw a line from last to new position)
+//TODO: fixed fast mouse movement. next fix issue when moving mouse too fast outside canvas while holding mouse button
 function mouseDragEvent(event) {
-    if (event?.touches) {
-        drawEvent(event);
-        return;
+    if (!mouseCheck) return;
+
+    const element = document.getElementById(event.target.id);
+    const ctx = element.getContext("2d");
+    const newCords = getCords(element, event.clientX, event.clientY);
+
+    // draw a line from lastXY to newCords using direct pixel manipulation
+    const dx = Math.abs(newCords[0] - lastXY[0]);
+    const dy = -Math.abs(newCords[1] - lastXY[1]);
+    let sx = (lastXY[0] < newCords[0]) ? 1 : -1; //determine if movement is right or left
+    let sy = (lastXY[1] < newCords[1]) ? 1 : -1; //determine if movement is up or down
+    let err = dx + dy, e2;
+
+    while (true) {
+        ctx.fillRect(lastXY[0], lastXY[1], 1, 1); // set pixel
+        // check if the current coordinates have reached the new coordinates
+        if (lastXY[0] === newCords[0] && lastXY[1] === newCords[1]) {
+            break;
+        }
+        // check if it's necessary to step in the x direction
+        e2 = 2 * err;
+        if (e2 >= dy) { 
+            err += dy; lastXY[0] += sx; 
+        }
+        // check if it's necessary to step in the y direction
+        if (e2 <= dx) { 
+            err += dx; lastXY[1] += sy; 
+        }
     }
-    if (event.buttons === 1 && mouseCheck) {
-        drawEvent(event);
-        // let extra = document.getElementById(event.target.id).getContext("2d");
-        // const cords = getCords(event);
-        // extra.lineCap = "square";
-        // extra.lineJoin = "miter"
-        // extra.miterLimit = "1";
-        // extra.lineWidth = "1";
-        // extra.moveTo(lastXY[0], lastXY[1]);
-        // extra.lineTo(cords[0], cords[1])
-        // extra.stroke();
-        // lastXY = cords;
-        return;
-    }
+
+    lastXY = newCords; // update last position of mouse
 }
 
 function touchDrawEvent(event){
