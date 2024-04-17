@@ -9,7 +9,7 @@ function ArtTool() {
             <div className="topbar">
                 <h1>(bar doesnt work right on narrow screens)</h1>
                 <button onClick={debugEvent} type="button">click for debug info</button>
-                <button onClick={canvasResetEvent} type="button">click to clear canvas</button>
+                <button onClick={clearCanvasEvent} type="button">click to clear canvas</button>
             </div>
             <div className="content">
                 <p>Drawing Canvas</p>
@@ -23,26 +23,23 @@ function ArtTool() {
 }
 export default ArtTool;
 
+//global variables
 let mouseCheck = false;
 let lastXY;
 
-function checkResetEvent() {
-    if (mouseCheck) {
-        document.getElementById("drawing-area").getContext("2d").save();
-    }
-    //* flags check as false, used for mouseDragEvent
-    mouseCheck = false;
-}
-
-function canvasResetEvent(event) {
+function clearCanvasEvent() {
     try {
         document.getElementById("drawing-area").getContext("2d").reset();        
     } catch (error) {
         console.error(error);
     }
 }
-
-function debugEvent(event) {
+function checkResetEvent() {
+    //* flags check as false, used for mouseDragEvent
+    mouseCheck = false;
+}
+function debugEvent() {
+    //! log outputs for checking canvas size
     const element = document.getElementById("drawing-area");
     let foo = element.getBoundingClientRect();
     let style = getComputedStyle(element);
@@ -57,34 +54,20 @@ function debugEvent(event) {
     console.log("padding = " + style.padding + "\n(needs offset of " + style.padding.split(" ")[0] + ")");
 }
 
-
-
 function drawEvent(event) {
     event.preventDefault();
-    //* check if the event is called with left mouse button
-    // console.log(event.target.width, event.target.height);
-    // console.log(window.innerWidth, window.innerHeight);
-    // console.log(document.getElementById("drawing-area").width, document.getElementById("drawing-area").height);
-    // console.log();
-    
-    mouseCheck = true
+    mouseCheck = true //for mouseDragEvent()
     let element = document.getElementById(event.target.id);
+    //* translate event coordiantes to the canvas 
     const cords = getCords(element, event.clientX, event.clientY);
 
-    let extra = element.getContext("2d");
     //* draw pixel
+    let extra = element.getContext("2d");
     if (event.button === 0) {
-        extra.fillRect(cords[0], cords[1], 1, 1);
-        lastXY = cords;
+        extra.fillRect(cords[0], cords[1], 1, 1); //draw pixel at translated coordinates
+        lastXY = cords; //used for fallback in mouseDragEvent()
     }
-    console.log(event);
 }
-function touchDrawEvent(event){
-    let element = document.getElementById(event.target.id);
-    const cords = getCords(element, event.targetTouches[0]?.clientX || event.clientX, event.targetTouches[0]?.clientY || event.clientY)
-    element.getContext("2d").fillRect(cords[0], cords[1], 1, 1)
-}
-
 //TODO: fallback functionality for fast mouse movements. (i.e. save last pixel pos and draw a line from last to new position)
 function mouseDragEvent(event) {
     if (event?.touches) {
@@ -93,21 +76,24 @@ function mouseDragEvent(event) {
     }
     if (event.buttons === 1 && mouseCheck) {
         drawEvent(event);
-
+        // let extra = document.getElementById(event.target.id).getContext("2d");
+        // const cords = getCords(event);
+        // extra.lineCap = "square";
+        // extra.lineJoin = "miter"
+        // extra.miterLimit = "1";
+        // extra.lineWidth = "1";
+        // extra.moveTo(lastXY[0], lastXY[1]);
+        // extra.lineTo(cords[0], cords[1])
+        // extra.stroke();
+        // lastXY = cords;
         return;
-        let extra = document.getElementById(event.target.id).getContext("2d");
-        const cords = getCords(event);
-
-        extra.lineCap = "square";
-        extra.lineJoin = "miter"
-        extra.miterLimit = "1";
-        extra.lineWidth = "1";
-        extra.moveTo(lastXY[0], lastXY[1]);
-        extra.lineTo(cords[0], cords[1])
-        extra.stroke();
-
-        lastXY = cords;
     }
+}
+
+function touchDrawEvent(event){
+    let element = document.getElementById(event.target.id);
+    const cords = getCords(element, event.targetTouches[0]?.clientX || event.clientX, event.targetTouches[0]?.clientY || event.clientY)
+    element.getContext("2d").fillRect(cords[0], cords[1], 1, 1)
 }
 function touchDragEvent(event) {
     console.log(event);

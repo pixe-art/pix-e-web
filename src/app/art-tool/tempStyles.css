@@ -34,9 +34,6 @@ html, body {
     user-select: none;
     touch-action: none;
     background: white;
-    /* position: absolute; */
-    /* left: 50%;
-    top: 45%; */
     margin-top: 20%;
 
     scale: 12;
