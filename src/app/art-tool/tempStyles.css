@@ -13,22 +13,40 @@ html, body {
 .topbar {
     background: rgb(21, 21, 32);
     min-height: 3em;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+.topbar button:hover{
+    color: cornflowerblue;
 }
 .content {
     user-select: none;
     display: flex;
-    justify-content: center;
     padding-top: 120px;
+    flex-direction: column;
+    align-content: center;
+    flex-wrap: wrap;
+    align-items: center;
 }
 .canvas {
+    cursor: crosshair;
     user-select: none;
+    touch-action: none;
     background: white;
-    padding: solid 0.1em red;
-    position: absolute;
-    left: 50%;
-    top: 45%;
+    /* position: absolute; */
+    /* left: 50%;
+    top: 45%; */
+    margin-top: 20%;
+
     scale: 12;
     image-rendering: pixelated;
-    border: solid 1px rgb(21, 21, 32);
+    border: solid 1px darkgray;
     border-radius: 1px;
+}
+@media (orientation:portrait) {
+    .canvas {
+    left: unset;
+    scale: 5;
+    }
 }
