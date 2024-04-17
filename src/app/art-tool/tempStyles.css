@@ -1,0 +1,34 @@
+html, body {
+    height: 100%;
+}
+
+.parent {
+    display: flex;
+    flex-direction: column;
+    align-content: center;
+    align-items: stretch;
+    height: 100%;
+    background: rgb(52, 52, 94);
+}
+.topbar {
+    background: rgb(21, 21, 32);
+    min-height: 3em;
+}
+.content {
+    user-select: none;
+    display: flex;
+    justify-content: center;
+    padding-top: 120px;
+}
+.canvas {
+    user-select: none;
+    background: white;
+    padding: solid 0.1em red;
+    position: absolute;
+    left: 50%;
+    top: 45%;
+    scale: 12;
+    image-rendering: pixelated;
+    border: solid 1px rgb(21, 21, 32);
+    border-radius: 1px;
+}
