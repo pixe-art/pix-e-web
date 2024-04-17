@@ -1,5 +1,6 @@
 // auth/useGoogleLogin.js
-import { auth, GoogleAuthProvider, signInWithPopup } from '../../firebaseConfig';
+import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import {auth} from "@/firebaseModel"
 
 const useGoogleLogin = async () => {
     const provider = new GoogleAuthProvider();
