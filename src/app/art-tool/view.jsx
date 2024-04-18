@@ -15,7 +15,7 @@ function ArtTool() {
             <div className="content">
                 <p>Drawing Canvas</p>
                 <canvas className="canvas" id="drawing-area" width="64" height="32" onContextMenu={mouseClickEvent}
-                onMouseDown={mouseClickEvent} onMouseMove={mouseDragEvent} onTouchStart={touchDrawEvent} onTouchMove={touchDragEvent}>
+                onMouseDown={mouseClickEvent} onMouseMove={mouseDragEvent} onTouchStart={touchDrawEvent} onTouchMove={touchDragEvent} onMouseLeave={resetLastCoords}>
                     <script>{clearCanvasEvent()}</script>
                 </canvas>
             </div>
@@ -70,6 +70,9 @@ function saveEvent() {
     temp.remove();
 }
 
+function resetLastCoords(){
+    lastXY = [-1, -1];
+}
 function mouseClickEvent(event) {
     event.preventDefault();
     mouseCheck = true //for mouseDragEvent()
@@ -83,9 +86,9 @@ function mouseClickEvent(event) {
     if (event.button === 2) {
         extra.fillStyle = "white";
     }
-        extra.fillRect(cords[0], cords[1], 1, 1); //draw pixel at translated coordinates
-        lastXY = cords; //used for fallback in mouseDragEvent()
-        extra.restore();
+    extra.fillRect(cords[0], cords[1], 1, 1); //draw pixel at translated coordinates
+    lastXY = cords; //used for fallback in mouseDragEvent()
+    extra.restore();
     }
 function mouseDragEvent(event) {
     if ((event.buttons === 2 || event.buttons === 1) && mouseCheck) {
@@ -97,6 +100,9 @@ function mouseDragEvent(event) {
         // set draw color to white for erase if right click
         if (event.buttons === 2) {
             extra.fillStyle = "white";
+        }
+        if (lastXY[0] < 0 || lastXY[1] < 0) {
+            lastXY = cords;
         }
         draw_line(lastXY[0], lastXY[1], cords[0], cords[1], extra);
         extra.restore();
