@@ -1,34 +1,66 @@
 import { initializeApp } from "firebase/app";
 import { getDatabase, push, ref, get, set, onValue } from "firebase/database";
-//import { getAuth } from "firebase/auth";
+import { getAuth } from "firebase/auth";
+import { reaction } from "mobx"
 import { getStorage } from "firebase/storage";
-
 import firebaseConfig from "./firebaseConfig.js"
 
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
-const imageDb = getStorage(app);
+const PATH = "pixeModel";
 
-function persistenceToModel(data_from_firebase, model) {
-    
+export function modelToPersistence(model) {
+    let realtimeModel = null;
+
+    realtimeModel = {picture: model.testPicture};
+
+    return realtimeModel;
 }
 
-async function addPictureToFirebase(picture) {
-    await set(ref(db, 'picture'), picture);
+export function persistenceToModel(data, model) {
+    if (data){
+        if (data.picture) {
+            model.testPicture = ["It works!"]
+        }
+    }
 }
 
-async function readPictureFromFirebase(model) {
+export function saveToFirebase(model) {
+    const rf = ref(db, PATH);
+
+    if (model.ready) {
+        set(rf, modelToPersistence(model));
+    }
+}
+
+export function readFromFirebase(model) {
     model.ready = false;
-    const snapshot = await get(ref(db, 'picture'));
-    await persistenceToModel(snapshot.val(), model);
-    model.ready = true;
+    const rf = ref(db, PATH);
+    return get(rf).then(convertACB);
+
+    function convertACB(snapshot) {
+        persistenceToModel(snapshot.val(), model);
+        model.ready = true;
+    }
 }
 
-async function readFromFirebase(model) {
-    model.ready = false;
-    const snapshot = await get(ref(db, '/'));
-    await persistenceToModel(snapshot.val(), model);
-    model.ready = true;
+export function connectToFirebase(model) {
+    readFromFirebase(model);
+    reaction(modelChangedACB, storedStateEffectACB);
+
+    // For testing
+    setTimeout(() => { model.testPicture = ["Changed!"]; }, 2000);
+    setTimeout(() => { console.log(model.testPicture[0]); }, 1000);
+    setTimeout(() => { console.log(model.testPicture[0]); }, 3000);
+    // End of testing
+
+    function storedStateEffectACB() {
+        saveToFirebase(model);
+    }
+
+    function modelChangedACB() {
+        return [model.testPicture];
+    }
 }
 
-export { imageDb, readFromFirebase, addPictureToFirebase, readPictureFromFirebase};
+export default connectToFirebase;
