@@ -48,6 +48,8 @@ function ArtTool() {
         event.preventDefault();
         mouseCheck = true //for mouseDragEvent()
         let element = document.getElementById(event.target.id);
+        const ctx = element.getContext("2d");
+        ctx.fillStyle = color;
         //* translate event coordiantes to the canvas 
         const cords = getCords(element, event.clientX, event.clientY);
 
@@ -65,7 +67,8 @@ function ArtTool() {
         const element = document.getElementById(event.target.id);
         const ctx = element.getContext("2d");
         const newCords = getCords(element, event.clientX, event.clientY);
-
+        
+        //ctx.fillStyle = color;
         // draw a line from lastXY to newCords using direct pixel manipulation
         const dx = Math.abs(newCords[0] - lastXY[0]);
         const dy = -Math.abs(newCords[1] - lastXY[1]);
@@ -113,12 +116,14 @@ function ArtTool() {
             <div className="content">
                 <p>Drawing Canvas</p>
                 <div>
-                <SketchPicker color={color} onChangeComplete={handleChangeComplete} />
-                <canvas style={{ border: '1px solid #ccc' }} /* Your canvas attributes and event handlers */ />
-                </div>
                 <canvas className="canvas" id="drawing-area" width="64" height="32" onContextMenu={drawEvent}
                 onMouseDown={drawEvent} onMouseMove={mouseDragEvent} onTouchStart={touchDrawEvent} onTouchMove={touchDragEvent}>
                 </canvas>
+                <div className="color-palette">
+                    <SketchPicker color={color} onChangeComplete={handleChangeComplete} />
+                </div>
+                <canvas style={{ border: '1px solid #ccc' }} />
+                </div>
             </div>
 
         </div>
