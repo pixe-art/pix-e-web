@@ -3,6 +3,7 @@ html, body {
 }
 
 .parent {
+    touch-action: none;
     display: flex;
     flex-direction: column;
     align-content: center;
@@ -22,6 +23,7 @@ html, body {
 }
 .content {
     user-select: none;
+    
     display: flex;
     padding-top: 120px;
     flex-direction: column;
