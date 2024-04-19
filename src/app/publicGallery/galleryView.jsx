@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import Link  from 'next/link';
+import Link  from 'next/link'; 
 
 export default function GalleryView() {
     const [isMenuOpen, setMenuOpen] = useState(false);
