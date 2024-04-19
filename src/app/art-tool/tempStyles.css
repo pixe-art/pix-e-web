@@ -28,6 +28,7 @@ html, body {
     align-content: center;
     flex-wrap: wrap;
     align-items: center;
+    justify-content: space-between;
 }
 .canvas {
     cursor: crosshair;
@@ -47,3 +48,9 @@ html, body {
     scale: 5;
     }
 }
+
+
+
+.color-palette {
+    margin-top: 200px;
+    }

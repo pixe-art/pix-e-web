@@ -3,7 +3,7 @@ import "../globals.css"
 import "./tempStyles.css"
 import { getCords } from "@/utilities";
 import React,{useState} from "react";
-import ColorPalette from "./colorPalette";
+//import ColorPalette from "./colorPalette";
 import { SketchPicker } from 'react-color';
 
 function ArtTool() {
@@ -68,7 +68,6 @@ function ArtTool() {
         const ctx = element.getContext("2d");
         const newCords = getCords(element, event.clientX, event.clientY);
         
-        //ctx.fillStyle = color;
         // draw a line from lastXY to newCords using direct pixel manipulation
         const dx = Math.abs(newCords[0] - lastXY[0]);
         const dy = -Math.abs(newCords[1] - lastXY[1]);
@@ -122,7 +121,7 @@ function ArtTool() {
                 <div className="color-palette">
                     <SketchPicker color={color} onChangeComplete={handleChangeComplete} />
                 </div>
-                <canvas style={{ border: '1px solid #ccc' }} />
+                {/*<canvas style={{ border: '1px solid #ccc' }} />*/}
                 </div>
             </div>
 
