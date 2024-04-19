@@ -5,19 +5,36 @@ import { getCords } from "@/utilities";
 
 function ArtTool() {
     return(
-        <div className="parent" onMouseUp={checkResetEvent}>
+        <div className="parent" onMouseUp={checkReset}>
             <div className="topbar">
                 <h1>Left-Click to draw | Right-Click to erase | Middle-Click for single pixel</h1>
                 <button onClick={debugEvent} type="button">click for debug info</button>
-                <button onClick={clearCanvasEvent} type="button">click to clear canvas</button>
-                <button onClick={saveEvent} type="button">click to download canvas</button>
             </div>
             <div className="content">
-                <p>Drawing Canvas</p>
-                <canvas className="canvas" id="drawing-area" width="64" height="32" onContextMenu={mouseClickEvent}
-                onMouseDown={mouseClickEvent} onMouseMove={mouseDragEvent} onTouchStart={touchDrawEvent} onTouchMove={touchDragEvent} onMouseLeave={resetLastCoords}>
-                    <script>{clearCanvasEvent()}</script>
-                </canvas>
+                <div className="tmpcolor">
+
+                </div>
+                <div>
+                    <canvas className="canvas" id="drawing-area" width="64" height="32" onContextMenu={(event)=>{event.preventDefault()}}
+                    onMouseDown={mouseClickEvent} onMouseMove={mouseDragEvent} onTouchStart={touchDrawEvent} onTouchMove={touchDragEvent} onMouseLeave={resetLastCoords}>
+                        <script>{clearCanvas()}</script>
+                    </canvas>
+                </div>
+                <div className="tools">
+                    <div className="tool-buttons">
+                        <button id="erase" onClick={eraserEvent}>Eraser</button>
+                        <button id="undo" onClick={undo}>Undo</button>
+                        <button id="redo" disabled="true">Redo</button>
+                        <button id="clear" onClick={clearCanvas} type="button">Clear</button>
+                        <button id="download" onClick={downloadCanvas} type="button">Download</button>
+                        <div>
+                            <p>pen size</p>
+                            <p>&nbsp;</p>                            
+                            <p id="pen-size-d">1</p>                            
+                        </div>
+                        <input type="range" name="pen-size" id="pen-size" defaultValue={"1"} min={"1"} max={"12"} onChange={penSizeEvent}/>
+                    </div>
+                </div>
             </div>
 
         </div>
@@ -28,6 +45,11 @@ export default ArtTool;
 //global variables
 let mouseCheck = false;
 let lastXY;
+let penSize = 1;
+let penColor = "black";
+const historyLength = 10
+let undoHistory = new Array(historyLength);
+
 function debugEvent() {
     //! log outputs for checking canvas size
     const element = document.getElementById("drawing-area");
@@ -44,7 +66,7 @@ function debugEvent() {
     console.log("padding = " + style.padding + "\n(needs offset of " + style.padding.split(" ")[0] + ")");
 }
 
-function clearCanvasEvent() {
+function clearCanvas() {
     try {
         const element = document.getElementById("drawing-area");
         let extra = element.getContext("2d");
@@ -56,11 +78,12 @@ function clearCanvasEvent() {
         console.error(error);
     }
 }
-function checkResetEvent() {
+function checkReset() {
     //* flags check as false, used for mouseDragEvent
+    
     mouseCheck = false;
 }
-function saveEvent() {
+function downloadCanvas() {
     let element = document.getElementById("drawing-area");
     let temp = document.createElement('a');
     const img = element.toDataURL("image/png").replace("image/png", "image/octet-stream");
@@ -69,24 +92,61 @@ function saveEvent() {
     temp.click();   
     temp.remove();
 }
+function saveCurrent() {
+    let element = document.getElementById("drawing-area");
+    if (undoHistory.at(historyLength)) {
+        undoHistory.pop()
+    }        
+    undoHistory.unshift(element.toDataURL())
+}
+function undo() {
+    let element = document.getElementById("drawing-area");
+    let img = new Image()
+    let last = undoHistory[0];
+    undoHistory = undoHistory.slice(1)
+    if (!last) {
+        return;
+    }
+    img.src = last;
+    img.onload = () => {
+        element.getContext("2d").drawImage(img,0,0);
+    }
+}
+function eraserEvent(event) {
+    let element = document.getElementById(event.target.id);
+    if (element.className.includes("active")) {
+        element.className = ""
+        penColor = "black"
+    } else {
+        element.className = "active"
+        penColor = "white"
+    }
+}
+function penSizeEvent(event) {
+    penSize = event.target.value;
+    document.getElementById("pen-size-d").innerHTML = event.target.value;
+}
 
 function resetLastCoords(){
     lastXY = [-1, -1];
 }
 function mouseClickEvent(event) {
     event.preventDefault();
+    saveCurrent();
     mouseCheck = true //for mouseDragEvent()
     const element = document.getElementById(event.target.id);
     //* translate event coordiantes to the canvas 
-    const cords = getCords(element, event.clientX, event.clientY);
+    const cords = getCords(element, event.clientX, event.clientY, (penSize-1)/2);
 
     //* draw pixel
     let extra = element.getContext("2d");
     extra.save();
     if (event.button === 2) {
         extra.fillStyle = "white";
+    } else {
+        extra.fillStyle = penColor;
     }
-    extra.fillRect(cords[0], cords[1], 1, 1); //draw pixel at translated coordinates
+    extra.fillRect(cords[0], cords[1], penSize, penSize); //draw pixel at translated coordinates
     lastXY = cords; //used for fallback in mouseDragEvent()
     extra.restore();
     }
@@ -94,12 +154,15 @@ function mouseDragEvent(event) {
     if ((event.buttons === 2 || event.buttons === 1) && mouseCheck) {
         const element = document.getElementById(event.target.id);
         let extra = element.getContext("2d");
-        const cords = getCords(element, event.clientX, event.clientY);
+        const cords = getCords(element, event.clientX, event.clientY, (penSize-1)/2);
 
         extra.save();
         // set draw color to white for erase if right click
+        extra.fillStyle = "white";
         if (event.buttons === 2) {
             extra.fillStyle = "white";
+        } else {
+            extra.fillStyle = penColor;
         }
         if (lastXY[0] < 0 || lastXY[1] < 0) {
             lastXY = cords;
@@ -113,7 +176,7 @@ function mouseDragEvent(event) {
 function touchDrawEvent(event){
     const element = document.getElementById(event.target.id);
     const cords = getCords(element, event.targetTouches[0]?.clientX || event.clientX, event.targetTouches[0]?.clientY || event.clientY)
-    element.getContext("2d").fillRect(cords[0], cords[1], 1, 1)
+    element.getContext("2d").fillRect(cords[0], cords[1], penSize, penSize)
     lastXY = cords;
 }
 function touchDragEvent(event) {
@@ -150,24 +213,24 @@ function draw_line(x1, y1, x2, y2, con) {
         } else { // Line is drawn right to left (swap ends)
             x = x2; y = y2; xe = x1;
         }
-        con.fillRect(x, y, 1, 1); // draws pixel at translated coordinates
+        con.fillRect(x, y, penSize, penSize); // draws pixel at translated coordinates
         // Rasterize the line
         for (i = 0; x < xe; i++) {
             x = x + 1;
             // Deal with octants...
             if (px < 0) {
-                px += 2 * dy1;
+                px = px + 2 * dy1;
             } else {
                 if ((dx < 0 && dy < 0) || (dx > 0 && dy > 0)) {
                     y++;
                 } else {
                     y--;
                 }
-                px += 2 * (dy1 - dx1);
+                px = px + 2 * (dy1 - dx1);
             }
             // Draw pixel from line span at
             // currently rasterized position
-            con.fillRect(x, y, 1, 1);
+            con.fillRect(x, y, penSize, penSize);
         }
     } else { //* The line is Y-axis dominant
         // Line is drawn bottom to top
@@ -176,24 +239,24 @@ function draw_line(x1, y1, x2, y2, con) {
         } else { // Line is drawn top to bottom
             x = x2; y = y2; ye = y1;
         }
-        con.fillRect(x, y, 1, 1); // draws pixel at translated coordinates
+        con.fillRect(x, y, penSize, penSize); // draws pixel at translated coordinates
         // Rasterize the line
         for (i = 0; y < ye; i++) {
-            y += 1;
+            y++;
             // Deal with octants...
             if (py <= 0) {
-                py += 2 * dx1;
+                py = px + 2 * dx1;
             } else {
                 if ((dx < 0 && dy<0) || (dx > 0 && dy > 0)) {
                     x++;
                 } else {
                     x--;
                 }
-                py += 2 * (dx1 - dy1);
+                py = py + 2 * (dx1 - dy1);
             }
             // Draw pixel from line span at
             // currently rasterized position
-            con.fillRect(x, y, 1, 1); // draws pixel at translated coordinates
+            con.fillRect(x, y, penSize, penSize); // draws pixel at translated coordinates
         }
     }
  }

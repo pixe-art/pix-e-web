@@ -21,23 +21,46 @@ html, body {
 .topbar button:hover{
     color: cornflowerblue;
 }
-.content {
+.content{
     user-select: none;
-    
     display: flex;
-    padding-top: 120px;
-    flex-direction: column;
-    align-content: center;
-    flex-wrap: wrap;
+    flex-direction: row;
+    justify-content: space-between;
     align-items: center;
+    height: 100%;
+}
+.tmpcolor {
+    margin-left: 1em;
+}
+.tools {
+    margin-right: 1em;
+}
+.tool-buttons {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+}
+.tool-buttons button {
+    transition: 0.2s;
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+    color: black;
+    background-color: darkgray;
+}
+.tool-buttons .active {
+    transition: 0.2s;
+    color: whitesmoke !important;
+    background-color: rgb(46, 46, 46) !important;
+}
+.tool-buttons div {
+    padding-left: 1.5em;
+    display: flex;
 }
 .canvas {
     cursor: crosshair;
     user-select: none;
     touch-action: none;
     background: white;
-    margin-top: 20%;
-
     scale: 12;
     image-rendering: pixelated;
     border: solid 1px darkgray;
