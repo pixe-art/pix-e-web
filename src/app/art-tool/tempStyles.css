@@ -21,16 +21,17 @@ html, body {
 .topbar button:hover{
     color: cornflowerblue;
 }
+
 .content {
     user-select: none;
     
-    display: flex;
+    display: inline-flex;
     padding-top: 120px;
     flex-direction: column;
     align-content: center;
     flex-wrap: wrap;
     align-items: center;
-    justify-content: space-between;
+    justify-content: center;
 }
 .canvas {
     cursor: crosshair;
@@ -38,6 +39,7 @@ html, body {
     touch-action: none;
     background: white;
     margin-top: 20%;
+    margin-left: 100px;
 
     scale: 12;
     image-rendering: pixelated;
@@ -52,7 +54,39 @@ html, body {
 }
 
 
-
-.color-palette {
+/*.color-palette {
     margin-top: 200px;
-    }
+    }*/
+
+.palette {
+    margin-top: 250px;
+    display: inline-block;
+    width: fit-content;
+}
+
+.sketch-picker {
+    margin-top: 0px;
+    display: inline-block;
+    width: fit-content;
+}
+
+.palette-button {
+    border: 1px solid black;
+    background-color: gray;
+    height: 50px;
+    width: 220px;
+    border-radius: 4px;
+    transition: background-color 0.3s, transform 0.3s;
+    display: inline-block;
+}
+
+button:hover {
+    background-color: rgb(146, 146, 146);
+    color: white;
+    border-color: #af02f4;
+}
+
+.draggable {
+    width: auto;
+    display: inline-block;
+}
