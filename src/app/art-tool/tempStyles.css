@@ -71,6 +71,7 @@ html, body {
 }
 
 .palette-button {
+    color: rgb(41, 14, 42);
     border: 1px solid black;
     background-color: gray;
     height: 50px;
@@ -82,7 +83,7 @@ html, body {
 
 button:hover {
     background-color: rgb(146, 146, 146);
-    color: white;
+    color: #af02f4;
     border-color: #af02f4;
 }
 
