@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import Link  from 'next/link'; 
 
-export default function GalleryView() {
+export default function GalleryView({images}) {
     const [isMenuOpen, setMenuOpen] = useState(false);
+    const [selectedImage, setSelectedImage] = useState(null);
     const genericHamburgerLine = `h-1 w-6 my-1 rounded-full bg-cream transition ease transform duration-300`;
 
     return (
@@ -45,7 +46,19 @@ export default function GalleryView() {
             </div>
             <div className="flex-grow p-4">
                 <h1 className="text-2xl mb-2">Gallery</h1>
-                <p>Here are some pictures of my favorite things.</p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+                    {images.map(image => (
+                        <div key={image.id} className="rounded overflow-hidden shadow-lg p-4 bg-cream transform transition duration-500 hover:scale-110 hover:z-10">
+                            <img src={image.testPicture} alt="" className="w-full h-auto object-cover" />
+                            <div className="px-6 py-4">
+                                <div className="font-bold text-lg mb-2">{image.title}</div>
+                                <p className="text-gray-700 text-base">
+                                    Created by: {image.creator}
+                                </p>
+                            </div>
+                        </div>
+                    ))}
+                </div>
             </div>
         </div>
     );

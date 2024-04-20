@@ -26,40 +26,33 @@ export function persistenceToModel(data, model) {
 }
 
 export function saveToFirebase(model) {
-    const rf = ref(db, PATH);
-
-    if (model.ready) {
-        set(rf, modelToPersistence(model));
-    }
+    model.forEach(image => {
+        const rf = ref(db, `${PATH}/${image.id}`);
+        set(rf, modelToPersistence(image));
+    });
 }
 
 export function readFromFirebase(model) {
-    model.ready = false;
     const rf = ref(db, PATH);
     return get(rf).then(convertACB);
 
     function convertACB(snapshot) {
         persistenceToModel(snapshot.val(), model);
-        model.ready = true;
     }
 }
 
 export function connectToFirebase(model) {
-    readFromFirebase(model);
+    readFromFirebase(model).then(() => {
+        saveToFirebase(model);
+    });
     reaction(modelChangedACB, storedStateEffectACB);
-
-    // For testing
-    setTimeout(() => { model.testPicture = ["Changed!"]; }, 2000);
-    setTimeout(() => { console.log(model.testPicture[0]); }, 1000);
-    setTimeout(() => { console.log(model.testPicture[0]); }, 3000);
-    // End of testing
 
     function storedStateEffectACB() {
         saveToFirebase(model);
     }
 
     function modelChangedACB() {
-        return [model.testPicture];
+        return model.testPicture;
     }
 }
 
