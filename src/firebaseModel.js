@@ -12,7 +12,11 @@ const PATH = "pixeModel";
 export function modelToPersistence(model) {
     let realtimeModel = null;
 
-    realtimeModel = {picture: model.testPicture};
+    realtimeModel = {
+        title: model.title,
+        creator: model.creator,
+        picture: model.testPicture
+    };
 
     return realtimeModel;
 }
