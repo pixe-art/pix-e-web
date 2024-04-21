@@ -38,6 +38,7 @@ export default function MyGalleryView({ savePicture, loadGallery, pictures }) {
                     {isMenuOpen && (
                         <>
                             {/* Add menu items here */}
+                            <Link href="/dashboard" className="text-white no-underline hover:underline">Dashboard</Link>
                             <Link href="#" className="text-white no-underline hover:underline">My Gallery</Link>
                             <Link href="/publicGallery" className="text-white no-underline hover:underline">Public Gallery</Link>
                         </>
