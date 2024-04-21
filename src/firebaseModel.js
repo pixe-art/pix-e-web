@@ -8,6 +8,7 @@ import firebaseConfig from "./firebaseConfig.js"
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 const PATH = "pixeModel";
+export const auth = getAuth(app);
 
 export function modelToPersistence(model) {
     let realtimeModel = null;
