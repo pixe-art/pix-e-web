@@ -111,3 +111,8 @@ button:hover {
     width: auto;
     display: inline-block;
 }
+
+.sketch-picker {
+    background-color: #322828;
+    color: black;
+}
