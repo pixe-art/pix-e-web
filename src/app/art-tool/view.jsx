@@ -53,10 +53,10 @@ let undoHistory = new Array(historyLength);
 function debugEvent() {
     //! log outputs for checking canvas size
     const element = document.getElementById("drawing-area");
-    let foo = element.getBoundingClientRect();
-    let style = getComputedStyle(element);
-    let multH = foo.height/element.height;
-    let multW = foo.width/element.width;
+    const foo = element.getBoundingClientRect();
+    const style = getComputedStyle(element);
+    const multH = foo.height/element.height;
+    const multW = foo.width/element.width;
     console.log("\n[ DEBUG INFO ]\n");
     console.log("canvas scaling = " + style.scale);
     console.log("size difference (mult):\nwidth = " + multW + "x\nheight = " + multH + "x");
@@ -68,24 +68,27 @@ function debugEvent() {
 
 function clearCanvas() {
     try {
+        // declare elements
         const element = document.getElementById("drawing-area");
-        let extra = element.getContext("2d");
+        const extra = element.getContext("2d");
+        // fill canvas with white
         extra.save();
         extra.fillStyle = "white";
         extra.fillRect(0,0, element.width, element.height);        
         extra.restore();
+        // reset undo history
+        undoHistory = new Array(historyLength);
     } catch (error) {
         console.error(error);
     }
 }
 function checkReset() {
     //* flags check as false, used for mouseDragEvent
-    
     mouseCheck = false;
 }
 function downloadCanvas() {
-    let element = document.getElementById("drawing-area");
-    let temp = document.createElement('a');
+    const element = document.getElementById("drawing-area");
+    const temp = document.createElement('a');
     const img = element.toDataURL("image/png").replace("image/png", "image/octet-stream");
     temp.setAttribute("href", img);
     temp.setAttribute("download", "canvas.png");
@@ -93,14 +96,14 @@ function downloadCanvas() {
     temp.remove();
 }
 function saveCurrent() {
-    let element = document.getElementById("drawing-area");
+    const element = document.getElementById("drawing-area");
     if (undoHistory.at(historyLength)) {
         undoHistory.pop()
     }        
     undoHistory.unshift(element.toDataURL())
 }
 function undo() {
-    let element = document.getElementById("drawing-area");
+    const element = document.getElementById("drawing-area");
     let img = new Image()
     let last = undoHistory[0];
     undoHistory = undoHistory.slice(1)
@@ -113,7 +116,7 @@ function undo() {
     }
 }
 function eraserEvent(event) {
-    let element = document.getElementById(event.target.id);
+    const element = document.getElementById(event.target.id);
     if (element.className.includes("active")) {
         element.className = ""
         penColor = "black"
@@ -139,7 +142,7 @@ function mouseClickEvent(event) {
     const cords = getCords(element, event.clientX, event.clientY, (penSize-1)/2);
 
     //* draw pixel
-    let extra = element.getContext("2d");
+    const extra = element.getContext("2d");
     extra.save();
     if (event.button === 2) {
         extra.fillStyle = "white";
@@ -153,7 +156,7 @@ function mouseClickEvent(event) {
 function mouseDragEvent(event) {
     if ((event.buttons === 2 || event.buttons === 1) && mouseCheck) {
         const element = document.getElementById(event.target.id);
-        let extra = element.getContext("2d");
+        const extra = element.getContext("2d");
         const cords = getCords(element, event.clientX, event.clientY, (penSize-1)/2);
 
         extra.save();
@@ -181,7 +184,7 @@ function touchDrawEvent(event){
 }
 function touchDragEvent(event) {
     const element = document.getElementById(event.target.id);
-    let extra = element.getContext("2d");
+    const extra = element.getContext("2d");
     try {
         const cords = getCords(element, 
             event.targetTouches[0]?.clientX || event.Touch[0]?.clientX || event.clientX, 
