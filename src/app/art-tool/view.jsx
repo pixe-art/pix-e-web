@@ -8,20 +8,55 @@ import { SketchPicker } from 'react-color';
 import Draggable from './draggable';
 
 function ArtTool() {
-    return(
-        <div className="parent" onMouseUp={checkResetEvent}>
+const [color, setColor] = useState("#000000"); // default color (black)
+const [showPicker, setShowPicker] = useState(true)
+
+function handleColorChange(color) {
+    setColor(color.hex);
+    penColor = color.hex;
+}
+function paletteButtonClick(showPicker){
+    setShowPicker(!showPicker);
+}
+    return( 
+        <div className="parent" onMouseUp={checkReset}>
             <div className="topbar">
                 <h1>Left-Click to draw | Right-Click to erase | Middle-Click for single pixel</h1>
                 <button onClick={debugEvent} type="button">click for debug info</button>
-                <button onClick={clearCanvasEvent} type="button">click to clear canvas</button>
-                <button onClick={saveEvent} type="button">click to download canvas</button>
             </div>
             <div className="content">
-                <p>Drawing Canvas</p>
-                <canvas className="canvas" id="drawing-area" width="64" height="32" onContextMenu={mouseClickEvent}
-                onMouseDown={mouseClickEvent} onMouseMove={mouseDragEvent} onTouchStart={touchDrawEvent} onTouchMove={touchDragEvent} onMouseLeave={resetLastCoords}>
-                    <script>{clearCanvasEvent()}</script>
-                </canvas>
+                <div className="palette">
+                <Draggable className="draggable">
+                    <button className="palette-button" onClick={paletteButtonClick}>Toggle Color Palette</button>
+                        {showPicker && (
+                            <div className="color-palette">
+                                <SketchPicker color={color} onChangeComplete={handleColorChange} />
+                            </div>
+                            )}
+                </Draggable>
+                
+                </div>
+                <div>
+                    <canvas className="canvas" id="drawing-area" width="64" height="32" onContextMenu={(event)=>{event.preventDefault()}}
+                    onMouseDown={mouseClickEvent} onMouseMove={mouseDragEvent} onTouchStart={touchDrawEvent} onTouchMove={touchDragEvent} onMouseLeave={resetLastCoords}>
+                        {/* <script>{clearCanvas()}</script> */}
+                    </canvas>
+                </div>
+                <div className="tools">
+                    <div className="tool-buttons">
+                        <button id="erase" onClick={eraserEvent}>Eraser</button>
+                        <button id="undo" onClick={undo}>Undo</button>
+                        <button id="redo" disabled="true">Redo</button>
+                        <button id="clear" onClick={clearCanvas} type="button">Clear</button>
+                        <button id="download" onClick={downloadCanvas} type="button">Download</button>
+                        <div>
+                            <p>pen size</p>
+                            <p>&nbsp;</p>                            
+                            <p id="pen-size-d">1</p>                            
+                        </div>
+                        <input type="range" name="pen-size" id="pen-size" defaultValue={"1"} min={"1"} max={"12"} onChange={penSizeEvent}/>
+                    </div>
+                </div>
             </div>
 
         </div>
@@ -29,13 +64,17 @@ function ArtTool() {
 }
 export default ArtTool;
 
+
 //global variables
 let mouseCheck = false;
 let lastXY;
 let penSize = 1;
 let penColor = "black";
+let currentColor = "black";
 const historyLength = 10
 let undoHistory = new Array(historyLength);
+
+let fresh = true;
 
 function debugEvent() {
     //! log outputs for checking canvas size
@@ -106,10 +145,10 @@ function eraserEvent(event) {
     const element = document.getElementById(event.target.id);
     if (element.className.includes("active")) {
         element.className = ""
-        penColor = "black"
+        currentColor = penColor;
     } else {
         element.className = "active"
-        penColor = "white"
+        currentColor = "white"
     }
 }
 function penSizeEvent(event) {
@@ -121,6 +160,13 @@ function resetLastCoords(){
     lastXY = [-1, -1];
 }
 function mouseClickEvent(event) {
+    if (fresh) {
+        fresh = false;
+        clearCanvas();
+    }
+    if (penColor !== currentColor && penColor !== "white") {
+        currentColor = penColor
+    }
     event.preventDefault();
     saveCurrent();
     mouseCheck = true //for mouseDragEvent()
@@ -134,7 +180,7 @@ function mouseClickEvent(event) {
     if (event.button === 2) {
         extra.fillStyle = "white";
     } else {
-        extra.fillStyle = penColor;
+        extra.fillStyle = currentColor;
     }
     extra.fillRect(cords[0], cords[1], penSize, penSize); //draw pixel at translated coordinates
     lastXY = cords; //used for fallback in mouseDragEvent()
@@ -152,7 +198,7 @@ function mouseDragEvent(event) {
         if (event.buttons === 2) {
             extra.fillStyle = "white";
         } else {
-            extra.fillStyle = penColor;
+            extra.fillStyle = currentColor;
         }
         if (lastXY[0] < 0 || lastXY[1] < 0) {
             lastXY = cords;

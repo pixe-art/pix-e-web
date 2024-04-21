@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from "react";
 
 // can be used to move elements on the screen (e.g. color palette)
-const Draggable = ({ children, showPicker, setShowPicker }) => {
+const Draggable = ({ children }) => {
     const [isDragging, setIsDragging] = useState(false);
     const [position, setPosition] = useState({x:0,y:0});
     const [startPosition, setStartPosition] = useState({x: 0, y: 0});
@@ -28,10 +28,6 @@ const Draggable = ({ children, showPicker, setShowPicker }) => {
     }
 
     const handleMouseUp = () => {
-        console.log("Mouse Up, Dragged: ", dragged);
-        if (!dragged) {
-            setShowPicker(!showPicker);
-        }
         setIsDragging(false);
     };
 
