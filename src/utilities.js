@@ -2,8 +2,8 @@ export function getCords(element, x, y, offset) {
     //* assign values to variables
     const style = getComputedStyle(element);
     const canvas = element.getBoundingClientRect();
-    const offsetBorder = (style.border.split("px")[0]);
-    const offsetPadding = (style.padding.split("px")[0]);
+    const offsetBorder = parseFloat(style.border.split("px")[0]);
+    const offsetPadding = parseFloat(style.padding.split("px")[0]);
     const fullOffset = Math.round(offset + offsetBorder + offsetPadding);
     //* calculate relative positions
     const posX = (Math.round(((x - (canvas.left))/(style.scale))) - fullOffset);
