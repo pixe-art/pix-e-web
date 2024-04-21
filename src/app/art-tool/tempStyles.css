@@ -72,3 +72,42 @@ html, body {
     scale: 5;
     }
 }
+
+
+/*.color-palette {
+    margin-top: 200px;
+    }*/
+
+.palette {
+    margin-top: 250px;
+    display: inline-block;
+    width: fit-content;
+}
+
+.sketch-picker {
+    margin-top: 0px;
+    display: inline-block;
+    width: fit-content;
+}
+
+.palette-button {
+    color: rgb(41, 14, 42);
+    border: 1px solid black;
+    background-color: gray;
+    height: 50px;
+    width: 220px;
+    border-radius: 4px;
+    transition: background-color 0.3s, transform 0.3s;
+    display: inline-block;
+}
+
+button:hover {
+    background-color: rgb(146, 146, 146);
+    color: #af02f4;
+    border-color: #af02f4;
+}
+
+.draggable {
+    width: auto;
+    display: inline-block;
+}

@@ -11,10 +11,11 @@
   "dependencies": {
     "firebase": "^10.11.0",
     "next": "14.2.1",
-    "react": "^18",
-    "react-dom": "^18",
     "mobx": "^6.8.0",
-    "mobx-react-lite": "^3.4.2"
+    "mobx-react-lite": "^3.4.2",
+    "react": "^18",
+    "react-color": "^2.19.3",
+    "react-dom": "^18"
   },
   "devDependencies": {
     "postcss": "^8",

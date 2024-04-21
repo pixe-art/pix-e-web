@@ -2,39 +2,26 @@
 import "../globals.css"
 import "./tempStyles.css"
 import { getCords } from "@/utilities";
+import React,{useState} from "react";
+//import ColorPalette from "./colorPalette";
+import { SketchPicker } from 'react-color';
+import Draggable from './draggable';
 
 function ArtTool() {
     return(
-        <div className="parent" onMouseUp={checkReset}>
+        <div className="parent" onMouseUp={checkResetEvent}>
             <div className="topbar">
                 <h1>Left-Click to draw | Right-Click to erase | Middle-Click for single pixel</h1>
                 <button onClick={debugEvent} type="button">click for debug info</button>
+                <button onClick={clearCanvasEvent} type="button">click to clear canvas</button>
+                <button onClick={saveEvent} type="button">click to download canvas</button>
             </div>
             <div className="content">
-                <div className="tmpcolor">
-
-                </div>
-                <div>
-                    <canvas className="canvas" id="drawing-area" width="64" height="32" onContextMenu={(event)=>{event.preventDefault()}}
-                    onMouseDown={mouseClickEvent} onMouseMove={mouseDragEvent} onTouchStart={touchDrawEvent} onTouchMove={touchDragEvent} onMouseLeave={resetLastCoords}>
-                        <script>{clearCanvas()}</script>
-                    </canvas>
-                </div>
-                <div className="tools">
-                    <div className="tool-buttons">
-                        <button id="erase" onClick={eraserEvent}>Eraser</button>
-                        <button id="undo" onClick={undo}>Undo</button>
-                        <button id="redo" disabled="true">Redo</button>
-                        <button id="clear" onClick={clearCanvas} type="button">Clear</button>
-                        <button id="download" onClick={downloadCanvas} type="button">Download</button>
-                        <div>
-                            <p>pen size</p>
-                            <p>&nbsp;</p>                            
-                            <p id="pen-size-d">1</p>                            
-                        </div>
-                        <input type="range" name="pen-size" id="pen-size" defaultValue={"1"} min={"1"} max={"12"} onChange={penSizeEvent}/>
-                    </div>
-                </div>
+                <p>Drawing Canvas</p>
+                <canvas className="canvas" id="drawing-area" width="64" height="32" onContextMenu={mouseClickEvent}
+                onMouseDown={mouseClickEvent} onMouseMove={mouseDragEvent} onTouchStart={touchDrawEvent} onTouchMove={touchDragEvent} onMouseLeave={resetLastCoords}>
+                    <script>{clearCanvasEvent()}</script>
+                </canvas>
             </div>
 
         </div>
