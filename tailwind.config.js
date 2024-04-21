@@ -7,6 +7,10 @@ module.exports = {
   ],
   theme: {
     extend: {
+      colors: {
+        cream: '#f2e9e4', // replace with your preferred cream color
+        brown: '#a67c52'  // replace with your preferred brown color
+      },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
         "gradient-conic":

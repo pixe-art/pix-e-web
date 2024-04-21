@@ -9,13 +9,13 @@ import Draggable from './draggable';
 
 function ArtTool() {
 const [color, setColor] = useState("#000000"); // default color (black)
-const [showPicker, setShowPicker] = useState(true)
+const [showPicker, setShowPicker] = useState(false)
 
-function handleColorChange(color) {
+const handleColorChange = (color) => {
     setColor(color.hex);
     penColor = color.hex;
 }
-function paletteButtonClick(showPicker){
+const paletteButtonClick = () => {
     setShowPicker(!showPicker);
 }
     return( 
