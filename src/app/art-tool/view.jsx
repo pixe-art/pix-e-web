@@ -44,7 +44,7 @@ const paletteButtonClick = () => {
                 </div>
                 <div className="tools">
                     <div className="tool-buttons">
-                        <button id="erase" onClick={eraserEvent}>Eraser</button>
+                        <button id="erase" disabled="true" onClick={eraserEvent}>Eraser</button>
                         <button id="undo" onClick={undo}>Undo</button>
                         <button id="redo" disabled="true">Redo</button>
                         <button id="clear" onClick={clearCanvas} type="button">Clear</button>
