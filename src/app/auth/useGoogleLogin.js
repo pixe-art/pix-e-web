@@ -1,4 +1,3 @@
-// auth/useGoogleLogin.js
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import {auth} from "@/firebaseModel"
 

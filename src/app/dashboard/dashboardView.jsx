@@ -1,9 +1,53 @@
 import Link from "next/link";
+import { useEffect, useState } from 'react';
+import { auth, signOut } from '@/firebaseModel';
+import { useRouter } from 'next/navigation';
+import { onAuthStateChanged } from "firebase/auth"; // Import the onAuthStateChanged listener
 
 export default function Dashboard() {
+  const router = useRouter();
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    // Listen for authentication state changes
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      if (currentUser) {
+        // User is signed in, see docs for a list of available properties
+        // https://firebase.google.com/docs/reference/js/firebase.User
+        setUser(currentUser);
+      } else {
+        // User is signed out
+        setUser(null);
+        router.push('/auth'); // Redirect to login page if not logged in
+      }
+    });
+
+    // Cleanup subscription on unmount
+    return () => unsubscribe();
+  }, [router]);
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      router.push('/auth');
+      console.log('User logged out');
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
+  };
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
+      <button
+        onClick={handleLogout}
+        className="absolute top-4 left-4 px-4 py-2 text-white bg-gray-500 rounded hover:bg-gray-600"
+      >
+        Logout
+      </button>
       <div className="max-w-md w-full px-8 py-6 bg-white shadow-md rounded-lg text-center border-8 border-black rounded-xl">
+        {user && (
+          <p className="text-sm text-gray-600 mb-4">Logged in as: {user.uid}</p>
+        )}
         <h1 className="text-3xl font-bold text-gray-800 mb-4">
           Welcome to Pix-E Dashboard!
         </h1>

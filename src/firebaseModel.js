@@ -1,6 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getDatabase, push, ref, get, set, onValue } from "firebase/database";
-import { getAuth } from "firebase/auth";
+import { getAuth, signOut } from "firebase/auth";
 import { reaction } from "mobx"
 import { getStorage } from "firebase/storage";
 import firebaseConfig from "./firebaseConfig.js"
@@ -9,6 +9,7 @@ const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 const PATH = "pixeModel";
 export const auth = getAuth(app);
+export {signOut};
 
 export function modelToPersistence(model) {
     let realtimeModel = null;
