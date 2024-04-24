@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import Link  from 'next/link'; 
+import { BsThreeDots } from 'react-icons/bs';
+import { Dropdown } from 'react-bootstrap';
 
 export default function GalleryView({images}) {
     const [isMenuOpen, setMenuOpen] = useState(false);
@@ -42,6 +44,7 @@ export default function GalleryView({images}) {
                         <Link href="/dashboard" className="text-white no-underline hover:underline">Dashboard</Link>
                         <Link href="/privateGallery" className="text-white no-underline hover:underline">My Gallery</Link>
                         <Link href="#" className="text-white no-underline hover:underline">Public Gallery</Link>
+                        <Link href="/art-tool" className="text-white no-underline hover:underline">Create a picture</Link>
                     </>
                 )}
             </div>
@@ -49,16 +52,26 @@ export default function GalleryView({images}) {
                 <h1 className="text-2xl mb-2">Gallery</h1>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
                     {images.map(image => (
-                        <div key={image.id} className="rounded overflow-hidden shadow-lg p-4 bg-cream transform transition duration-500 hover:scale-110 hover:z-10">
+                        <div key={image.id} className="relative rounded overflow-hidden shadow-lg p-4 bg-cream transform transition duration-500 hover:scale-110 hover:z-10">
                             <img src={image.testPicture} alt="" className="w-full h-auto object-cover" />
-                            <div className="px-6 py-4">
+                            <Dropdown className="absolute top-0 right-0 mb-2 mr-2">
+                                <Dropdown.Toggle variant="none" id="dropdown-basic">
+                                    <BsThreeDots />
+                                </Dropdown.Toggle>
+                                <Dropdown.Menu className="w-31 h-30 bg-cream text-black rounded-md">
+                                    <Dropdown.Item className="hover:bg-gray-400 hover:text-white" href="#/action-1">Action 1</Dropdown.Item>
+                                    <Dropdown.Item className="hover:bg-gray-400 hover:text-white" href="#/action-2">Action 2</Dropdown.Item>
+                                    <Dropdown.Item className="hover:bg-gray-400 hover:text-white" href="#/action-3">Action 3</Dropdown.Item>
+                                </Dropdown.Menu>
+                            </Dropdown>
+                            <div className="px-6 py-4"> 
                                 <div className="font-bold text-lg mb-2">{image.title}</div>
                                 <p className="text-gray-700 text-base">
                                     Created by: {image.creator}
                                 </p>
                             </div>
                         </div>
-                    ))}
+                    ))} 
                 </div>
             </div>
         </div>
