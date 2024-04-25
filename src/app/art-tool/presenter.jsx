@@ -68,7 +68,6 @@ export default observer(
             redoHistory.unshift(canvas.toDataURL())        
         }
         function restoreLastImage() {
-            console.log(redoHistory);
             const last = redoHistory[0];
             redoHistory = redoHistory.slice(1)
             return last;

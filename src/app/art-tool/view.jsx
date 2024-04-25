@@ -120,11 +120,17 @@ function ArtTool(props) {
         props.unshiftUndoHistory(element)     
     }
     function overwriteCanvas(source) {
+        // overwrites canvas with an img url
         const element = document.getElementById("drawing-area");
         const extra = element.getContext("2d")
         let img = new Image()
         img.src = source;
         img.onload = () => {
+            if (img.width > element.width || img.height > element.height) {
+                console.error("Preventing Canvas overwrite due to img having too large dimensions (" + img.width + "x" + img.height + ")\n"
+                + "\tImg should not be larger than Canvas (" + element.width + "x" + element.height + ")");
+                return;
+            }
             clearCanvas()
             extra.drawImage(img,0,0);
             img.remove();
