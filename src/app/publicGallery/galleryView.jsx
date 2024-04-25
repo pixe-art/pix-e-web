@@ -2,10 +2,12 @@ import { useState } from 'react';
 import Link  from 'next/link'; 
 import { BsThreeDots } from 'react-icons/bs';
 import { Dropdown } from 'react-bootstrap';
+import { downloadImage } from './galleryPresenter.jsx';
 
 export default function GalleryView({images}) {
     const [isMenuOpen, setMenuOpen] = useState(false);
     const [selectedImage, setSelectedImage] = useState(null);
+    const [isDropdownOpen, setDropdownOpen] = useState(false);
     const genericHamburgerLine = `h-1 w-6 my-1 rounded-full bg-cream transition ease transform duration-300`;
 
     return (
@@ -52,17 +54,19 @@ export default function GalleryView({images}) {
                 <h1 className="text-2xl mb-2">Gallery</h1>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
                     {images.map(image => (
-                        <div key={image.id} className="relative rounded overflow-hidden shadow-lg p-4 bg-cream transform transition duration-500 hover:scale-110 hover:z-10">
+                        <div key={image.id} className="relative rounded shadow-lg p-4 bg-cream transform transition duration-500 hover:scale-110 hover:z-10">
                             <img src={image.testPicture} alt="" className="w-full h-auto object-cover" />
-                            <Dropdown className="absolute top-0 right-0 mb-2 mr-2">
+                            <Dropdown className="absolute top-0 right-0 mb-2 mr-2" onMouseEnter={() => setDropdownOpen(true)} onMouseLeave={() => setDropdownOpen(false)}>
                                 <Dropdown.Toggle variant="none" id="dropdown-basic">
                                     <BsThreeDots />
                                 </Dropdown.Toggle>
-                                <Dropdown.Menu className="w-31 h-30 bg-cream text-black rounded-md">
-                                    <Dropdown.Item className="hover:bg-gray-400 hover:text-white" href="#/action-1">Action 1</Dropdown.Item>
-                                    <Dropdown.Item className="hover:bg-gray-400 hover:text-white" href="#/action-2">Action 2</Dropdown.Item>
-                                    <Dropdown.Item className="hover:bg-gray-400 hover:text-white" href="#/action-3">Action 3</Dropdown.Item>
+                                {isDropdownOpen && (
+                                <Dropdown.Menu className="w-31 bg-cream text-black rounded-md">
+                                    <Dropdown.Item className="hover:bg-gray-400 hover:text-white" href="#/">Mark as favorite</Dropdown.Item>
+                                    <Dropdown.Item className="hover:bg-gray-400 hover:text-white" onClick={() => downloadImage(image.testPicture, image.title)}>Download</Dropdown.Item>
+                                    <Dropdown.Item className="hover:bg-gray-400 hover:text-white" href="#/">Something </Dropdown.Item>
                                 </Dropdown.Menu>
+                                )} 
                             </Dropdown>
                             <div className="px-6 py-4"> 
                                 <div className="font-bold text-lg mb-2">{image.title}</div>

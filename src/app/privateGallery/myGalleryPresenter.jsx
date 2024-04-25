@@ -40,6 +40,8 @@ const loadGallery = () => {
     });
 }
 
+
+
 return <MyGalleryView savePicture={savePicture} loadGallery={loadGallery} pictures={model.pictures} />
 }
 
