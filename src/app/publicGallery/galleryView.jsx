@@ -63,7 +63,7 @@ export default function GalleryView({images}) {
                                 {isDropdownOpen && (
                                 <Dropdown.Menu className="w-31 bg-cream text-black rounded-md">
                                     <Dropdown.Item className="hover:bg-gray-400 hover:text-white" href="#/">Mark as favorite</Dropdown.Item>
-                                    <Dropdown.Item className="hover:bg-gray-400 hover:text-white" onClick={() => downloadImage(image.testPicture, image.title)}>Download</Dropdown.Item>
+                                    <Dropdown.Item className="hover:bg-gray-400 hover:text-white" onClick={() => downloadImage(image.storage, image.title)}>Download</Dropdown.Item>
                                     <Dropdown.Item className="hover:bg-gray-400 hover:text-white" href="#/">Something </Dropdown.Item>
                                 </Dropdown.Menu>
                                 )} 
