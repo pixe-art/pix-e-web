@@ -11,11 +11,8 @@ import Draggable from './draggable';
 let fresh = true;
 
 function ArtTool(props) {
-    const paletteButtonClick = () => {
-        props.setShowPicker(!props.showPicker);
-    }
     return( 
-        <div className="parent" onMouseUp={props.checkReset}>
+        <div className="parent" onMouseUp={mouseUp}>
             <div className="topbar">
                 <h1>Left-Click to draw | Right-Click to erase | Middle-Click for single pixel</h1>
                 <button onClick={debugEvent} type="button">click for debug info</button>
@@ -24,9 +21,9 @@ function ArtTool(props) {
                 <div className="palette">
                 <Draggable className="draggable">
                     <button className="palette-button" onClick={paletteButtonClick}>Toggle Color Palette</button>
-                        {props.showPicker && (
-                            <div className="color-palette">
-                                <SketchPicker color={props.color} onChangeComplete={props.handleColorChange} />
+                        {(
+                            <div className="color-palette" id="sketch-picker" style={{ display: 'none' }}>
+                                <SketchPicker color={props.color} onChangeComplete={colorChangeEvent} />
                             </div>
                             )}
                 </Draggable>
@@ -40,7 +37,8 @@ function ArtTool(props) {
                 </div>
                 <div className="tools">
                     <div className="tool-buttons">
-                        <button id="erase" disabled={true} onClick={eraserEvent}>Eraser</button>
+                        <input type="color" name="" id="color-d" value={"black"} disabled="true" className="color-display"/>
+                        <button id="erase" onClick={toggleEraser}>Eraser</button>
                         <button id="undo" onClick={undo}>Undo</button>
                         <button id="redo" disabled={true}>Redo</button>
                         <button id="clear" onClick={clearCanvas} type="button">Clear</button>
@@ -57,32 +55,57 @@ function ArtTool(props) {
 
         </div>
     );
-
+    function mouseUp() {
+        props.checkReset(false)
+    }
+    function paletteButtonClick() {
+        let style = document.getElementById("sketch-picker").style
+        if (String(style.display).includes("none")) {
+            style.display = ''
+        } else {
+            style.display = 'none'
+        }
+    }
+    function drawRect(x, y, con) {
+        // draw rectangles on canvas ('con') at position [x, y]
+        if (props.setEraser()) {
+            con.clearRect(x, y, props.changePenSize(), props.changePenSize())            
+        } else {
+            con.fillRect(x, y, props.changePenSize(), props.changePenSize())            
+        }
+    }
+    function colorChangeEvent(event) {
+        // changes color of draw style on canvas
+        const canvas = document.getElementById("drawing-area")
+        const colorDisplay = document.getElementById("color-d")
+        const con = canvas.getContext("2d")
+        const color = props.handleColorChange(event);
+        con.fillStyle = color 
+        colorDisplay.value = color;
+    }
     function debugEvent() {
         //! log outputs for checking canvas size
         const element = document.getElementById("drawing-area");
         props.printDebugInfo(element)
     }
     function clearCanvas() {
-        console.log("clearing canvas");
+        // clears canvas and its history
         try {
-            // declare elements
             const element = document.getElementById("drawing-area");
-            const extra = element.getContext("2d");
-            // fill canvas with white
-            extra.save();
-            extra.fillStyle = "white";
-            extra.fillRect(0,0, element.width, element.height);        
-            extra.restore();
-            // reset undo history
-            props.clearUndoHistory();
+            const con = element.getContext("2d");
+            // empty canvas
+            const temp = con.fillStyle;
+            con.reset();
+            con.fillStyle = temp;
         } catch (error) {
             console.error(error);
         }
     }
     function downloadCanvas() {
+        // creates an off screen png image that downloads to users machine
         const element = document.getElementById("drawing-area");
         const temp = document.createElement('a');
+        //? replacing png to octet stream is necessary for download to work
         const img = element.toDataURL("image/png").replace("image/png", "image/octet-stream");
         temp.setAttribute("href", img);
         temp.setAttribute("download", "canvas.png");
@@ -90,30 +113,33 @@ function ArtTool(props) {
         temp.remove();
     }
     function saveCurrent() {
-        const canvas = document.getElementById("drawing-area");
-        props.unshiftUndoHistory(canvas)     
+        // saves current canvas history to undo history 
+        const element = document.getElementById("drawing-area");
+        props.unshiftUndoHistory(element)     
     }
     function undo() {
-        const element = document.getElementById("drawing-area");
+        // grabs and replaces canvas with last image in undo history 
         let img = new Image()
         const last = props.grabLastImage()
         if (!last) {
             return;
         }
+        const element = document.getElementById("drawing-area");
+        const extra = element.getContext("2d")
         img.src = last;
         img.onload = () => {
-            element.getContext("2d").drawImage(img,0,0);
+            clearCanvas()
+            extra.drawImage(img,0,0);
             img.remove();
         }
     }
-    function eraserEvent(event) {
+    function toggleEraser(event) {
         const element = document.getElementById(event.target.id);
-        if (element.className.includes("active")) {
-            element.className = ""
-            props.currentColor(true);
-        } else {
+        const eraserState = props.setEraser("toggle");
+        if (eraserState) {
             element.className = "active"
-            props.drawColor = "white"
+        } else {
+            element.className = "";
         }
     }
     function penSizeEvent(event) {
@@ -124,50 +150,29 @@ function ArtTool(props) {
         props.setLastXY([-1, -1]);
     }
     function mouseClickEvent(event) {
-        if (fresh) {
-            fresh = false;
-            clearCanvas();
-        }
-        if (props.penColor !== props.drawColor && props.penColor !== "white") {
-            props.currentColor(true)
-        }
         event.preventDefault();
         saveCurrent();
+        props.checkReset(true)
         const element = document.getElementById(event.target.id);
         //* translate event coordiantes to the canvas 
         const cords = getCords(element, event.clientX, event.clientY, (props.changePenSize()-1)/2);
 
         //* draw pixel
-        const extra = element.getContext("2d");
-        extra.save();
-        if (event.button === 2) {
-            extra.fillStyle = "white";
-        } else {
-            extra.fillStyle = props.drawColor;
-        }
-        extra.fillRect(cords[0], cords[1], props.changePenSize(), props.changePenSize()); //draw pixel at translated coordinates
+        const con = element.getContext("2d");
+        drawRect(cords[0], cords[1], con)
         props.setLastXY(cords); //used for fallback in mouseDragEvent()
-        extra.restore();
         }
     function mouseDragEvent(event) {
-        if ((event.buttons === 2 || event.buttons === 1)) {
+        if ((event.buttons === 2 || event.buttons === 1) && props.checkReset() === true) {
             const element = document.getElementById(event.target.id);
             const extra = element.getContext("2d");
             const cords = getCords(element, event.clientX, event.clientY, (props.changePenSize()-1)/2);
 
-            extra.save();
-            // set draw color to white for erase if right click
-            extra.fillStyle = "white";
-            if (event.buttons === 2) {
-                extra.fillStyle = "white";
-            } else {
-                extra.fillStyle = props.currentColor(true);
-            }
             if (props.setLastXY()[0] < 0 || props.setLastXY()[1] < 0) {
                 props.setLastXY(cords);
             }
+
             draw_line(cords[0],cords[1],extra)
-            extra.restore();
             props.setLastXY(cords);
         }
     }
@@ -214,8 +219,7 @@ function ArtTool(props) {
             } else { // Line is drawn right to left (swap ends)
                 x = x2; y = y2; xe = x1;
             }
-            con.fillRect(x, y, props.changePenSize(), props.changePenSize());
-
+            drawRect(x, y, con)
             // Rasterize the line
             for (i = 0; x < xe; i++) {
                 x = x + 1;
@@ -232,7 +236,7 @@ function ArtTool(props) {
                 }
                 // Draw pixel from line span at
                 // currently rasterized position
-                con.fillRect(x, y, props.changePenSize(), props.changePenSize());
+                drawRect(x, y, con)
             }
         } else { //* The line is Y-axis dominant
             // Line is drawn bottom to top
@@ -241,7 +245,7 @@ function ArtTool(props) {
             } else { // Line is drawn top to bottom
                 x = x2; y = y2; ye = y1;
             }
-            con.fillRect(x, y, props.changePenSize(), props.changePenSize());
+            drawRect(x, y, con)
 
             // Rasterize the line
             for (i = 0; y < ye; i++) {
@@ -259,7 +263,7 @@ function ArtTool(props) {
                 }
                 // Draw pixel from line span at
                 // currently rasterized position
-                con.fillRect(x, y, props.changePenSize(), props.changePenSize());
+                drawRect(x, y, con)
             }
         }
     } 
