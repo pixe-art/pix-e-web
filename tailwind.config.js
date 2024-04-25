@@ -16,6 +16,16 @@ module.exports = {
         "gradient-conic":
           "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
       },
+      keyframes: {
+        pulse: {
+          '0%': { transform: 'scale(1)' },
+          '50%': { transform: 'scale(1.2)' },
+          '100%': { transform: 'scale(1)' },
+        }
+      },
+      animation: {
+        pulse: 'pulse 0.5s cubic-bezier(0.4, 0, 0.6, 1)',
+      }
     },
   },
   plugins: [],

@@ -63,3 +63,5 @@ export function connectToFirebase(model) {
 }
 
 export default connectToFirebase;
+
+export { app };
