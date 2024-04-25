@@ -40,7 +40,7 @@ function ArtTool(props) {
                         <input type="color" name="" id="color-d" value={"black"} disabled="true" className="color-display"/>
                         <button id="erase" onClick={toggleEraser}>Eraser</button>
                         <button id="undo" onClick={undo}>Undo</button>
-                        <button id="redo" disabled={true}>Redo</button>
+                        <button id="redo" onClick={redo}>Redo</button>
                         <button id="clear" onClick={clearCanvas} type="button">Clear</button>
                         <button id="download" onClick={downloadCanvas} type="button">Download</button>
                         <div>
@@ -67,6 +67,7 @@ function ArtTool(props) {
         }
     }
     function drawRect(x, y, con) {
+        props.clearRedoHistory();
         // draw rectangles on canvas ('con') at position [x, y]
         if (props.setEraser()) {
             con.clearRect(x, y, props.changePenSize(), props.changePenSize())            
@@ -93,6 +94,7 @@ function ArtTool(props) {
         try {
             const element = document.getElementById("drawing-area");
             const con = element.getContext("2d");
+            props.unshiftUndoHistory(element)
             // empty canvas
             const temp = con.fillStyle;
             con.reset();
@@ -117,20 +119,32 @@ function ArtTool(props) {
         const element = document.getElementById("drawing-area");
         props.unshiftUndoHistory(element)     
     }
-    function undo() {
-        // grabs and replaces canvas with last image in undo history 
-        let img = new Image()
-        const last = props.grabLastImage()
-        if (!last) {
-            return;
-        }
+    function overwriteCanvas(source) {
         const element = document.getElementById("drawing-area");
         const extra = element.getContext("2d")
-        img.src = last;
+        let img = new Image()
+        img.src = source;
         img.onload = () => {
             clearCanvas()
             extra.drawImage(img,0,0);
             img.remove();
+        }
+    }
+    function undo() {
+        // grabs and replaces canvas with last image in undo history 
+        const last = props.grabLastImage()
+        if (last) {
+            const element = document.getElementById("drawing-area");
+            props.unshiftRedoHistory(element)
+            overwriteCanvas(last)
+        }
+    }
+    function redo() {
+        const last = props.restoreLastImage()
+        if (last) {
+            const element = document.getElementById("drawing-area")
+            props.unshiftUndoHistory(element)
+            overwriteCanvas(last)
         }
     }
     function toggleEraser(event) {

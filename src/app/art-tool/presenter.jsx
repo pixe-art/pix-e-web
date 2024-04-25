@@ -13,6 +13,7 @@ export default observer(
         let eraser = false;
         const historyLength = 10
         let undoHistory;
+        let redoHistory;
     
         let color = "black"; // default color (black)
         // let [color, setColor] = useState("#000000"); // default color (black)
@@ -52,9 +53,22 @@ export default observer(
             }
             undoHistory.unshift(canvas.toDataURL())
         }
+        function clearRedoHistory(){
+            redoHistory = new Array(historyLength)
+        }
         function grabLastImage() {
             const last = undoHistory[0];
             undoHistory = undoHistory.slice(1)
+            return last;
+        }
+        function unshiftRedoHistory(canvas) {
+            if (!Array.isArray(redoHistory)) {
+                clearRedoHistory();
+            }
+            redoHistory.unshift(canvas.toDataURL())        }
+        function restoreLastImage() {
+            const last = redoHistory[0];
+            redoHistory = redoHistory.slice(1)
             return last;
         }
 
@@ -98,10 +112,13 @@ export default observer(
                 setShowPicker = {setShowPicker}
                 checkReset = {setMouseCheck}
                 grabLastImage = {grabLastImage}
+                restoreLastImage = {restoreLastImage}
                 unshiftUndoHistory = {unshiftUndoHistory}
+                unshiftRedoHistory = {unshiftRedoHistory}
                 changePenSize = {setPenSize}
                 setLastXY = {setLastXY}
                 clearUndoHistory = {clearUndoHistory}
+                clearRedoHistory = {clearRedoHistory}
                 printDebugInfo = {printDebugInfo}
                 handleColorChange = {handleColorChange}
                 setEraser = {setEraser}
