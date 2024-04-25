@@ -94,7 +94,7 @@ function ArtTool(props) {
         try {
             const element = document.getElementById("drawing-area");
             const con = element.getContext("2d");
-            props.unshiftUndoHistory(element)
+            // props.unshiftUndoHistory(element)
             // empty canvas
             const temp = con.fillStyle;
             con.reset();
@@ -142,8 +142,7 @@ function ArtTool(props) {
     function redo() {
         const last = props.restoreLastImage()
         if (last) {
-            const element = document.getElementById("drawing-area")
-            props.unshiftUndoHistory(element)
+            saveCurrent()
             overwriteCanvas(last)
         }
     }
@@ -185,8 +184,14 @@ function ArtTool(props) {
             if (props.setLastXY()[0] < 0 || props.setLastXY()[1] < 0) {
                 props.setLastXY(cords);
             }
-
-            draw_line(cords[0],cords[1],extra)
+            if (event.buttons === 2) {
+                const temp = props.setEraser()
+                props.setEraser(false, true)
+                draw_line(cords[0],cords[1],extra)
+                props.setEraser(false, temp)
+            } else {
+                draw_line(cords[0],cords[1],extra)
+            }
             props.setLastXY(cords);
         }
     }

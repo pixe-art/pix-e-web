@@ -65,8 +65,10 @@ export default observer(
             if (!Array.isArray(redoHistory)) {
                 clearRedoHistory();
             }
-            redoHistory.unshift(canvas.toDataURL())        }
+            redoHistory.unshift(canvas.toDataURL())        
+        }
         function restoreLastImage() {
+            console.log(redoHistory);
             const last = redoHistory[0];
             redoHistory = redoHistory.slice(1)
             return last;
@@ -84,9 +86,11 @@ export default observer(
             }
             return lastXY;
         }
-        function setEraser(toggle) {
+        function setEraser(toggle, state) {
             if (toggle) {
-                eraser = !eraser                
+                eraser = !eraser
+            } else if (state === false || state === true) {
+                eraser = state                
             }
             return eraser
         }
