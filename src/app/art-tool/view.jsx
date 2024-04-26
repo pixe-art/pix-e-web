@@ -41,8 +41,8 @@ function ArtTool(props) {
                         <button id="erase" onClick={toggleEraser}>Eraser</button>
                         <button id="undo" onClick={undo}>Undo</button>
                         <button id="redo" onClick={redo}>Redo</button>
-                        <button id="clear" onClick={clearCanvas} type="button">Clear</button>
-                        <button id="download" onClick={downloadCanvas} type="button">Download</button>
+                        <button id="clear" onClick={props.clearCanvas} type="button">Clear</button>
+                        <button id="download" onClick={props.downloadCanvas} type="button">Download</button>
                         <div>
                             <p>pen size</p>
                             <p>&nbsp;</p>                            
@@ -76,19 +76,17 @@ function ArtTool(props) {
         }
     }
     function colorChangeEvent(event) {
-        // changes color of draw style on canvas
-        const canvas = document.getElementById("drawing-area")
-        const colorDisplay = document.getElementById("color-d")
-        const con = canvas.getContext("2d")
-        const color = props.handleColorChange(event);
-        con.fillStyle = color 
-        colorDisplay.value = color;
+        const colorDisplay = document.getElementById("color-d");
+        const newColor = event.hex;
+        const color = props.handleColorChange(newColor);
+        colorDisplay.value = color;  // Update the UI element showing the color
     }
     function debugEvent() {
         //! log outputs for checking canvas size
         const element = document.getElementById("drawing-area");
         props.printDebugInfo(element)
     }
+    /*
     function clearCanvas() {
         // clears canvas and its history
         try {
@@ -102,7 +100,8 @@ function ArtTool(props) {
         } catch (error) {
             console.error(error);
         }
-    }
+    }*/
+    /*
     function downloadCanvas() {
         // creates an off screen png image that downloads to users machine
         const element = document.getElementById("drawing-area");
@@ -113,7 +112,7 @@ function ArtTool(props) {
         temp.setAttribute("download", "canvas.png");
         temp.click();   
         temp.remove();
-    }
+    }*/
     function saveCurrent() {
         // saves current canvas history to undo history 
         const element = document.getElementById("drawing-area");
@@ -170,6 +169,10 @@ function ArtTool(props) {
     }
     function mouseClickEvent(event) {
         event.preventDefault();
+        // right click erase
+        if (event.button === 2) {
+            props.setEraser(false, true);
+        }
         saveCurrent();
         props.checkReset(true)
         const element = document.getElementById(event.target.id);
@@ -181,26 +184,19 @@ function ArtTool(props) {
         drawRect(cords[0], cords[1], con)
         props.setLastXY(cords); //used for fallback in mouseDragEvent()
         }
-    function mouseDragEvent(event) {
-        if ((event.buttons === 2 || event.buttons === 1) && props.checkReset() === true) {
-            const element = document.getElementById(event.target.id);
-            const extra = element.getContext("2d");
-            const cords = getCords(element, event.clientX, event.clientY, (props.changePenSize()-1)/2);
 
-            if (props.setLastXY()[0] < 0 || props.setLastXY()[1] < 0) {
-                props.setLastXY(cords);
-            }
-            if (event.buttons === 2) {
-                const temp = props.setEraser()
-                props.setEraser(false, true)
-                draw_line(cords[0],cords[1],extra)
-                props.setEraser(false, temp)
+    function mouseDragEvent(event) {
+        const canvas = document.getElementById("drawing-area");
+        const [x2, y2] = getCords(canvas, event.clientX, event.clientY, (props.penSize - 1) / 2);
+        if ((event.buttons === 1 || event.buttons === 2) && props.checkReset()) {
+            if (props.lastXY[0] === -1 && props.lastXY[1] === -1) {
+                props.setLastXY([x2, y2]);  // Update without drawing if last coordinates were invalid
             } else {
-                draw_line(cords[0],cords[1],extra)
+                props.drawLine(canvas, x2, y2);
             }
-            props.setLastXY(cords);
         }
     }
+        
     function touchDrawEvent(event){
         const element = document.getElementById(event.target.id);
         const cords = getCords(element, event.targetTouches[0]?.clientX || event.clientX, event.targetTouches[0]?.clientY || event.clientY)
@@ -221,6 +217,7 @@ function ArtTool(props) {
             
         }
     }
+    /*
     function draw_line(x2, y2, con) {
         const x1 = props.setLastXY()[0]
         const y1 = props.setLastXY()[1]
@@ -291,6 +288,6 @@ function ArtTool(props) {
                 drawRect(x, y, con)
             }
         }
-    } 
+    } */
 }
 export default ArtTool;
