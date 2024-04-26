@@ -8,8 +8,8 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        cream: '#f2e9e4', // replace with your preferred cream color
-        brown: '#a67c52'  // replace with your preferred brown color
+        cream: '#f2e9e4', 
+        brown: '#a67c52'  
       },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",

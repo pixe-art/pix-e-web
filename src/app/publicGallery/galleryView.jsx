@@ -64,7 +64,7 @@ export default function GalleryView({images}) {
                         setFavourite(!isFavourite);
                         if (!isFavourite) {
                           setAnimate(true);
-                          setTimeout(() => setAnimate(false), 500); // 500ms is the animation duration
+                          setTimeout(() => setAnimate(false), 500); 
                         }
                       };
 
