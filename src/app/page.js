@@ -1,11 +1,8 @@
 // app/page.js
+'use client'
 import Head from 'next/head';
 
 export default function Home() {
-  function logACB() {
-    console.log("Clicked!");
-  }
-
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
       <Head>

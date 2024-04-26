@@ -4,7 +4,7 @@ import { auth, signOut } from '@/firebaseModel';
 import { useRouter } from 'next/navigation';
 import { onAuthStateChanged } from "firebase/auth"; // Import the onAuthStateChanged listener
 
-export default function Dashboard() {
+export default function Dashboard(props) {
   const router = useRouter();
   const [user, setUser] = useState(null);
 
@@ -36,6 +36,22 @@ export default function Dashboard() {
     }
   };
 
+  function logACB() {
+    props.setText("Cool!");
+    console.log("Clicked!");
+  }
+
+  function setPicturesACB() {
+    props.model.pictures = [...props.model.pictures, {
+      id: 'image4',
+        testPicture: "https://brfenergi.se/iprog/loading.gif",
+        title: "Loading",
+        creator: "Chuck Loadis"
+    }];
+    //props.setPictures("Cool!");
+    console.log("Clicked!");
+  }
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
       <button
@@ -51,6 +67,7 @@ export default function Dashboard() {
         <h1 className="text-3xl font-bold text-gray-800 mb-4">
           Welcome to Pix-E Dashboard!
         </h1>
+        <button className="text-3xl font-bold text-gray-800 mb-4" onClick={setPicturesACB}>Click to update data in firebase!</button>
         <p className="text-lg text-gray-600 mb-6">
           Create and share your pixel art creations.
         </p>
