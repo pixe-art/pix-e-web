@@ -1,7 +1,7 @@
 'use client'
 
 import { observer } from "mobx-react-lite";
-import images from "/src/pixeModel.js";
+import {useModel} from "/src/app/model-provider.js";
 import { app } from "/src/firebaseModel.js";
 import { getStorage, ref, getDownloadURL } from "firebase/storage";
 
@@ -32,6 +32,7 @@ export function downloadImage(url, filename) {
 
 export default observer(
     function Gallery(){
-        return <GalleryView images = {images}/>
+        const model = useModel();
+        return <GalleryView model = {model}/>
     }
 );
