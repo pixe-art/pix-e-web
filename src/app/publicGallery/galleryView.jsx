@@ -8,7 +8,7 @@ import { faDownload, faQuestion } from '@fortawesome/free-solid-svg-icons';
 import { faHeart as solidHeart } from '@fortawesome/free-solid-svg-icons';
 import { faHeart as outlineHeart } from '@fortawesome/free-regular-svg-icons';
 
-export default function GalleryView({images}) {
+export default function GalleryView(props) {
     const [isMenuOpen, setMenuOpen] = useState(false);
     const [selectedImage, setSelectedImage] = useState(null);
     const genericHamburgerLine = `h-1 w-6 my-1 rounded-full bg-cream transition ease transform duration-300`;
@@ -56,7 +56,7 @@ export default function GalleryView({images}) {
             <div className="flex-grow p-4">
                 <h1 className="text-2xl mb-2">Gallery</h1>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-                {images.map((image) => {
+                {props.model.pictures.map((image) => {
                     const [isDropdownOpen, setDropdownOpen] = useState(false);
                     const [isFavourite, setFavourite] = useState(false);
                     const [animate, setAnimate] = useState(false);
