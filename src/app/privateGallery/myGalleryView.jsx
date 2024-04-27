@@ -41,6 +41,7 @@ export default function MyGalleryView({ savePicture, loadGallery, pictures }) {
                             <Link href="/dashboard" className="text-white no-underline hover:underline">Dashboard</Link>
                             <Link href="#" className="text-white no-underline hover:underline">My Gallery</Link>
                             <Link href="/publicGallery" className="text-white no-underline hover:underline">Public Gallery</Link>
+                            <Link href="/art-tool" className="text-white no-underline hover:underline">Create a picture</Link>
                         </>
                     )}
                 </div>
