@@ -126,9 +126,9 @@ function ArtTool(props) {
         let img = new Image()
         img.src = source;
         img.onload = () => {
-            if (img.width > element.width || img.height > element.height) {
-                console.error("Preventing Canvas overwrite due to img having too large dimensions (" + img.width + "x" + img.height + ")\n"
-                + "\tImg should not be larger than Canvas (" + element.width + "x" + element.height + ")");
+            if (img.width !== element.width || img.height !== element.height) {
+                console.error("Preventing Canvas overwrite due to img with incorrect dimensions (" + img.width + "x" + img.height + ")\n"
+                + "\tImg should be equal to Canvas (" + element.width + "x" + element.height + ")");
                 return;
             }
             clearCanvas()
