@@ -37,7 +37,7 @@ function ArtTool(props) {
                 </div>
                 <div className="tools">
                     <div className="tool-buttons">
-                        <input type="color" name="" id="color-d" value={"black"} disabled="true" className="color-display"/>
+                        <input type="color" name="" id="color-d" value={props.color} disabled={true} className="color-display"/>
                         <button id="erase" onClick={toggleEraser}>Eraser</button>
                         <button id="undo" onClick={undo}>Undo</button>
                         <button id="redo" onClick={redo}>Redo</button>
@@ -69,7 +69,7 @@ function ArtTool(props) {
     function drawRect(x, y, con) {
         props.clearRedoHistory();
         // draw rectangles on canvas ('con') at position [x, y]
-        if (props.setEraser()) {
+        if (props.eraserToggle()) {
             con.clearRect(x, y, props.changePenSize(), props.changePenSize())            
         } else {
             con.fillRect(x, y, props.changePenSize(), props.changePenSize())            
@@ -78,41 +78,15 @@ function ArtTool(props) {
     function colorChangeEvent(event) {
         const colorDisplay = document.getElementById("color-d");
         const newColor = event.hex;
-        const color = props.handleColorChange(newColor);
-        colorDisplay.value = color;  // Update the UI element showing the color
+        const colorVar = props.handleColorChange(newColor);
+        colorDisplay.value = colorVar;  // Update the UI element showing the color
     }
     function debugEvent() {
         //! log outputs for checking canvas size
         const element = document.getElementById("drawing-area");
         props.printDebugInfo(element)
     }
-    /*
-    function clearCanvas() {
-        // clears canvas and its history
-        try {
-            const element = document.getElementById("drawing-area");
-            const con = element.getContext("2d");
-            // props.unshiftUndoHistory(element)
-            // empty canvas
-            const temp = con.fillStyle;
-            con.reset();
-            con.fillStyle = temp;
-        } catch (error) {
-            console.error(error);
-        }
-    }*/
-    /*
-    function downloadCanvas() {
-        // creates an off screen png image that downloads to users machine
-        const element = document.getElementById("drawing-area");
-        const temp = document.createElement('a');
-        //? replacing png to octet stream is necessary for download to work
-        const img = element.toDataURL("image/png").replace("image/png", "image/octet-stream");
-        temp.setAttribute("href", img);
-        temp.setAttribute("download", "canvas.png");
-        temp.click();   
-        temp.remove();
-    }*/
+
     function saveCurrent() {
         // saves current canvas history to undo history 
         const element = document.getElementById("drawing-area");
@@ -130,7 +104,7 @@ function ArtTool(props) {
                 + "\tImg should not be larger than Canvas (" + element.width + "x" + element.height + ")");
                 return;
             }
-            clearCanvas()
+            props.clearCanvas()
             extra.drawImage(img,0,0);
             img.remove();
         }
@@ -153,7 +127,7 @@ function ArtTool(props) {
     }
     function toggleEraser(event) {
         const element = document.getElementById(event.target.id);
-        const eraserState = props.setEraser("toggle");
+        const eraserState = props.eraserToggle("toggle");
         if (eraserState) {
             element.className = "active"
         } else {
@@ -165,13 +139,13 @@ function ArtTool(props) {
     }
 
     function resetLastCoords(){
-        props.setLastXY([-1, -1]);
+        props.setLastCords([-1, -1]);
     }
     function mouseClickEvent(event) {
         event.preventDefault();
         // right click erase
         if (event.button === 2) {
-            props.setEraser(false, true);
+            props.eraserToggle(false, true);
         }
         saveCurrent();
         props.checkReset(true)
@@ -182,7 +156,7 @@ function ArtTool(props) {
         //* draw pixel
         const con = element.getContext("2d");
         drawRect(cords[0], cords[1], con)
-        props.setLastXY(cords); //used for fallback in mouseDragEvent()
+        props.setLastCords(cords); //used for fallback in mouseDragEvent()
         }
 
     function mouseDragEvent(event) {
@@ -190,7 +164,7 @@ function ArtTool(props) {
         const [x2, y2] = getCords(canvas, event.clientX, event.clientY, (props.penSize - 1) / 2);
         if ((event.buttons === 1 || event.buttons === 2) && props.checkReset()) {
             if (props.lastXY[0] === -1 && props.lastXY[1] === -1) {
-                props.setLastXY([x2, y2]);  // Update without drawing if last coordinates were invalid
+                props.setLastCords([x2, y2]);  // Update without drawing if last coordinates were invalid
             } else {
                 props.drawLine(canvas, x2, y2);
             }
@@ -201,7 +175,7 @@ function ArtTool(props) {
         const element = document.getElementById(event.target.id);
         const cords = getCords(element, event.targetTouches[0]?.clientX || event.clientX, event.targetTouches[0]?.clientY || event.clientY)
         element.getContext("2d").fillRect(cords[0], cords[1], props.changePenSize(), props.changePenSize())
-        props.setLastXY(cords);
+        props.setLastCords(cords);
     }
     function touchDragEvent(event) {
         const element = document.getElementById(event.target.id);
@@ -212,82 +186,10 @@ function ArtTool(props) {
                 event.targetTouches[0]?.clientY || event.Touch[0]?.clientY || event.clientY);            
                 // draw_line(props.lastXY[0], props.lastXY[1], , extra);
                 draw_line(cords[0],cords[1],extra)
-                props.setLastXY(cords);
+                props.setLastCords(cords);
         } catch (error) {
             
         }
     }
-    /*
-    function draw_line(x2, y2, con) {
-        const x1 = props.setLastXY()[0]
-        const y1 = props.setLastXY()[1]
-        // draw_line taken and adapted from https://ghost-together.medium.com/how-to-code-your-first-algorithm-draw-a-line-ca121f9a1395
-        // Iterators, counters required by algorithm
-        let x, y, dx, dy, dx1, dy1, px, py, xe, ye, i;
-        // Calculate line deltas
-        dx = x2 - x1;
-        dy = y2 - y1;
-        // Create a positive copy of deltas (makes iterating easier)
-        dx1 = Math.abs(dx);
-        dy1 = Math.abs(dy);
-        // Calculate error intervals for both axis
-        px = 2 * dy1 - dx1;
-        py = 2 * dx1 - dy1;
-        
-        if (dy1 <= dx1) { //* The line is X-axis dominant
-            // Line is drawn left to right
-            if (dx >= 0) {
-                x = x1; y = y1; xe = x2;
-            } else { // Line is drawn right to left (swap ends)
-                x = x2; y = y2; xe = x1;
-            }
-            drawRect(x, y, con)
-            // Rasterize the line
-            for (i = 0; x < xe; i++) {
-                x = x + 1;
-                // Deal with octants...
-                if (px < 0) {
-                    px = px + 2 * dy1;
-                } else {
-                    if ((dx < 0 && dy < 0) || (dx > 0 && dy > 0)) {
-                        y++;
-                    } else {
-                        y--;
-                    }
-                    px = px + 2 * (dy1 - dx1);
-                }
-                // Draw pixel from line span at
-                // currently rasterized position
-                drawRect(x, y, con)
-            }
-        } else { //* The line is Y-axis dominant
-            // Line is drawn bottom to top
-            if (dy >= 0) {
-                x = x1; y = y1; ye = y2;
-            } else { // Line is drawn top to bottom
-                x = x2; y = y2; ye = y1;
-            }
-            drawRect(x, y, con)
-
-            // Rasterize the line
-            for (i = 0; y < ye; i++) {
-                y++;
-                // Deal with octants...
-                if (py <= 0) {
-                    py = px + 2 * dx1;
-                } else {
-                    if ((dx < 0 && dy<0) || (dx > 0 && dy > 0)) {
-                        x++;
-                    } else {
-                        x--;
-                    }
-                    py = py + 2 * (dx1 - dy1);
-                }
-                // Draw pixel from line span at
-                // currently rasterized position
-                drawRect(x, y, con)
-            }
-        }
-    } */
 }
 export default ArtTool;
