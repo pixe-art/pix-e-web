@@ -2,14 +2,16 @@
 import "../globals.css"
 import "./tempStyles.css"
 import { getCords } from "@/utilities";
-import React from "react";
+import { useRef,React } from "react";
 import { SketchPicker } from 'react-color';
 import Draggable from './draggable';
 
-//! temporary var:
-let fresh = true;
+
 
 function ArtTool(props) {
+
+    const touchHandled = useRef(false);
+
     return( 
         <div id="parent" className="inset-0 bg-cover bg-slate-800 touch-none" onMouseUp={mouseUp}>
             <div id="topbar" className="hidden w-screen bg-slate-950 text-pretty justify-center p-2 md:flex">
@@ -131,6 +133,11 @@ function ArtTool(props) {
         props.setLastCords([-1, -1]);
     }
     function mouseClickEvent(event) {
+        if (touchHandled.current) {
+            touchHandled.current = false;
+            return;
+        }
+        console.log("mouseClickEvent");
         event.preventDefault();
         // save current canvas state in undoHistory
         saveCurrent();
@@ -172,24 +179,28 @@ function ArtTool(props) {
     }
         
     function touchDrawEvent(event){
+        touchHandled.current = true;
         const element = document.getElementById(event.target.id);
-        const cords = getCords(element, event.targetTouches[0]?.clientX || event.clientX, event.targetTouches[0]?.clientY || event.clientY)
-        element.getContext("2d").fillRect(cords[0], cords[1], props.changePenSize(), props.changePenSize())
+        const cords = getCords(element, event.targetTouches[0]?.clientX, event.targetTouches[0]?.clientY, (props.penSize - 1) / 2);
+        const ctx = element.getContext("2d");
+        props.drawRect(cords[0], cords[1], ctx);
         props.setLastCords(cords);
     }
+
     function touchDragEvent(event) {
-        const element = document.getElementById(event.target.id);
-        const extra = element.getContext("2d");
-        try {
-            const cords = getCords(element, 
-            event.targetTouches[0]?.clientX || event.Touch[0]?.clientX || event.clientX, 
-            event.targetTouches[0]?.clientY || event.Touch[0]?.clientY || event.clientY);            
-            // draw_line(props.lastXY[0], props.lastXY[1], , extra);
-            draw_line(cords[0],cords[1],extra)
-            props.setLastCords(cords);
-        } catch (error) {
-            
-        }
+        touchHandled.current = true;
+        const canvas = document.getElementById("drawing-area");
+        const rect = canvas.getBoundingClientRect();
+        const touch = event.targetTouches[0];
+
+        const scaleX = canvas.width / rect.width;
+        const scaleY = canvas.height / rect.height;
+
+        const x = Math.round((touch.clientX - rect.left) * scaleX);
+        const y = Math.round((touch.clientY - rect.top) * scaleY);
+        
+        props.drawLine(canvas, x, y);
+        //props.setLastCords([x, y]);
     }
 }
 export default ArtTool;

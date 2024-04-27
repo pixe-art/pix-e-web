@@ -11,12 +11,7 @@ export default observer(
 
         
         const [mouseCheck, setMouseCheck] = useState(false);
-        const [lastXY, setLastXY] = useState([0, 0]);
-        //const [penSize, setPenSize] = useState(1);
-        // const [eraser, setEraser] = useState(false);
-        //const historyLength = 10;
-        //const [undoHistory, setUndoHistory] = useState(new Array(historyLength).fill(null));
-        //const [redoHistory, setRedoHistory] = useState(new Array(historyLength).fill(null));
+        const [lastXY, setLastXY] = useState([-1, -1]);
         const [color, setColor] = useState("#000000");
         /*const [showPicker, setShowpicker] = useState(false);
          */
@@ -27,20 +22,8 @@ export default observer(
         const eraser = useRef(false);
         const undoHistory = useRef(new Array(10).fill(null));
         const redoHistory = useRef(new Array(10).fill(null));
-        //const color = useRef("black");
         const showPicker = useRef(false);
         const historyLength = 10;
-
-        /* let mouseCheck;
-        let lastXY = [new Array(2)];
-        let penSize = 1;
-        let eraser = false;
-        const historyLength = 10
-        let undoHistory;
-        let redoHistory;
-    
-        let color = "black"; // default color (black)
-        let showPicker = false; */
 
         useEffect(() => {
             updateCanvasColor(); //update color for canvas whenever color changes
@@ -111,7 +94,7 @@ export default observer(
             if (xy) {
                 setLastXY(xy);               
             }
-            return lastXY;
+            //return lastXY;
         }
         function eraserToggle(state) {
             if (typeof state === 'boolean') {
@@ -213,7 +196,6 @@ export default observer(
         return(
             <ArtTool
                 drawLine={drawLine}
-                showPicker = {showPicker.current}
                 lastXY = {lastXY}
                 penSize = {penSize.current}
                 undoHistory = {undoHistory.current}
