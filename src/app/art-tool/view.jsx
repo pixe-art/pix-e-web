@@ -2,8 +2,7 @@
 import "../globals.css"
 import "./tempStyles.css"
 import { getCords } from "@/utilities";
-import React,{useState} from "react";
-//import ColorPalette from "./colorPalette";
+import React from "react";
 import { SketchPicker } from 'react-color';
 import Draggable from './draggable';
 
@@ -66,15 +65,7 @@ function ArtTool(props) {
             style.display = 'none'
         }
     }
-    function drawRect(x, y, con) {
-        props.clearRedoHistory();
-        // draw rectangles on canvas ('con') at position [x, y]
-        if (props.eraserToggle()) {
-            con.clearRect(x, y, props.changePenSize(), props.changePenSize())            
-        } else {
-            con.fillRect(x, y, props.changePenSize(), props.changePenSize())            
-        }
-    }
+
     function colorChangeEvent(event) {
         const colorDisplay = document.getElementById("color-d");
         const newColor = event.hex;
@@ -143,30 +134,41 @@ function ArtTool(props) {
     }
     function mouseClickEvent(event) {
         event.preventDefault();
-        // right click erase
-        if (event.button === 2) {
-            props.eraserToggle(false, true);
-        }
+        // save current canvas state in undoHistory
         saveCurrent();
         props.checkReset(true)
         const element = document.getElementById(event.target.id);
         //* translate event coordiantes to the canvas 
         const cords = getCords(element, event.clientX, event.clientY, (props.changePenSize()-1)/2);
-
-        //* draw pixel
         const con = element.getContext("2d");
-        drawRect(cords[0], cords[1], con)
-        props.setLastCords(cords); //used for fallback in mouseDragEvent()
+
+        if (event.button === 2 && !props.eraser) {
+            //* right click erase
+            props.eraserToggle(false, true)
+            props.drawRect(cords[0], cords[1], con)
+            props.eraserToggle(false, false)
+        } else { 
+            //* regualr draw
+            props.setLastCords(cords);
         }
+        // save cords for fallback in mouseDragEvent, prevents gaps in fast movements
+        props.setLastCords(cords); 
+    }
 
     function mouseDragEvent(event) {
         const canvas = document.getElementById("drawing-area");
-        const [x2, y2] = getCords(canvas, event.clientX, event.clientY, (props.penSize - 1) / 2);
+        const xy = getCords(canvas, event.clientX, event.clientY, (props.penSize - 1) / 2);
         if ((event.buttons === 1 || event.buttons === 2) && props.checkReset()) {
             if (props.lastXY[0] === -1 && props.lastXY[1] === -1) {
-                props.setLastCords([x2, y2]);  // Update without drawing if last coordinates were invalid
+                props.setLastCords(xy);  // Update without drawing if last coordinates were invalid
+            } else if (event.buttons === 2 && !props.eraser) {
+                //* right click erase
+                props.eraserToggle(false, true)
+                props.drawLine(canvas, xy[0], xy[1]);
+                props.eraserToggle(false, false)
             } else {
-                props.drawLine(canvas, x2, y2);
+                //* regular draw
+                props.drawLine(canvas, xy[0], xy[1]);
             }
         }
     }
@@ -182,11 +184,11 @@ function ArtTool(props) {
         const extra = element.getContext("2d");
         try {
             const cords = getCords(element, 
-                event.targetTouches[0]?.clientX || event.Touch[0]?.clientX || event.clientX, 
-                event.targetTouches[0]?.clientY || event.Touch[0]?.clientY || event.clientY);            
-                // draw_line(props.lastXY[0], props.lastXY[1], , extra);
-                draw_line(cords[0],cords[1],extra)
-                props.setLastCords(cords);
+            event.targetTouches[0]?.clientX || event.Touch[0]?.clientX || event.clientX, 
+            event.targetTouches[0]?.clientY || event.Touch[0]?.clientY || event.clientY);            
+            // draw_line(props.lastXY[0], props.lastXY[1], , extra);
+            draw_line(cords[0],cords[1],extra)
+            props.setLastCords(cords);
         } catch (error) {
             
         }

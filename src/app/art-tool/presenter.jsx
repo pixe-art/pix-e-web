@@ -13,7 +13,7 @@ export default observer(
         const [mouseCheck, setMouseCheck] = useState(false);
         const [lastXY, setLastXY] = useState([0, 0]);
         //const [penSize, setPenSize] = useState(1);
-        const [eraser, setEraser] = useState(false);
+        // const [eraser, setEraser] = useState(false);
         //const historyLength = 10;
         //const [undoHistory, setUndoHistory] = useState(new Array(historyLength).fill(null));
         //const [redoHistory, setRedoHistory] = useState(new Array(historyLength).fill(null));
@@ -24,7 +24,7 @@ export default observer(
         //const mouseCheck = useRef(false);
         //const lastXY = useRef([0, 0]);
         const penSize = useRef(1);
-        //const eraser = useRef(false);
+        const eraser = useRef(false);
         const undoHistory = useRef(new Array(10).fill(null));
         const redoHistory = useRef(new Array(10).fill(null));
         //const color = useRef("black");
@@ -115,10 +115,11 @@ export default observer(
         }
         function eraserToggle(toggle, state) {
             if (toggle) {
-                setEraser(prevEraser => !prevEraser);
-            } else if (state === false || state === true) {
-                setEraser(state);                
+                eraser.current = !eraser.current;
+            } else if (typeof state === 'boolean') {
+                eraser.current = state
             }
+            return eraser.current
         }
 
         function setShowPicker(state) {
@@ -140,6 +141,16 @@ export default observer(
             }
         }
 
+        function drawRect(x, y, ctx) {
+            clearRedoHistory();
+            // draw rectangles on canvas ('con') at position [x, y]
+            if (eraser.current) {
+                ctx.clearRect(x, y, penSize.current, penSize.current)            
+            } else {
+                ctx.fillRect(x, y, penSize.current, penSize.current)            
+            }
+        }
+
         function drawLine(canvas, x2, y2) {
             const ctx = canvas.getContext("2d");
             let [x1, y1] = lastXY;
@@ -158,13 +169,7 @@ export default observer(
             let err = (dx > dy ? dx : -dy) / 2;
     
             while (true) {
-                if (eraser) {
-                    console.log("ERASING! ERASING!");
-                    ctx.clearRect(x1, y1, penSize.current, penSize.current);
-                } else {
-                    console.log("DRAWING! DRAWING!");
-                    ctx.fillRect(x1, y1, penSize.current, penSize.current);
-                }
+                drawRect(x1, y1, ctx)
                 if (x1 === x2 && y1 === y2) {
                     break;
                 }
@@ -215,6 +220,7 @@ export default observer(
                 penSize = {penSize.current}
                 undoHistory = {undoHistory.current}
                 color = {color}
+                drawRect = {drawRect}
                 setColor = {setColor}
                 setShowPicker = {setShowPicker}
                 checkReset = {mouseChecker}
@@ -231,7 +237,7 @@ export default observer(
                 eraserToggle = {eraserToggle}
                 downloadCanvas = {downloadCanvas}
                 clearCanvas = {clearCanvas}
-                eraser = {eraser}
+                eraser = {eraser.current}
             />
         );
     }
