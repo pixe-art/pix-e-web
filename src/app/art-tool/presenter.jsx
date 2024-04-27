@@ -3,12 +3,36 @@
 'use client'; 
 import ArtTool from "./view";
 import { observer } from "mobx-react-lite"; //? observer
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 
 export default observer(
+    
     function Tool() {
-        let mouseCheck;
-        let lastXY = new Array(2);
+
+        
+        const [mouseCheck, setMouseCheck] = useState(false);
+        const [lastXY, setLastXY] = useState([0, 0]);
+        //const [penSize, setPenSize] = useState(1);
+        const [eraser, setEraser] = useState(false);
+        //const historyLength = 10;
+        //const [undoHistory, setUndoHistory] = useState(new Array(historyLength).fill(null));
+        //const [redoHistory, setRedoHistory] = useState(new Array(historyLength).fill(null));
+        const [color, setColor] = useState("#000000");
+        /*const [showPicker, setShowpicker] = useState(false);
+         */
+
+        //const mouseCheck = useRef(false);
+        //const lastXY = useRef([0, 0]);
+        const penSize = useRef(1);
+        //const eraser = useRef(false);
+        const undoHistory = useRef(new Array(10).fill(null));
+        const redoHistory = useRef(new Array(10).fill(null));
+        //const color = useRef("black");
+        const showPicker = useRef(false);
+        const historyLength = 10;
+
+        /* let mouseCheck;
+        let lastXY = [new Array(2)];
         let penSize = 1;
         let eraser = false;
         const historyLength = 10
@@ -16,8 +40,12 @@ export default observer(
         let redoHistory;
     
         let color = "black"; // default color (black)
-        // let [color, setColor] = useState("#000000"); // default color (black)
-        let showPicker = false;
+        let showPicker = false; */
+
+        useEffect(() => {
+            updateCanvasColor(); //update color for canvas whenever color changes
+        }, [color]);
+        
         
         function printDebugInfo(canvas) {
             const foo = canvas.getBoundingClientRect();
@@ -33,98 +61,177 @@ export default observer(
             console.log("padding = " + style.padding + "\n(needs offset of " + style.padding.split(" ")[0] + ")");
         }
     
-        function setMouseCheck(state) {
+        function mouseChecker(state) {
             //* flags check as false, used for mouseDragEvent
             if (state === true || state === false) {
-                mouseCheck = state;
+                setMouseCheck(state);
             }
             return mouseCheck;
         }
 
         function clearUndoHistory(){
-            undoHistory = new Array(historyLength)
+            undoHistory.current = new Array(historyLength)
         }
         function unshiftUndoHistory(canvas) {
-            if (!Array.isArray(undoHistory)) {
+            if (!Array.isArray(undoHistory.current)) {
                 clearUndoHistory();
             }
-            if (undoHistory.at(historyLength)) {
-                undoHistory.pop()
+            if (undoHistory.current.at(historyLength)) {
+                undoHistory.current.pop()
             }
-            undoHistory.unshift(canvas.toDataURL())
+            undoHistory.current.unshift(canvas.toDataURL())
         }
         function clearRedoHistory(){
-            redoHistory = new Array(historyLength)
+            redoHistory.current = new Array(historyLength)
         }
         function grabLastImage() {
-            const last = undoHistory[0];
-            undoHistory = undoHistory.slice(1)
+            const last = undoHistory.current[0];
+            undoHistory.current = undoHistory.current.slice(1)
             return last;
         }
         function unshiftRedoHistory(canvas) {
-            if (!Array.isArray(redoHistory)) {
+            if (!Array.isArray(redoHistory.current)) {
                 clearRedoHistory();
             }
-            redoHistory.unshift(canvas.toDataURL())        
+            redoHistory.current.unshift(canvas.toDataURL())        
         }
         function restoreLastImage() {
-            const last = redoHistory[0];
-            redoHistory = redoHistory.slice(1)
+            const last = redoHistory.current[0];
+            redoHistory.current = redoHistory.current.slice(1)
             return last;
         }
 
         function setPenSize(size){
             if (size) {
-                penSize = size 
+                penSize.current = size 
             }
-            return penSize;
+            return penSize.current;
         }
-        function setLastXY(xy) {
+        function setLastCords(xy) {
             if (xy) {
-                lastXY = xy;                
+                setLastXY(xy);               
             }
             return lastXY;
         }
-        function setEraser(toggle, state) {
+        function eraserToggle(toggle, state) {
             if (toggle) {
-                eraser = !eraser
+                setEraser(prevEraser => !prevEraser);
             } else if (state === false || state === true) {
-                eraser = state                
+                setEraser(state);                
             }
-            return eraser
         }
+
         function setShowPicker(state) {
             if (state) {                
-                showPicker = state;
+                showPicker.current = state;
             }
-            return showPicker
+            return showPicker.current
         }
-        function handleColorChange(newColor){
-            // setColor(newColor.hex);              
-            color = newColor.hex;              
-            return color;
+        const handleColorChange = (newColor) => {
+            setColor(newColor);  // Update the color state, useEffect runs to updateCanvasColor once color is set
+            return newColor;
         }
+        
+        function updateCanvasColor() {
+            const canvas = document.getElementById("drawing-area");
+            if (canvas) {
+                const ctx = canvas.getContext("2d");
+                ctx.fillStyle = color;  // Update the canvas context with the new color
+            }
+        }
+
+        function drawLine(canvas, x2, y2) {
+            const ctx = canvas.getContext("2d");
+            let [x1, y1] = lastXY;
+            // when mouse leaves canvas while drawing, reset XY
+            if (x1 === -1 && y1 === -1) {  
+                setLastXY([x2, y2]);       
+                return;                    
+            }
+            // Logic for Bresenham's line algorithm, adapted from https://ghost-together.medium.com/how-to-code-your-first-algorithm-draw-a-line-ca121f9a1395
+            let dx = x2 - x1;
+            let dy = y2 - y1;
+            let sx = (dx < 0) ? -1 : 1;
+            let sy = (dy < 0) ? -1 : 1;
+            dx = Math.abs(dx);
+            dy = Math.abs(dy);
+            let err = (dx > dy ? dx : -dy) / 2;
+    
+            while (true) {
+                if (eraser) {
+                    console.log("ERASING! ERASING!");
+                    ctx.clearRect(x1, y1, penSize.current, penSize.current);
+                } else {
+                    console.log("DRAWING! DRAWING!");
+                    ctx.fillRect(x1, y1, penSize.current, penSize.current);
+                }
+                if (x1 === x2 && y1 === y2) {
+                    break;
+                }
+                let e2 = err;
+                if (e2 > -dx) { 
+                    err -= dy; 
+                    x1 += sx; 
+                }
+                if (e2 < dy) { 
+                    err += dx; 
+                    y1 += sy; 
+                }
+            }
+            setLastXY([x2, y2]);
+        }
+
+        function downloadCanvas() {
+            const canvas = document.getElementById("drawing-area");
+            const dataURL = canvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
+            const link = document.createElement('a');
+            link.download = "canvas.png";
+            link.href = dataURL;
+            link.click();
+        }
+
+        function clearCanvas() {
+            // clears canvas and its history
+            try {
+                const element = document.getElementById("drawing-area");
+                const con = element.getContext("2d");
+                // props.unshiftUndoHistory(element)
+                // empty canvas
+                const temp = con.fillStyle;
+                con.reset();
+                con.fillStyle = temp;
+            } catch (error) {
+                console.error(error);
+            }
+        }
+        
+
 
         return(
             <ArtTool
-                showPicker = {showPicker}
+                drawLine={drawLine}
+                showPicker = {showPicker.current}
                 lastXY = {lastXY}
-                penSize = {penSize}
-                undoHistory = {undoHistory}
+                penSize = {penSize.current}
+                undoHistory = {undoHistory.current}
                 color = {color}
+                setColor = {setColor}
                 setShowPicker = {setShowPicker}
-                checkReset = {setMouseCheck}
+                checkReset = {mouseChecker}
                 grabLastImage = {grabLastImage}
                 restoreLastImage = {restoreLastImage}
                 unshiftUndoHistory = {unshiftUndoHistory}
                 unshiftRedoHistory = {unshiftRedoHistory}
                 changePenSize = {setPenSize}
-                setLastXY = {setLastXY}
+                setLastCords = {setLastCords}
                 clearUndoHistory = {clearUndoHistory}
                 clearRedoHistory = {clearRedoHistory}
                 printDebugInfo = {printDebugInfo}
                 handleColorChange = {handleColorChange}
-                setEraser = {setEraser}
+                eraserToggle = {eraserToggle}
+                downloadCanvas = {downloadCanvas}
+                clearCanvas = {clearCanvas}
+                eraser = {eraser}
             />
         );
     }

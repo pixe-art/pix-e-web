@@ -85,6 +85,7 @@ html, body {
     margin-top: 250px;
     display: inline-block;
     width: fit-content;
+    z-index: 1000;
 }
 
 .sketch-picker {
