@@ -1,114 +1,17 @@
-html, body {
-    height: 100%;
-}
 
-.parent {
-    touch-action: none;
-    display: flex;
-    flex-direction: column;
-    align-content: center;
-    align-items: stretch;
-    height: 100%;
-    background: rgb(52, 52, 94);
-}
-.topbar {
-    background: rgb(21, 21, 32);
-    min-height: 3em;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-}
-.topbar button:hover{
-    color: cornflowerblue;
-}
-.content{
-    user-select: none;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    height: 100%;
-}
-.tmpcolor {
-    margin-left: 1em;
-}
-.tools {
-    margin-right: 1em;
-}
-.tool-buttons {
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-}
-.color-display {
-    min-width: 100%;
-}
-.tool-buttons button {
-    transition: 0.2s;
-    margin-top: 0.5em;
-    margin-bottom: 0.5em;
-    color: black;
-    background-color: darkgray;
-}
-.tool-buttons .active {
-    transition: 0.2s;
-    color: whitesmoke !important;
-    background-color: rgb(46, 46, 46) !important;
-}
-.tool-buttons div {
-    padding-left: 1.5em;
-    display: flex;
-}
 .canvas {
-    cursor: crosshair;
-    user-select: none;
-    touch-action: none;
-    background: white;
     scale: 12;
     image-rendering: pixelated;
-    border: solid 1px darkgray;
-    border-radius: 1px;
 }
-@media (orientation:portrait) {
+@media (max-width: 1024px) {
     .canvas {
-    left: unset;
-    scale: 5;
+    scale: 8;
     }
 }
-
-
-/*.color-palette {
-    margin-top: 200px;
-    }*/
-
-.palette {
-    margin-top: 250px;
-    display: inline-block;
-    width: fit-content;
-    z-index: 1000;
-}
-
-.sketch-picker {
-    margin-top: 0px;
-    display: inline-block;
-    width: fit-content;
-}
-
-.palette-button {
-    color: rgb(41, 14, 42);
-    border: 1px solid black;
-    background-color: gray;
-    height: 50px;
-    width: 220px;
-    border-radius: 4px;
-    transition: background-color 0.3s, transform 0.3s;
-    display: inline-block;
-}
-
-button:hover {
-    background-color: rgb(146, 146, 146);
-    color: #af02f4;
-    border-color: #af02f4;
+@media (max-width: 768px) {
+    .canvas {
+    scale: 5;
+    }
 }
 
 .draggable {

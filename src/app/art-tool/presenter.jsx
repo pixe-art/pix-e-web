@@ -113,10 +113,8 @@ export default observer(
             }
             return lastXY;
         }
-        function eraserToggle(toggle, state) {
-            if (toggle) {
-                eraser.current = !eraser.current;
-            } else if (typeof state === 'boolean') {
+        function eraserToggle(state) {
+            if (typeof state === 'boolean') {
                 eraser.current = state
             }
             return eraser.current
