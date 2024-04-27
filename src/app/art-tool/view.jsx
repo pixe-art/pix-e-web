@@ -2,297 +2,194 @@
 import "../globals.css"
 import "./tempStyles.css"
 import { getCords } from "@/utilities";
-import React,{useState} from "react";
-//import ColorPalette from "./colorPalette";
+import React from "react";
 import { SketchPicker } from 'react-color';
 import Draggable from './draggable';
 
-function ArtTool() {
-const [color, setColor] = useState("#000000"); // default color (black)
-const [showPicker, setShowPicker] = useState(false)
+//! temporary var:
+let fresh = true;
 
-const handleColorChange = (color) => {
-    setColor(color.hex);
-    penColor = color.hex;
-}
-const paletteButtonClick = () => {
-    setShowPicker(!showPicker);
-}
+function ArtTool(props) {
     return( 
-        <div className="parent" onMouseUp={checkReset}>
-            <div className="topbar">
-                <h1>Left-Click to draw | Right-Click to erase | Middle-Click for single pixel</h1>
-                <button onClick={debugEvent} type="button">click for debug info</button>
+        <div id="parent" className="inset-0 bg-cover bg-slate-800 touch-none" onMouseUp={mouseUp}>
+            <div id="topbar" className="hidden w-screen bg-slate-950 text-pretty justify-center p-2 md:flex">
+                <div id="instrutions" className="flex justify-center max-w-fit border self-center text-center *:mx-1 *:px-1 flex-row border-none">
+                    <h1>Left-Click to draw</h1>
+                    <h1>Right-Click to erase</h1>
+                    <h1>Middle-Click to place a single pixel</h1>
+                    <button id="debug" className="mx-2 border rounded max-w-fit self-center" onClick={debugEvent} type="button">Click here for debug info</button>
+                </div>
             </div>
-            <div className="content">
-                <div className="palette">
-                <Draggable className="draggable">
-                    <button className="palette-button" onClick={paletteButtonClick}>Toggle Color Palette</button>
-                        {showPicker && (
-                            <div className="color-palette">
-                                <SketchPicker color={color} onChangeComplete={handleColorChange} />
-                            </div>
+            <div id="content" className="h-screen flex flex-col md:flex-row justify-evenly md:justify-between items-center">
+                <div id="color-picker">
+                    <Draggable>
+                        <div className="flex flex-col items-center justify-center">
+                            <button className="min-h-12 min-w-56 w-full bg-slate-800 border rounded-lg md:hover:bg-slate-600" onClick={paletteButtonClick}>Toggle Color Palette</button>
+                            {(
+                                <div id="sketch-picker" style={{ display: '' }} className="self-center">
+                                    <SketchPicker color={props.color} onChangeComplete={colorChangeEvent} className="self-center"/>
+                                </div>
                             )}
-                </Draggable>
-                
+                        </div>
+                    </Draggable>
                 </div>
                 <div>
-                    <canvas className="canvas" id="drawing-area" width="64" height="32" onContextMenu={(event)=>{event.preventDefault()}}
-                    onMouseDown={mouseClickEvent} onMouseMove={mouseDragEvent} onTouchStart={touchDrawEvent} onTouchMove={touchDragEvent} onMouseLeave={resetLastCoords}>
-                        {/* <script>{clearCanvas()}</script> */}
-                    </canvas>
+                    <canvas className="canvas cursor-crosshair select-none touch-none bg-white border border-slate-600" id="drawing-area" width="64" height="32" onContextMenu={(event)=>{event.preventDefault()}}
+                    onMouseDown={mouseClickEvent} onMouseMove={mouseDragEvent} onTouchStart={touchDrawEvent} onTouchMove={touchDragEvent} onMouseLeave={resetLastCoords} />
                 </div>
-                <div className="tools">
-                    <div className="tool-buttons">
-                        <button id="erase" disabled={true} onClick={eraserEvent}>Eraser</button>
-                        <button id="undo" onClick={undo}>Undo</button>
-                        <button id="redo" disabled={true}>Redo</button>
-                        <button id="clear" onClick={clearCanvas} type="button">Clear</button>
-                        <button id="download" onClick={downloadCanvas} type="button">Download</button>
-                        <div>
-                            <p>pen size</p>
-                            <p>&nbsp;</p>                            
-                            <p id="pen-size-d">1</p>                            
-                        </div>
-                        <input type="range" name="pen-size" id="pen-size" defaultValue={"1"} min={"1"} max={"12"} onChange={penSizeEvent}/>
+                <div id="tools" className="mt-20 grid md:mt-0 md:ml-4 md:flex md:flex-col items-stretch [&_button]:my-2 [&_button]:select-none">
+                    <input id="color-d" className="min-w-full bg-slate-800 cursor-no-drop" type="color" name="" value={props.color} disabled={true} />
+                    <button id="erase" className="transition-all bg-slate-800 border rounded-lg md:hover:bg-slate-600" onClick={toggleEraser}>Eraser</button>
+                    <button id="undo" className="transition-all bg-slate-800 border rounded-lg md:hover:bg-slate-600 active:bg-slate-200 active:text-black" onClick={undo}>Undo</button>
+                    <button id="redo" className="transition-all bg-slate-800 border rounded-lg md:hover:bg-slate-600 active:bg-slate-200 active:text-black" onClick={redo}>Redo</button>
+                    <button id="clear" className="transition-all bg-slate-800 border rounded-lg md:hover:bg-slate-600 active:bg-slate-200 active:text-black" onClick={props.clearCanvas} type="button">Clear</button>
+                    <button id="download" className="transition-all bg-slate-800 border rounded-lg md:hover:bg-slate-600 active:bg-slate-200 active:text-black" onClick={props.downloadCanvas} type="button">Download</button>
+                    <div className="flex flex-row">
+                        <p>pen size</p>
+                        <p>&nbsp;</p>                            
+                        <p id="pen-size-d">1</p>                            
                     </div>
+                    <input type="range" name="pen-size" id="pen-size" className="cursor-w-resize" defaultValue={props.changePenSize()} min={"1"} max={"12"} onChange={penSizeEvent}/>
                 </div>
             </div>
 
         </div>
     );
-}
-export default ArtTool;
+    function mouseUp() {
+        props.checkReset(false)
+    }
+    function paletteButtonClick() {
+        let style = document.getElementById("sketch-picker").style
+        if (String(style.display).includes("none")) {
+            style.display = ''
+        } else {
+            style.display = 'none'
+        }
+    }
 
-
-//global variables
-let mouseCheck = false;
-let lastXY;
-let penSize = 1;
-let penColor = "black";
-let currentColor = "black";
-const historyLength = 10
-let undoHistory = new Array(historyLength);
-
-let fresh = true;
-
-function debugEvent() {
-    //! log outputs for checking canvas size
-    const element = document.getElementById("drawing-area");
-    const foo = element.getBoundingClientRect();
-    const style = getComputedStyle(element);
-    const multH = foo.height/element.height;
-    const multW = foo.width/element.width;
-    console.log("\n[ DEBUG INFO ]\n");
-    console.log("canvas scaling = " + style.scale);
-    console.log("size difference (mult):\nwidth = " + multW + "x\nheight = " + multH + "x");
-    console.log("canvas size:\nwidth = " + foo.width + "\nheight = " + foo.height);
-    console.log("canvas edges:\nlft = " + foo.left + "\nrgt = " + foo.right + "\ntop = " + foo.top + "\nbot = " + foo.bottom);
-    console.log("border = " + style.border + "\n(needs offset of " + style.border.split(" ")[0] + ")");
-    console.log("padding = " + style.padding + "\n(needs offset of " + style.padding.split(" ")[0] + ")");
-}
-
-function clearCanvas() {
-    try {
-        // declare elements
+    function colorChangeEvent(event) {
+        const colorDisplay = document.getElementById("color-d");
+        const newColor = event.hex;
+        const colorVar = props.handleColorChange(newColor);
+        colorDisplay.value = colorVar;  // Update the UI element showing the color
+    }
+    function debugEvent() {
+        //! log outputs for checking canvas size
         const element = document.getElementById("drawing-area");
-        const extra = element.getContext("2d");
-        // fill canvas with white
-        extra.save();
-        extra.fillStyle = "white";
-        extra.fillRect(0,0, element.width, element.height);        
-        extra.restore();
-        // reset undo history
-        undoHistory = new Array(historyLength);
-    } catch (error) {
-        console.error(error);
+        props.printDebugInfo(element)
     }
-}
-function checkReset() {
-    //* flags check as false, used for mouseDragEvent
-    mouseCheck = false;
-}
-function downloadCanvas() {
-    const element = document.getElementById("drawing-area");
-    const temp = document.createElement('a');
-    const img = element.toDataURL("image/png").replace("image/png", "image/octet-stream");
-    temp.setAttribute("href", img);
-    temp.setAttribute("download", "canvas.png");
-    temp.click();   
-    temp.remove();
-}
-function saveCurrent() {
-    const element = document.getElementById("drawing-area");
-    if (undoHistory.at(historyLength)) {
-        undoHistory.pop()
-    }        
-    undoHistory.unshift(element.toDataURL())
-}
-function undo() {
-    const element = document.getElementById("drawing-area");
-    let img = new Image()
-    let last = undoHistory[0];
-    undoHistory = undoHistory.slice(1)
-    if (!last) {
-        return;
-    }
-    img.src = last;
-    img.onload = () => {
-        element.getContext("2d").drawImage(img,0,0);
-    }
-}
-function eraserEvent(event) {
-    const element = document.getElementById(event.target.id);
-    if (element.className.includes("active")) {
-        element.className = ""
-        currentColor = penColor;
-    } else {
-        element.className = "active"
-        currentColor = "white"
-    }
-}
-function penSizeEvent(event) {
-    penSize = event.target.value;
-    document.getElementById("pen-size-d").innerHTML = event.target.value;
-}
 
-function resetLastCoords(){
-    lastXY = [-1, -1];
-}
-function mouseClickEvent(event) {
-    if (fresh) {
-        fresh = false;
-        clearCanvas();
+    function saveCurrent() {
+        // saves current canvas history to undo history 
+        const element = document.getElementById("drawing-area");
+        props.unshiftUndoHistory(element)     
     }
-    if (penColor !== currentColor && penColor !== "white") {
-        currentColor = penColor
+    function overwriteCanvas(source) {
+        // overwrites canvas with an img url
+        const element = document.getElementById("drawing-area");
+        const extra = element.getContext("2d")
+        let img = new Image()
+        img.src = source;
+        img.onload = () => {
+            if (img.width !== element.width || img.height !== element.height) {
+                console.error("Preventing Canvas overwrite due to img with incorrect dimensions (" + img.width + "x" + img.height + ")\n"
+                + "\tImg should be equal to Canvas (" + element.width + "x" + element.height + ")");
+                return;
+            }
+            props.clearCanvas()
+            extra.drawImage(img,0,0);
+            img.remove();
+        }
     }
-    event.preventDefault();
-    saveCurrent();
-    mouseCheck = true //for mouseDragEvent()
-    const element = document.getElementById(event.target.id);
-    //* translate event coordiantes to the canvas 
-    const cords = getCords(element, event.clientX, event.clientY, (penSize-1)/2);
+    function undo() {
+        // grabs and replaces canvas with last image in undo history 
+        const last = props.grabLastImage()
+        if (last) {
+            const element = document.getElementById("drawing-area");
+            props.unshiftRedoHistory(element)
+            overwriteCanvas(last)
+        }
+    }
+    function redo() {
+        const last = props.restoreLastImage()
+        if (last) {
+            saveCurrent()
+            overwriteCanvas(last)
+        }
+    }
+    function toggleEraser(event) {
+        const element = document.getElementById(event.target.id);
+        const ebg = element.classList.toggle('bg-gray-200')
+        element.classList.toggle('text-black')
+        props.eraserToggle(ebg)
+    }
+    function penSizeEvent(event) {
+        document.getElementById("pen-size-d").innerHTML = props.changePenSize(event.target.value);
+    }
 
-    //* draw pixel
-    const extra = element.getContext("2d");
-    extra.save();
-    if (event.button === 2) {
-        extra.fillStyle = "white";
-    } else {
-        extra.fillStyle = currentColor;
+    function resetLastCoords(){
+        props.setLastCords([-1, -1]);
     }
-    extra.fillRect(cords[0], cords[1], penSize, penSize); //draw pixel at translated coordinates
-    lastXY = cords; //used for fallback in mouseDragEvent()
-    extra.restore();
+    function mouseClickEvent(event) {
+        event.preventDefault();
+        // save current canvas state in undoHistory
+        saveCurrent();
+        props.checkReset(true)
+        const element = document.getElementById(event.target.id);
+        //* translate event coordiantes to the canvas 
+        const cords = getCords(element, event.clientX, event.clientY, (props.changePenSize()-1)/2);
+        const con = element.getContext("2d");
+
+        if (event.button === 2 && !props.eraser) {
+            //* right click erase
+            props.eraserToggle(true)
+            props.drawRect(cords[0], cords[1], con)
+            props.eraserToggle(false)
+        } else { 
+            //* regualr draw
+            props.drawRect(cords[0], cords[1], con)
+        }
+        // save cords for fallback in mouseDragEvent, prevents gaps in fast movements
+        props.setLastCords(cords); 
     }
-function mouseDragEvent(event) {
-    if ((event.buttons === 2 || event.buttons === 1) && mouseCheck) {
+
+    function mouseDragEvent(event) {
+        const canvas = document.getElementById("drawing-area");
+        const xy = getCords(canvas, event.clientX, event.clientY, (props.penSize - 1) / 2);
+        if ((event.buttons === 1 || event.buttons === 2) && props.checkReset()) {
+            if (props.lastXY[0] === -1 && props.lastXY[1] === -1) {
+                props.setLastCords(xy);  // Update without drawing if last coordinates were invalid
+            } else if (event.buttons === 2 && !props.eraser) {
+                //* right click erase
+                props.eraserToggle(true)
+                props.drawLine(canvas, xy[0], xy[1]);
+                props.eraserToggle(false)
+            } else {
+                //* regular draw
+                props.drawLine(canvas, xy[0], xy[1]);
+            }
+        }
+    }
+        
+    function touchDrawEvent(event){
+        const element = document.getElementById(event.target.id);
+        const cords = getCords(element, event.targetTouches[0]?.clientX || event.clientX, event.targetTouches[0]?.clientY || event.clientY)
+        element.getContext("2d").fillRect(cords[0], cords[1], props.changePenSize(), props.changePenSize())
+        props.setLastCords(cords);
+    }
+    function touchDragEvent(event) {
         const element = document.getElementById(event.target.id);
         const extra = element.getContext("2d");
-        const cords = getCords(element, event.clientX, event.clientY, (penSize-1)/2);
-
-        extra.save();
-        // set draw color to white for erase if right click
-        extra.fillStyle = "white";
-        if (event.buttons === 2) {
-            extra.fillStyle = "white";
-        } else {
-            extra.fillStyle = currentColor;
-        }
-        if (lastXY[0] < 0 || lastXY[1] < 0) {
-            lastXY = cords;
-        }
-        draw_line(lastXY[0], lastXY[1], cords[0], cords[1], extra);
-        extra.restore();
-
-        lastXY = cords;
-    }
-}
-function touchDrawEvent(event){
-    const element = document.getElementById(event.target.id);
-    const cords = getCords(element, event.targetTouches[0]?.clientX || event.clientX, event.targetTouches[0]?.clientY || event.clientY)
-    element.getContext("2d").fillRect(cords[0], cords[1], penSize, penSize)
-    lastXY = cords;
-}
-function touchDragEvent(event) {
-    const element = document.getElementById(event.target.id);
-    const extra = element.getContext("2d");
-    try {
-        const cords = getCords(element, 
+        try {
+            const cords = getCords(element, 
             event.targetTouches[0]?.clientX || event.Touch[0]?.clientX || event.clientX, 
             event.targetTouches[0]?.clientY || event.Touch[0]?.clientY || event.clientY);            
-            draw_line(lastXY[0], lastXY[1], cords[0], cords[1], extra);
-            lastXY = cords;
-    } catch (error) {
-        return;
+            // draw_line(props.lastXY[0], props.lastXY[1], , extra);
+            draw_line(cords[0],cords[1],extra)
+            props.setLastCords(cords);
+        } catch (error) {
+            
+        }
     }
 }
-// draw_line taken and adapted from https://ghost-together.medium.com/how-to-code-your-first-algorithm-draw-a-line-ca121f9a1395
-function draw_line(x1, y1, x2, y2, con) {
-    // Iterators, counters required by algorithm
-    let x, y, dx, dy, dx1, dy1, px, py, xe, ye, i;
-    // Calculate line deltas
-    dx = x2 - x1;
-    dy = y2 - y1;
-    // Create a positive copy of deltas (makes iterating easier)
-    dx1 = Math.abs(dx);
-    dy1 = Math.abs(dy);
-    // Calculate error intervals for both axis
-    px = 2 * dy1 - dx1;
-    py = 2 * dx1 - dy1;
-    
-    if (dy1 <= dx1) { //* The line is X-axis dominant
-        // Line is drawn left to right
-        if (dx >= 0) {
-            x = x1; y = y1; xe = x2;
-        } else { // Line is drawn right to left (swap ends)
-            x = x2; y = y2; xe = x1;
-        }
-        con.fillRect(x, y, penSize, penSize); // draws pixel at translated coordinates
-        // Rasterize the line
-        for (i = 0; x < xe; i++) {
-            x = x + 1;
-            // Deal with octants...
-            if (px < 0) {
-                px = px + 2 * dy1;
-            } else {
-                if ((dx < 0 && dy < 0) || (dx > 0 && dy > 0)) {
-                    y++;
-                } else {
-                    y--;
-                }
-                px = px + 2 * (dy1 - dx1);
-            }
-            // Draw pixel from line span at
-            // currently rasterized position
-            con.fillRect(x, y, penSize, penSize);
-        }
-    } else { //* The line is Y-axis dominant
-        // Line is drawn bottom to top
-        if (dy >= 0) {
-            x = x1; y = y1; ye = y2;
-        } else { // Line is drawn top to bottom
-            x = x2; y = y2; ye = y1;
-        }
-        con.fillRect(x, y, penSize, penSize); // draws pixel at translated coordinates
-        // Rasterize the line
-        for (i = 0; y < ye; i++) {
-            y++;
-            // Deal with octants...
-            if (py <= 0) {
-                py = px + 2 * dx1;
-            } else {
-                if ((dx < 0 && dy<0) || (dx > 0 && dy > 0)) {
-                    x++;
-                } else {
-                    x--;
-                }
-                py = py + 2 * (dx1 - dy1);
-            }
-            // Draw pixel from line span at
-            // currently rasterized position
-            con.fillRect(x, y, penSize, penSize); // draws pixel at translated coordinates
-        }
-    }
- }
+export default ArtTool;
