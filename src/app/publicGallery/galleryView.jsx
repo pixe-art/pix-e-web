@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import  Link  from 'next/link';
 import { Dropdown } from 'react-bootstrap';
 import { BsThreeDots } from 'react-icons/bs';
@@ -10,6 +10,13 @@ function ImageComponent({ image }) {
     const [isDropdownOpen, setDropdownOpen] = useState(false);
     const [isFavourite, setFavourite] = useState(false);
     const [animate, setAnimate] = useState(false);
+    const [isMounted, setIsMounted] = useState(false);
+
+    //TODO: check if 'isMounted' is needed
+    useEffect(() => {
+        setIsMounted(true);
+    }, []);
+
     const toggleFavourite = () => {
         setFavourite(!isFavourite);
         if (!isFavourite) {
@@ -21,7 +28,7 @@ function ImageComponent({ image }) {
     return (
         <div className="relative rounded shadow-lg p-4 bg-cream transform transition duration-500 hover:scale-110 hover:z-10">
             <img src={image.testPicture} alt="" className="w-full h-auto object-cover" />
-            <Dropdown className="absolute bottom-0 right-0 mb-2 mr-2" onClick={() => setDropdownOpen(true)} onMouseLeave={() => setDropdownOpen(false)}>
+            <Dropdown className="absolute bottom-0 right-0 mb-2 mr-2" onClick={() => isMounted && setDropdownOpen(true)} onMouseLeave={() => isMounted && setDropdownOpen(false)}>
                 <Dropdown.Toggle variant="none" id="dropdown-basic">
                     <BsThreeDots />
                 </Dropdown.Toggle>
@@ -54,7 +61,12 @@ function ImageComponent({ image }) {
 
 export default function GalleryView(props) {
     const [isMenuOpen, setMenuOpen] = useState(false);
+    const [isMounted, setIsMounted] = useState(false);
     const genericHamburgerLine = `h-1 w-6 my-1 rounded-full bg-cream transition ease transform duration-300`;
+
+    useEffect(() => {
+        setIsMounted(true);
+    }, []);
 
     return (
         <div className="min-h-screen bg-cream flex text-black">
@@ -65,8 +77,8 @@ export default function GalleryView(props) {
                 <div className="flex items-center mb-4">
                 <button
                     className="flex flex-col h-10 w-12 border-2 border-cream rounded justify-center items-center group"
-                    onMouseEnter={() => setMenuOpen(true)}
-                    onClick={() => setMenuOpen(!isMenuOpen)} 
+                    onMouseEnter={() => isMounted && setMenuOpen(true)}
+                    onClick={() => isMounted && setMenuOpen(!isMenuOpen)} 
                 >
                     <div
                         className={`${genericHamburgerLine} ${
