@@ -133,10 +133,6 @@ function ArtTool(props) {
         props.setLastCords([-1, -1]);
     }
     function mouseClickEvent(event) {
-        if (touchHandled.current) {
-            touchHandled.current = false;
-            return;
-        }
         console.log("mouseClickEvent");
         event.preventDefault();
         // save current canvas state in undoHistory
@@ -179,7 +175,6 @@ function ArtTool(props) {
     }
         
     function touchDrawEvent(event){
-        touchHandled.current = true;
         const element = document.getElementById(event.target.id);
         const cords = getCords(element, event.targetTouches[0]?.clientX, event.targetTouches[0]?.clientY, (props.penSize - 1) / 2);
         const ctx = element.getContext("2d");
@@ -188,7 +183,6 @@ function ArtTool(props) {
     }
 
     function touchDragEvent(event) {
-        touchHandled.current = true;
         const canvas = document.getElementById("drawing-area");
         const rect = canvas.getBoundingClientRect();
         const touch = event.targetTouches[0];
