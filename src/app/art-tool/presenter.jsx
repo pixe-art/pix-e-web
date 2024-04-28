@@ -59,9 +59,12 @@ export default observer(
             if (!Array.isArray(undoHistory.current)) {
                 clearUndoHistory();
             }
+            if (canvas.toDataURL() === undoHistory.current[0]) {
+                return
+            }
             if (undoHistory.current.at(historyLength)) {
                 undoHistory.current.pop()
-            }
+            }            
             undoHistory.current.unshift(canvas.toDataURL())
         }
         function clearRedoHistory(){
@@ -181,7 +184,6 @@ export default observer(
             try {
                 const element = document.getElementById("drawing-area");
                 const con = element.getContext("2d");
-                // props.unshiftUndoHistory(element)
                 // empty canvas
                 const temp = con.fillStyle;
                 con.reset();

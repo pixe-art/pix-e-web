@@ -2,16 +2,13 @@
 import "../globals.css"
 import "./tempStyles.css"
 import { getCords } from "@/utilities";
-import { useRef,React } from "react";
+import { React } from "react";
 import { SketchPicker } from 'react-color';
 import Draggable from './draggable';
 
 
 
 function ArtTool(props) {
-
-    let touchHandled = false; // to make sure mouse events aren't triggered during touch events
-
     return( 
         <div id="parent" className="inset-0 bg-cover bg-slate-800 touch-none" onMouseUp={mouseUp}>
             <div id="topbar" className="hidden w-screen bg-slate-950 text-pretty justify-center p-2 md:flex">
@@ -37,14 +34,14 @@ function ArtTool(props) {
                 </div>
                 <div>
                     <canvas className="canvas cursor-crosshair select-none touch-none bg-white border border-slate-600" id="drawing-area" width="64" height="32" onContextMenu={(event)=>{event.preventDefault()}}
-                    onMouseDown={mouseClickEvent} onMouseMove={mouseDragEvent} onTouchStart={touchDrawEvent} onTouchMove={touchDragEvent} onMouseLeave={resetLastCoords} />
+                    onTouchStart={touchDrawEvent} onMouseDown={mouseClickEvent}  onMouseMove={mouseDragEvent} onMouseLeave={resetLastCoords} onTouchMove={touchDragEvent}/>
                 </div>
                 <div id="tools" className="mt-20 grid md:mt-0 md:ml-4 md:flex md:flex-col items-stretch [&_button]:my-2 [&_button]:select-none">
                     <input id="color-d" className="min-w-full bg-slate-800 cursor-no-drop" type="color" name="" value={props.color} disabled={true} />
                     <button id="erase" className="transition-all bg-slate-800 border rounded-lg md:hover:bg-slate-600" onClick={toggleEraser}>Eraser</button>
                     <button id="undo" className="transition-all bg-slate-800 border rounded-lg md:hover:bg-slate-600 active:bg-slate-200 active:text-black" onClick={undo}>Undo</button>
                     <button id="redo" className="transition-all bg-slate-800 border rounded-lg md:hover:bg-slate-600 active:bg-slate-200 active:text-black" onClick={redo}>Redo</button>
-                    <button id="clear" className="transition-all bg-slate-800 border rounded-lg md:hover:bg-slate-600 active:bg-slate-200 active:text-black" onClick={props.clearCanvas} type="button">Clear</button>
+                    <button id="clear" className="transition-all bg-slate-800 border rounded-lg md:hover:bg-slate-600 active:bg-slate-200 active:text-black" onClick={clearCanvas} type="button">Clear</button>
                     <button id="download" className="transition-all bg-slate-800 border rounded-lg md:hover:bg-slate-600 active:bg-slate-200 active:text-black" onClick={props.downloadCanvas} type="button">Download</button>
                     <div className="flex flex-row">
                         <p>pen size</p>
@@ -85,6 +82,11 @@ function ArtTool(props) {
         // saves current canvas history to undo history 
         const element = document.getElementById("drawing-area");
         props.unshiftUndoHistory(element)     
+    }
+    function clearCanvas() {
+        const element = document.getElementById("drawing-area")
+        props.unshiftUndoHistory(element)
+        props.clearCanvas()
     }
     function overwriteCanvas(source) {
         // overwrites canvas with an img url
@@ -133,10 +135,6 @@ function ArtTool(props) {
         props.setLastCords([-1, -1]);
     }
     function mouseClickEvent(event) {
-        if (touchHandled) {
-            return;
-        }
-        console.log("mouseClickEvent");
         event.preventDefault();
         // save current canvas state in undoHistory
         saveCurrent();
@@ -178,29 +176,22 @@ function ArtTool(props) {
     }
         
     function touchDrawEvent(event){
-        touchHandled = true;
         const element = document.getElementById(event.target.id);
-        const cords = getCords(element, event.targetTouches[0]?.clientX, event.targetTouches[0]?.clientY, (props.penSize - 1) / 2);
-        const ctx = element.getContext("2d");
+        const touch = event.targetTouches[0];
+        const xy = getCords(element, touch.clientX, touch.clientY, (props.penSize - 1) / 2);
         saveCurrent();
-        props.drawRect(cords[0], cords[1], ctx);
-        props.setLastCords(cords);
+        props.setLastCords(xy); 
     }
 
     function touchDragEvent(event) {
-        touchHandled = true;
-        const canvas = document.getElementById("drawing-area");
-        const rect = canvas.getBoundingClientRect();
+        const element = document.getElementById(event.target.id);
         const touch = event.targetTouches[0];
-
-        const scaleX = canvas.width / rect.width;
-        const scaleY = canvas.height / rect.height;
-
-        const x = Math.round((touch.clientX - rect.left) * scaleX);
-        const y = Math.round((touch.clientY - rect.top) * scaleY);
-        
-        props.drawLine(canvas, x, y);
-        //props.setLastCords([x, y]);
+        const xy = getCords(element, touch.clientX, touch.clientY, (props.penSize - 1) / 2);
+        if (props.lastXY[0] === -1 && props.lastXY[1] === -1) {
+            props.setLastCords(xy);  // Update without drawing if last coordinates were invalid
+        } else {
+            props.drawLine(element, xy[0], xy[1]);
+        }
     }
 }
 export default ArtTool;
