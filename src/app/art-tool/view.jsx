@@ -10,7 +10,7 @@ import Draggable from './draggable';
 
 function ArtTool(props) {
 
-    const touchHandled = useRef(false);
+    let touchHandled = false; // to make sure mouse events aren't triggered during touch events
 
     return( 
         <div id="parent" className="inset-0 bg-cover bg-slate-800 touch-none" onMouseUp={mouseUp}>
@@ -133,6 +133,9 @@ function ArtTool(props) {
         props.setLastCords([-1, -1]);
     }
     function mouseClickEvent(event) {
+        if (touchHandled) {
+            return;
+        }
         console.log("mouseClickEvent");
         event.preventDefault();
         // save current canvas state in undoHistory
@@ -175,14 +178,17 @@ function ArtTool(props) {
     }
         
     function touchDrawEvent(event){
+        touchHandled = true;
         const element = document.getElementById(event.target.id);
         const cords = getCords(element, event.targetTouches[0]?.clientX, event.targetTouches[0]?.clientY, (props.penSize - 1) / 2);
         const ctx = element.getContext("2d");
+        saveCurrent();
         props.drawRect(cords[0], cords[1], ctx);
         props.setLastCords(cords);
     }
 
     function touchDragEvent(event) {
+        touchHandled = true;
         const canvas = document.getElementById("drawing-area");
         const rect = canvas.getBoundingClientRect();
         const touch = event.targetTouches[0];
