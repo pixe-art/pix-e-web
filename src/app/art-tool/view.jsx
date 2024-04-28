@@ -2,12 +2,11 @@
 import "../globals.css"
 import "./tempStyles.css"
 import { getCords } from "@/utilities";
-import React from "react";
+import { React } from "react";
 import { SketchPicker } from 'react-color';
 import Draggable from './draggable';
 
-//! temporary var:
-let fresh = true;
+
 
 function ArtTool(props) {
     return( 
@@ -35,14 +34,14 @@ function ArtTool(props) {
                 </div>
                 <div>
                     <canvas className="canvas cursor-crosshair select-none touch-none bg-white border border-slate-600" id="drawing-area" width="64" height="32" onContextMenu={(event)=>{event.preventDefault()}}
-                    onMouseDown={mouseClickEvent} onMouseMove={mouseDragEvent} onTouchStart={touchDrawEvent} onTouchMove={touchDragEvent} onMouseLeave={resetLastCoords} />
+                    onTouchStart={touchDrawEvent} onMouseDown={mouseClickEvent}  onMouseMove={mouseDragEvent} onMouseLeave={resetLastCoords} onTouchMove={touchDragEvent}/>
                 </div>
                 <div id="tools" className="mt-20 grid md:mt-0 md:ml-4 md:flex md:flex-col items-stretch [&_button]:my-2 [&_button]:select-none">
                     <input id="color-d" className="min-w-full bg-slate-800 cursor-no-drop" type="color" name="" value={props.color} disabled={true} />
                     <button id="erase" className="transition-all bg-slate-800 border rounded-lg md:hover:bg-slate-600" onClick={toggleEraser}>Eraser</button>
                     <button id="undo" className="transition-all bg-slate-800 border rounded-lg md:hover:bg-slate-600 active:bg-slate-200 active:text-black" onClick={undo}>Undo</button>
                     <button id="redo" className="transition-all bg-slate-800 border rounded-lg md:hover:bg-slate-600 active:bg-slate-200 active:text-black" onClick={redo}>Redo</button>
-                    <button id="clear" className="transition-all bg-slate-800 border rounded-lg md:hover:bg-slate-600 active:bg-slate-200 active:text-black" onClick={props.clearCanvas} type="button">Clear</button>
+                    <button id="clear" className="transition-all bg-slate-800 border rounded-lg md:hover:bg-slate-600 active:bg-slate-200 active:text-black" onClick={clearCanvas} type="button">Clear</button>
                     <button id="download" className="transition-all bg-slate-800 border rounded-lg md:hover:bg-slate-600 active:bg-slate-200 active:text-black" onClick={props.downloadCanvas} type="button">Download</button>
                     <div className="flex flex-row">
                         <p>pen size</p>
@@ -83,6 +82,11 @@ function ArtTool(props) {
         // saves current canvas history to undo history 
         const element = document.getElementById("drawing-area");
         props.unshiftUndoHistory(element)     
+    }
+    function clearCanvas() {
+        const element = document.getElementById("drawing-area")
+        props.unshiftUndoHistory(element)
+        props.clearCanvas()
     }
     function overwriteCanvas(source) {
         // overwrites canvas with an img url
@@ -173,22 +177,20 @@ function ArtTool(props) {
         
     function touchDrawEvent(event){
         const element = document.getElementById(event.target.id);
-        const cords = getCords(element, event.targetTouches[0]?.clientX || event.clientX, event.targetTouches[0]?.clientY || event.clientY)
-        element.getContext("2d").fillRect(cords[0], cords[1], props.changePenSize(), props.changePenSize())
-        props.setLastCords(cords);
+        const touch = event.targetTouches[0];
+        const xy = getCords(element, touch.clientX, touch.clientY, (props.penSize - 1) / 2);
+        saveCurrent();
+        props.setLastCords(xy); 
     }
+
     function touchDragEvent(event) {
         const element = document.getElementById(event.target.id);
-        const extra = element.getContext("2d");
-        try {
-            const cords = getCords(element, 
-            event.targetTouches[0]?.clientX || event.Touch[0]?.clientX || event.clientX, 
-            event.targetTouches[0]?.clientY || event.Touch[0]?.clientY || event.clientY);            
-            // draw_line(props.lastXY[0], props.lastXY[1], , extra);
-            draw_line(cords[0],cords[1],extra)
-            props.setLastCords(cords);
-        } catch (error) {
-            
+        const touch = event.targetTouches[0];
+        const xy = getCords(element, touch.clientX, touch.clientY, (props.penSize - 1) / 2);
+        if (props.lastXY[0] === -1 && props.lastXY[1] === -1) {
+            props.setLastCords(xy);  // Update without drawing if last coordinates were invalid
+        } else {
+            props.drawLine(element, xy[0], xy[1]);
         }
     }
 }
