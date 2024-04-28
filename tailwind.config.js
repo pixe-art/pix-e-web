@@ -6,6 +6,12 @@ module.exports = {
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
+    screens:{
+      'md': '660px',
+      // => @media (min-width: 660px) { ... }
+      'hmd': {'raw': '(max-height: 550px)' },
+      // => @media (max-height: 550px) { ... }
+    },
     extend: {
       colors: {
         cream: '#f2e9e4', 
