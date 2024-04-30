@@ -21,6 +21,8 @@ export default {
         title: "Day",
         creator: "Bob",
         storage: "gs://pix-e-b9fab.appspot.com/art3.png"
-    },
+    }],
+    canvasCurrent: "",
+
     // Add more image objects as needed
-]};
+};
