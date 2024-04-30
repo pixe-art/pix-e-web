@@ -4,15 +4,15 @@
 import ArtTool from "./view";
 import { observer } from "mobx-react-lite"; //? observer
 import React, { useState, useRef, useEffect } from "react";
+import { useModel } from "../model-provider.js";
 
 export default observer(
-    
     function Tool() {
-
+        const model = useModel();
         
         const [mouseCheck, setMouseCheck] = useState(false);
         const [lastXY, setLastXY] = useState([-1, -1]);
-        const [color, setColor] = useState("#000000");
+        const [color, setColor] = useState(model?.color || "#000000");
         /*const [showPicker, setShowpicker] = useState(false);
          */
 
@@ -42,6 +42,7 @@ export default observer(
             console.log("canvas edges:\nlft = " + foo.left + "\nrgt = " + foo.right + "\ntop = " + foo.top + "\nbot = " + foo.bottom);
             console.log("border = " + style.border + "\n(needs offset of " + style.border.split(" ")[0] + ")");
             console.log("padding = " + style.padding + "\n(needs offset of " + style.padding.split(" ")[0] + ")");
+            console.log("model = ", model);
         }
     
         function mouseChecker(state) {
@@ -64,7 +65,8 @@ export default observer(
             }
             if (undoHistory.current.at(historyLength)) {
                 undoHistory.current.pop()
-            }            
+            }    
+            model.canvasCurrent = canvas.toDataURL(); // persistance bby letsgo
             undoHistory.current.unshift(canvas.toDataURL())
         }
         function clearRedoHistory(){
@@ -114,6 +116,7 @@ export default observer(
         }
         const handleColorChange = (newColor) => {
             setColor(newColor);  // Update the color state, useEffect runs to updateCanvasColor once color is set
+            model.color = newColor; // update color in model
             return newColor;
         }
         
@@ -197,11 +200,13 @@ export default observer(
 
         return(
             <ArtTool
-                drawLine={drawLine}
+                model = {model}
+                color = {color}
                 lastXY = {lastXY}
+                eraser = {eraser.current}
                 penSize = {penSize.current}
                 undoHistory = {undoHistory.current}
-                color = {color}
+                drawLine={drawLine}
                 drawRect = {drawRect}
                 setColor = {setColor}
                 setShowPicker = {setShowPicker}
@@ -219,7 +224,6 @@ export default observer(
                 eraserToggle = {eraserToggle}
                 downloadCanvas = {downloadCanvas}
                 clearCanvas = {clearCanvas}
-                eraser = {eraser.current}
             />
         );
     }

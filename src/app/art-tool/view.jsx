@@ -2,11 +2,11 @@
 import "../globals.css"
 import "./tempStyles.css"
 import { getCords } from "@/utilities";
-import { React } from "react";
+import { React, useEffect } from "react";
 import { SketchPicker } from 'react-color';
 import Draggable from './draggable';
 
-
+let init = true
 
 function ArtTool(props) {
     return( 
@@ -35,6 +35,15 @@ function ArtTool(props) {
                 <div>
                     <canvas className="canvas cursor-crosshair select-none touch-none bg-white border border-slate-600" id="drawing-area" width="64" height="32" onContextMenu={(event)=>{event.preventDefault()}}
                     onTouchStart={touchDrawEvent} onMouseDown={mouseClickEvent}  onMouseMove={mouseDragEvent} onMouseLeave={resetLastCoords} onTouchMove={touchDragEvent}/>
+                    <script>{
+                        //render image in model on first canvas load
+                        useEffect(() => {
+                            if(props.model.canvasCurrent && init) {
+                                init = false;
+                                overwriteCanvas(props.model.canvasCurrent);
+                            }
+                        })
+                        }</script>
                 </div>
                 <div id="tools" className="mt-20 grid md:mt-0 md:ml-4 md:flex md:flex-col items-stretch [&_button]:my-2 [&_button]:select-none">
                     <input id="color-d" className="min-w-full bg-slate-800 cursor-no-drop" type="color" name="" value={props.color} disabled={true} />
