@@ -14,13 +14,16 @@ export {signOut};
 export function modelToPersistence(model) {
     let realtimeModel = null;
 
+    //Model properties to be saved to the realtime database.
     realtimeModel = {testText: model.testText};
     realtimeModel.pictures = model.pictures;
+    //Add more properties here like: realtimeModel.color = model.color;
 
     return realtimeModel;
 }
 
 export function persistenceToModel(data, model) {
+    //Decide which data to be read from the realtime database.
     if (data){
         if (data.testText) {
             model.testText = data.testText;
@@ -29,6 +32,10 @@ export function persistenceToModel(data, model) {
         if (data.pictures){
             model.pictures = data.pictures;
         }
+
+        //Add more data here like: 
+        //if (data.color)
+        //  model.color = data.color;
     }
 }
 
