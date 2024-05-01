@@ -5,16 +5,19 @@ import { BsThreeDots } from 'react-icons/bs';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeart as solidHeart, faDownload, faQuestion } from '@fortawesome/free-solid-svg-icons';
 import { faHeart as outlineHeart } from '@fortawesome/free-regular-svg-icons';
+import { set } from 'firebase/database';
+import { downloadImage } from './galleryPresenter';
+import { connectToFirebase } from '../../firebaseModel';
 
 function ImageComponent({ image }) {
     const [isDropdownOpen, setDropdownOpen] = useState(false);
     const [isFavourite, setFavourite] = useState(false);
     const [animate, setAnimate] = useState(false);
-    const [isMounted, setIsMounted] = useState(false);
+    //const [isMounted, setIsMounted] = useState(false);
 
-    useEffect(() => {
-        setIsMounted(true);
-    }, []);
+    //useEffect(() => {
+    //    setIsMounted(true);
+    //}, []);
 
     const toggleFavourite = () => {
         setFavourite(!isFavourite);
@@ -27,7 +30,7 @@ function ImageComponent({ image }) {
     return (
         <div className="relative rounded shadow-lg p-4 bg-cream transform transition duration-500 hover:scale-110 hover:z-10">
             <img src={image.testPicture} alt="" className="w-full h-auto object-cover" />
-            <Dropdown className="absolute bottom-0 right-0 mb-2 mr-2" onClick={() => isMounted && setDropdownOpen(true)} onMouseLeave={() => isMounted && setDropdownOpen(false)}>
+            <Dropdown className="absolute bottom-0 right-0 mb-2 mr-2" onClick={() => /*isMounted &&*/ setDropdownOpen(true)} onMouseLeave={() => /*isMounted &&*/ setDropdownOpen(false)}>
                 <Dropdown.Toggle variant="none" id="dropdown-basic">
                     <BsThreeDots />
                 </Dropdown.Toggle>
@@ -61,13 +64,26 @@ function ImageComponent({ image }) {
 export default function GalleryView(props) {
     const [isMenuOpen, setMenuOpen] = useState(false);
     const [isMounted, setIsMounted] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
     const genericHamburgerLine = `h-1 w-6 my-1 rounded-full bg-cream transition ease transform duration-300`;
 
     useEffect(() => {
         setIsMounted(true);
-    }, []);
+        setTimeout(() => {
+            setIsLoading(false);
+        }, 1000);
+    }, []); //quick solution, may need to revise depending on data scaling
+
+    if (isLoading) {
+        return (
+            <div className="flex items-center justify-center min-h-screen text-2xl text-white animate-pulse">
+                Loading...
+            </div>
+        );
+    }
 
     return (
+    <div> {isMounted &&
         <div className="min-h-screen bg-cream flex text-black">
             <div 
                 className={`transition-all duration-300 ${isMenuOpen ? 'w-64' : 'w-16'} bg-brown text-white p-4 flex flex-col`}
@@ -76,8 +92,8 @@ export default function GalleryView(props) {
                 <div className="flex items-center mb-4">
                 <button
                     className="flex flex-col h-10 w-12 border-2 border-cream rounded justify-center items-center group"
-                    onMouseEnter={() => isMounted && setMenuOpen(true)}
-                    onClick={() => isMounted && setMenuOpen(!isMenuOpen)} 
+                    onMouseEnter={() => setMenuOpen(true)}
+                    onClick={() => setMenuOpen(!isMenuOpen)} 
                 >
                     <div
                         className={`${genericHamburgerLine} ${
@@ -116,5 +132,6 @@ export default function GalleryView(props) {
                 </div>
             </div>
         </div>
+    }</div>
     );
 }

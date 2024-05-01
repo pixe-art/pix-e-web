@@ -1,6 +1,6 @@
 // Alvin
 import "../globals.css"
-import "./tempStyles.css"
+import "./artToolStyles.css"
 import { getCords } from "@/utilities";
 import { React, useEffect } from "react";
 import { SketchPicker } from 'react-color';
@@ -11,7 +11,7 @@ let init = true
 function ArtTool(props) {
     return( 
         <div id="parent" className="inset-0 bg-cover bg-slate-800 touch-none" onMouseUp={mouseUp}>
-            <div id="topbar" className="hidden w-screen bg-slate-950 text-pretty justify-center p-2 md:flex">
+            <div id="topbar" className="hidden w-screen bg-slate-950 text-pretty justify-center p-2 md:flex hmd:hidden">
                 <div id="instrutions" className="flex justify-center max-w-fit border self-center text-center *:mx-1 *:px-1 flex-row border-none">
                     <h1>Left-Click to draw</h1>
                     <h1>Right-Click to erase</h1>
