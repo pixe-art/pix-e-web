@@ -22,8 +22,8 @@ function ArtTool(props) {
                     <button id="debug" className="mx-2 border rounded max-w-fit self-center" onClick={debugEvent} type="button">Click here for debug info</button>
                 </div>
             </div>
-            <div>
-                <Draft model = {props.model}>
+            <div id="draft" className="hidden">
+                <Draft  model = {props.model}>
                 </Draft>
             </div>
             <div id="content" className="h-screen flex flex-col md:flex-row justify-evenly md:justify-between items-center">
@@ -54,6 +54,7 @@ function ArtTool(props) {
                 </div>
                 <div id="tools" className="mt-20 grid md:mt-0 md:ml-4 md:flex md:flex-col items-stretch [&_button]:my-2 [&_button]:select-none">
                     <button id="save" className={toolButtonCSS + toolActiveButtonCSS} onClick={uploadToFirebase}>Save</button>
+                    <button id="save" className={toolButtonCSS + toolActiveButtonCSS} onClick={toggleDraft}>Draft Menu</button>
                     <input id="color-d" className="min-w-full bg-slate-800 cursor-no-drop" type="color" name="" value={props.color} disabled={true} />
                     <button id="erase" className={toolButtonCSS} onClick={toggleEraser}>Eraser</button>
                     <button id="undo" className={toolButtonCSS + toolActiveButtonCSS} onClick={undo}>Undo</button>
@@ -95,6 +96,10 @@ function ArtTool(props) {
         props.printDebugInfo(element)
     }
 
+    function toggleDraft() {
+        const element = document.getElementById("draft")
+        element.classList.toggle("hidden")
+    }
     function uploadToFirebase() {
         console.warn("attempting to upload...");
         const element = document.getElementById("drawing-area")
