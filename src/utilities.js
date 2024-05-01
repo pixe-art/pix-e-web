@@ -11,3 +11,22 @@ export function getCords(element, x, y, offset) {
 
     return [posX, posY];
 }
+
+export function canvasToData(canvas) {
+    const dataImage = canvas.toDataURL("image/png")
+    return dataImage;
+}
+
+export function buildModelPicture(imageID, URL, imageTitle, creator) {
+    if(!(imageID && URL && imageTitle && creator)){
+        console.error("function requires all arguments to be filled");
+        return
+    }
+    let out = {
+        id: imageID,
+        testPicture: URL,
+        title: imageTitle,
+        creator: creator,
+    }
+    return out;
+}

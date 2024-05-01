@@ -5,8 +5,11 @@ import { getCords } from "@/utilities";
 import { React, useEffect } from "react";
 import { SketchPicker } from 'react-color';
 import Draggable from './draggable';
+import Draft from "./draft";
 
 let init = true
+const toolButtonCSS = "transition-all bg-slate-800 border rounded-lg md:hover:bg-slate-600 "
+const toolActiveButtonCSS = "active:bg-slate-200 active:text-black "
 
 function ArtTool(props) {
     return( 
@@ -18,6 +21,10 @@ function ArtTool(props) {
                     <h1>Middle-Click to place a single pixel</h1>
                     <button id="debug" className="mx-2 border rounded max-w-fit self-center" onClick={debugEvent} type="button">Click here for debug info</button>
                 </div>
+            </div>
+            <div>
+                <Draft model = {props.model}>
+                </Draft>
             </div>
             <div id="content" className="h-screen flex flex-col md:flex-row justify-evenly md:justify-between items-center">
                 <div id="color-picker">
@@ -38,20 +45,21 @@ function ArtTool(props) {
                     <script>{
                         //render image in model on first canvas load
                         useEffect(() => {
-                            if(props.model.canvasCurrent && init) {
-                                init = false;
-                                overwriteCanvas(props.model.canvasCurrent);
+                            if (init){
+                                    overwriteCanvas(props.model.canvasCurrent);
                             }
-                        })
+                            init = false
+                        }, [])
                         }</script>
                 </div>
                 <div id="tools" className="mt-20 grid md:mt-0 md:ml-4 md:flex md:flex-col items-stretch [&_button]:my-2 [&_button]:select-none">
+                    <button id="save" className={toolButtonCSS + toolActiveButtonCSS} onClick={uploadToFirebase}>Save</button>
                     <input id="color-d" className="min-w-full bg-slate-800 cursor-no-drop" type="color" name="" value={props.color} disabled={true} />
-                    <button id="erase" className="transition-all bg-slate-800 border rounded-lg md:hover:bg-slate-600" onClick={toggleEraser}>Eraser</button>
-                    <button id="undo" className="transition-all bg-slate-800 border rounded-lg md:hover:bg-slate-600 active:bg-slate-200 active:text-black" onClick={undo}>Undo</button>
-                    <button id="redo" className="transition-all bg-slate-800 border rounded-lg md:hover:bg-slate-600 active:bg-slate-200 active:text-black" onClick={redo}>Redo</button>
-                    <button id="clear" className="transition-all bg-slate-800 border rounded-lg md:hover:bg-slate-600 active:bg-slate-200 active:text-black" onClick={clearCanvas} type="button">Clear</button>
-                    <button id="download" className="transition-all bg-slate-800 border rounded-lg md:hover:bg-slate-600 active:bg-slate-200 active:text-black" onClick={props.downloadCanvas} type="button">Download</button>
+                    <button id="erase" className={toolButtonCSS} onClick={toggleEraser}>Eraser</button>
+                    <button id="undo" className={toolButtonCSS + toolActiveButtonCSS} onClick={undo}>Undo</button>
+                    <button id="redo" className={toolButtonCSS + toolActiveButtonCSS} onClick={redo}>Redo</button>
+                    <button id="clear" className={toolButtonCSS + toolActiveButtonCSS} onClick={clearCanvas} type="button">Clear</button>
+                    <button id="download" className={toolButtonCSS + toolActiveButtonCSS} onClick={props.downloadCanvas} type="button">Download</button>
                     <div className="flex flex-row">
                         <p>pen size</p>
                         <p>&nbsp;</p>                            
@@ -87,6 +95,11 @@ function ArtTool(props) {
         props.printDebugInfo(element)
     }
 
+    function uploadToFirebase() {
+        console.warn("attempting to upload...");
+        const element = document.getElementById("drawing-area")
+        props.uploadToFirebase(element)
+    }
     function saveCurrent() {
         // saves current canvas history to undo history 
         const element = document.getElementById("drawing-area");

@@ -5,31 +5,40 @@ import ArtTool from "./view";
 import { observer } from "mobx-react-lite"; //? observer
 import React, { useState, useRef, useEffect } from "react";
 import { useModel } from "../model-provider.js";
+import Loading from "../loading";
+import { auth } from "@/firebaseModel";
+import { onAuthStateChanged } from "firebase/auth";
+import { buildModelPicture, canvasToData } from "@/utilities";
 
 export default observer(
     function Tool() {
+        const historyLength = 10;
+
         const model = useModel();
-        
         const [mouseCheck, setMouseCheck] = useState(false);
         const [lastXY, setLastXY] = useState([-1, -1]);
-        const [color, setColor] = useState(model?.color || "#000000");
-        /*const [showPicker, setShowpicker] = useState(false);
-         */
+        const [color, setColor] = useState("black");
 
-        //const mouseCheck = useRef(false);
-        //const lastXY = useRef([0, 0]);
         const penSize = useRef(1);
         const eraser = useRef(false);
         const undoHistory = useRef(new Array(10).fill(null));
         const redoHistory = useRef(new Array(10).fill(null));
         const showPicker = useRef(false);
-        const historyLength = 10;
 
         useEffect(() => {
-            updateCanvasColor(); //update color for canvas whenever color changes
-        }, [color]);
-        
-        
+            const unsubscribe = onAuthStateChanged(auth, (user) => {
+                if(!user)
+                    return Loading();
+            })
+
+            return () => {unsubscribe()};
+        }, []);
+
+        useEffect(() => {
+            setColor(model.colorCurrent);   // update color if color changes in model
+            updateCanvasColor();    // change draw color for canvas
+        }, [color, model.colorCurrent]);
+
         function printDebugInfo(canvas) {
             const foo = canvas.getBoundingClientRect();
             const style = getComputedStyle(canvas);
@@ -43,6 +52,7 @@ export default observer(
             console.log("border = " + style.border + "\n(needs offset of " + style.border.split(" ")[0] + ")");
             console.log("padding = " + style.padding + "\n(needs offset of " + style.padding.split(" ")[0] + ")");
             console.log("model = ", model);
+            console.log("user = ", auth.currentUser);
         }
     
         function mouseChecker(state) {
@@ -89,6 +99,15 @@ export default observer(
             return last;
         }
 
+        function uploadCanvasStateToFirebase(element) {
+            const data = canvasToData(element) 
+            console.log("got data from canvas:", data);
+            const out = buildModelPicture(Date.now(), data, model.pictures.length, "User")
+            model.pictures.push(out);
+            console.log(model.pictures);
+            console.log(model.pictures.length);
+        }
+
         function setPenSize(size){
             if (size) {
                 penSize.current = size 
@@ -116,7 +135,9 @@ export default observer(
         }
         const handleColorChange = (newColor) => {
             setColor(newColor);  // Update the color state, useEffect runs to updateCanvasColor once color is set
-            model.color = newColor; // update color in model
+            if (model.colorCurrent !== newColor) {
+                model.colorCurrent = newColor; // update color in model
+            }
             return newColor;
         }
         
@@ -175,10 +196,10 @@ export default observer(
 
         function downloadCanvas() {
             const canvas = document.getElementById("drawing-area");
-            const dataURL = canvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
+            const data = canvasToData(canvas).replace("image/png", "image/octet-stream")
             const link = document.createElement('a');
             link.download = "canvas.png";
-            link.href = dataURL;
+            link.href = data;
             link.click();
         }
 
@@ -195,8 +216,6 @@ export default observer(
                 console.error(error);
             }
         }
-        
-
 
         return(
             <ArtTool
@@ -224,7 +243,8 @@ export default observer(
                 eraserToggle = {eraserToggle}
                 downloadCanvas = {downloadCanvas}
                 clearCanvas = {clearCanvas}
+                uploadToFirebase = {uploadCanvasStateToFirebase}
             />
-        );
+        )
     }
 )

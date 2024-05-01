@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import { SketchPicker } from 'react-color';
 
 
-const ColorPalette = ({color = "black", onChangeComplete}) => (
+const ColorPalette = ({color, onChangeComplete}) => (
     <SketchPicker color = {color} onChangeComplete = {onChangeComplete} />
 );
 
