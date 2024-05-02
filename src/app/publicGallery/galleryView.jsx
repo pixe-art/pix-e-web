@@ -24,7 +24,7 @@ function ImageComponent({ image, addToFavourites }) {
         if (!isFavourite) {
             setAnimate(true);
             setTimeout(() => setAnimate(false), 500);
-            addToFavourites(image.testPicture, image.title); 
+            addToFavourites(image.testPicture, image.title, image.creator, image.id); 
         }
     };
 

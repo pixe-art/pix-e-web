@@ -6,6 +6,7 @@ import { getDatabase, ref as dbRef , set } from "firebase/database";
 import { useModel } from "/src/app/model-provider.js";
 import { app } from "/src/firebaseModel.js";
 import { getStorage, ref as sRef , getDownloadURL, uploadBytesResumable } from "firebase/storage";
+import { v4 as uuidv4 } from 'uuid';
 
 import GalleryView from "./galleryView.jsx";
 
@@ -32,7 +33,7 @@ export function downloadImage(url, filename) {
         });
 }
 
-export function addToFavourites(imageUrl, filename) {
+export function addToFavourites(imageUrl, filename, creator, id) {
     const auth = getAuth();
     const userId = auth.currentUser.uid;
 
@@ -41,73 +42,51 @@ export function addToFavourites(imageUrl, filename) {
     // Create a copy of the image in Firebase storage
     const storage = getStorage(app);
     const imageRef = sRef(storage, imagePath);
-    const userImageRef = sRef(storage, 'user/' + userId + '/' + filename);
+    const userImageRef = sRef(storage, 'users/' + userId + '/favourites/' + filename);
 
-    console.log(imagePath);
-    // Fetch the image data
-    fetch(imageUrl)
-        .then(response => response.blob())
-        .then(blob => {
-            // Upload the image data to the new path
-            const uploadTask = uploadBytesResumable(userImageRef, blob);
+        // Fetch the image data
+        fetch(imageUrl)
+            .then(response => response.blob())
+            .then(blob => {
+                // Upload the image data to the new path
+                const uploadTask = uploadBytesResumable(userImageRef, blob);
 
-            uploadTask.on('state_changed', 
-                (snapshot) => {
-                    // Handle the upload progress
-                }, 
-                (error) => {
-                    console.error(error);
-                }, 
-                () => {
-                    console.log('Copied image to user storage');
+                uploadTask.on('state_changed', 
+                    (snapshot) => {
+                        // Handle the upload progress
+                    }, 
+                    (error) => {
+                        console.error(error);
+                    }, 
+                    () => {
+                        console.log('Copied image to user storage');
 
-                    // Store the reference in the Firebase database
-                    const db = getDatabase(app);
-                    console.log(filename);
-                    console.log(imagePath);
-                    set(dbRef(db, 'user/' + userId + '/favourites/' + filename), imagePath);
-                    //set(ref(db, 'testPath'), 'testValue');
-                }
-            );
-        })
-        .catch((error) => {
-            console.error(error);
-        });
-}
-/*
-export function addToFavourites(imageUrl, filename) {
-    const auth = getAuth();
-    const userId = auth.currentUser.uid;
+                        // Generate Firebase HTTPS link for the image
+                        getDownloadURL(userImageRef)
+                            .then((url) => {
+                                console.log('Firebase HTTPS link:', url);
 
-    // Create a copy of the image in Firebase storage
-    const storage = getStorage(app);
-    const imageRef = storageRef(storage, imageUrl);
-    const userImageRef = storageRef(storage, 'user/' + userId + '/' + filename);
-
-    // Fetch the image data
-    fetch(imageUrl)
-        .then(response => response.blob())
-        .then(blob => {
-            // Upload the image data to the new path
-            const uploadTask = uploadBytesResumable(userImageRef, blob);
-
-            uploadTask.on('state_changed', 
-                (snapshot) => {
-                    // Handle the upload progress
-                }, 
-                (error) => {
-                    console.error(error);
-                }, 
-                () => {
-                    console.log('Copied image to user storage');
-                }
-            );
-        })
-        .catch((error) => {
-            console.error(error);
-        });
-}
-*/
+                                // Store the reference in the Firebase database
+                                const db = getDatabase(app);
+                                const imageID = filename + '' + uuidv4();
+                                set(dbRef(db, 'users/' + userId + '/favourites/' + imageID), {
+                                    id: imageID, 
+                                    testPicture: url, // use the url here
+                                    title: filename,
+                                    creator: creator,
+                                    storage: "gs://pix-e-b9fab.appspot.com/" + 'users/' + userId + '/favourites/' + filename
+                                });
+                            })
+                            .catch((error) => {
+                                console.error(error);
+                            });
+                    }
+                );
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+        }
 
 export default observer(
     function Gallery(){
