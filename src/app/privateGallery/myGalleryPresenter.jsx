@@ -1,48 +1,38 @@
 'use client'
 
 import { observer } from "mobx-react-lite";
-import { useState, useEffect } from 'react';
+import {useModel} from "/src/app/model-provider.js";
+import { app } from "/src/firebaseModel.js";
+import { getStorage, ref, getDownloadURL } from "firebase/storage";
+
 import MyGalleryView from "./myGalleryView.jsx";
-import {connectToFirebase, saveToFirebase, readFromFirebase} from "@/firebaseModel.js";
 
-function MyGallery() {
-  const [model, setModel] = useState({
-    ready: false,
-    testPicture: null,
-    pictures: [],
-  });
+export function downloadImage(url, filename) {
+    const storage = getStorage(app);
+    const imageRef = ref(storage, url);
 
-  useEffect(() => {
-    connectToFirebase(model);
-  }, []);
-
-const savePicture = () => {
-    // Update the model state using setModel
-    setModel(prevModel => {
-        const updatedModel = {
-            ...prevModel,
-            testPicture: prevModel.testPicture
-        };
-
-        // Save the updated model to Firebase
-        saveToFirebase(updatedModel);
-
-        return updatedModel;
-    });
+    getDownloadURL(imageRef)
+        .then((downloadURL) => {
+            console.log('File available at', downloadURL);
+            fetch(downloadURL)
+                .then(response => response.blob())
+                .then(blob => {
+                    const blobUrl = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = blobUrl;
+                    a.download = filename;
+                    a.click();
+                    URL.revokeObjectURL(blobUrl); // clean up
+                });
+        })
+        .catch((error) => {
+            console.error(error);
+        });
 }
 
-const loadGallery = () => {
-    readFromFirebase(model).then(data => {
-        setModel(prevModel => ({
-            ...prevModel,
-            pictures: data,
-        }));
-    });
-}
-
-
-
-return <MyGalleryView savePicture={savePicture} loadGallery={loadGallery} pictures={model.pictures} />
-}
-
-export default observer(MyGallery);
+export default observer(
+    function MyGallery(){
+        const model = useModel();
+        return <MyGalleryView model = {model}/>
+    }
+);
