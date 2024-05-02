@@ -100,12 +100,31 @@ export default observer(
         }
 
         function uploadCanvasStateToFirebase(element) {
-            const data = canvasToData(element) 
+            const data = canvasToData(element);
             console.log("got data from canvas:", data);
-            const out = buildModelPicture(Date.now(), data, model.pictures.length, "User")
+            const out = buildModelPicture(Date.now(), data, model.pictures.length, "User");
             model.pictures.push(out);
-            console.log(model.pictures);
+            console.log("model.pictures: ", model.pictures);
             console.log(model.pictures.length);
+        }
+
+        function isCanvasEmpty(canvas) {
+            const ctx = canvas.getContext('2d');
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const data = imageData.data;
+
+            for (let i = 3; i < data.length; i += 4) {
+                if ((data[i-3] !== 0 && data[i-2] !== 0 && data[i-1] !== 0 && data[i] !== 255) || data[i] > 0) {
+                    console.log("data[i-3]: ", data[i-3]);
+                    console.log("data[i-2]: ", data[i-2]);
+                    console.log("data[i-1]: ", data[i-1]);
+                    console.log("data[i]: ", data[i]);
+                    console.log("Canvas is not empty");
+                    return false;
+                }
+            }
+            console.log("Canvas is empty");
+            return true;
         }
 
         function setPenSize(size){
@@ -244,6 +263,7 @@ export default observer(
                 downloadCanvas = {downloadCanvas}
                 clearCanvas = {clearCanvas}
                 uploadToFirebase = {uploadCanvasStateToFirebase}
+                isCanvasEmpty = {isCanvasEmpty}
             />
         )
     }
