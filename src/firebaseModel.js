@@ -27,6 +27,8 @@ export function modelToPersistence(model) {
     //Model properties to be saved to the realtime database.
     realtimeModel = {testText: model.testText};
     realtimeModel.pictures = model.pictures;
+    realtimeModel.users = model.users || [];
+
     //Add more properties here like: realtimeModel.color = model.color;
 
     return realtimeModel;
@@ -41,6 +43,10 @@ export function persistenceToModel(data, model) {
 
         if (data.pictures){
             model.pictures = data.pictures;
+        }
+
+        if (data.users){
+            model.users = data.users; 
         }
 
         //Add more data here like: 

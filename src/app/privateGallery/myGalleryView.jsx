@@ -5,9 +5,10 @@ import { BsThreeDots } from 'react-icons/bs';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeart as solidHeart, faDownload, faQuestion } from '@fortawesome/free-solid-svg-icons';
 import { faHeart as outlineHeart } from '@fortawesome/free-regular-svg-icons';
-import { set } from 'firebase/database';
+//import { set } from 'firebase/database';
 import { downloadImage } from './myGalleryPresenter';
-import { connectToFirebase } from '../../firebaseModel';
+//import { connectToFirebase } from '../../firebaseModel';
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 
 function ImageComponent({ image }) {
     const [isDropdownOpen, setDropdownOpen] = useState(false);
@@ -62,10 +63,22 @@ function ImageComponent({ image }) {
 }
 
 export default function GalleryView(props) {
+    const [userID, setUserID] = useState(null);
     const [isMenuOpen, setMenuOpen] = useState(false);
     const [isMounted, setIsMounted] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
+    const auth = getAuth();
     const genericHamburgerLine = `h-1 w-6 my-1 rounded-full bg-cream transition ease transform duration-300`;
+
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(auth, (user) => {
+            if (user) {
+                setUserID(user.uid);
+            }
+        });
+
+        return () => unsubscribe();
+    }, [auth]);
 
     useEffect(() => {
         setIsMounted(true);
@@ -81,7 +94,7 @@ export default function GalleryView(props) {
             </div>
         );
     }
-
+    //console.log(userID);
     return (
     <div> {isMounted &&
         <div className="min-h-screen bg-cream flex text-black">
@@ -126,7 +139,7 @@ export default function GalleryView(props) {
             <div className="flex-grow p-4">
                 <h1 className="text-2xl mb-2">My Gallery</h1>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-                    {props.model.pictures.map((image) => (
+                    {Object.values(props.model.users[userID].favourites).map((image) => (
                         <ImageComponent key={image.id} image={image} />
                     ))}
                 </div>

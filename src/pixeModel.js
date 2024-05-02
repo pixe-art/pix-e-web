@@ -23,6 +23,10 @@ export default {
         storage: "gs://pix-e-b9fab.appspot.com/art3.png"
     }],
     canvasCurrent: "",
+    users: 
+    {
+        
+    },
 
     // Add more image objects as needed
 };

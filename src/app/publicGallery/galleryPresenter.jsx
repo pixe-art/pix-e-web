@@ -2,7 +2,7 @@
 
 import { observer } from "mobx-react-lite";
 import { getAuth } from "firebase/auth";
-import { getDatabase, ref as dbRef , set } from "firebase/database";
+import { getDatabase, ref as dbRef , set, push } from "firebase/database";
 import { useModel } from "/src/app/model-provider.js";
 import { app } from "/src/firebaseModel.js";
 import { getStorage, ref as sRef , getDownloadURL, uploadBytesResumable } from "firebase/storage";
@@ -44,49 +44,52 @@ export function addToFavourites(imageUrl, filename, creator, id) {
     const imageRef = sRef(storage, imagePath);
     const userImageRef = sRef(storage, 'users/' + userId + '/favourites/' + filename);
 
-        // Fetch the image data
-        fetch(imageUrl)
-            .then(response => response.blob())
-            .then(blob => {
-                // Upload the image data to the new path
-                const uploadTask = uploadBytesResumable(userImageRef, blob);
+    // Fetch the image data
+    fetch(imageUrl)
+        .then(response => response.blob())
+        .then(blob => {
+            // Upload the image data to the new path
+            const uploadTask = uploadBytesResumable(userImageRef, blob);
 
-                uploadTask.on('state_changed', 
-                    (snapshot) => {
-                        // Handle the upload progress
-                    }, 
-                    (error) => {
-                        console.error(error);
-                    }, 
-                    () => {
-                        console.log('Copied image to user storage');
+            uploadTask.on('state_changed', 
+                (snapshot) => {
+                    // Handle the upload progress
+                }, 
+                (error) => {
+                    console.error(error);
+                }, 
+                () => {
+                    console.log('Copied image to user storage');
 
-                        // Generate Firebase HTTPS link for the image
-                        getDownloadURL(userImageRef)
-                            .then((url) => {
-                                console.log('Firebase HTTPS link:', url);
+                    // Generate Firebase HTTPS link for the image
+                    getDownloadURL(userImageRef)
+                        .then((url) => {
+                            console.log('Firebase HTTPS link:', url);
 
-                                // Store the reference in the Firebase database
-                                const db = getDatabase(app);
-                                const imageID = filename + '' + uuidv4();
-                                set(dbRef(db, 'users/' + userId + '/favourites/' + imageID), {
-                                    id: imageID, 
-                                    testPicture: url, // use the url here
-                                    title: filename,
-                                    creator: creator,
-                                    storage: "gs://pix-e-b9fab.appspot.com/" + 'users/' + userId + '/favourites/' + filename
-                                });
-                            })
-                            .catch((error) => {
-                                console.error(error);
+                            // Store the reference in the Firebase database
+                            const db = getDatabase(app);
+                            const imageID = filename + '' + uuidv4();
+                            const usersRef = dbRef(db, 'pixeModel/users/' + userId);
+                            set(usersRef, true); // Set the user ID into the users object
+                            const imageRef = dbRef(db, 'pixeModel/users/' + userId + '/favourites/' + imageID);
+                            set(imageRef, {
+                                id: imageID, 
+                                testPicture: url, // use the url here
+                                title: filename,
+                                creator: creator,
+                                storage: "gs://pix-e-b9fab.appspot.com/users/" + userId + '/favourites/' + filename
                             });
-                    }
-                );
-            })
-            .catch((error) => {
-                console.error(error);
-            });
-        }
+                        })
+                        .catch((error) => {
+                            console.error(error);
+                        });
+                }
+            );
+        })
+        .catch((error) => {
+            console.error(error);
+        });
+}
 
 export default observer(
     function Gallery(){
