@@ -101,6 +101,14 @@ function ArtTool(props) {
             style.display = 'none'
         }
     }
+    function toggleBg(event){
+        const canv = document.getElementById("drawing-area");
+        canv.classList.toggle("bg-white")
+        canv.classList.toggle("bg-black")
+        const element = document.getElementById(event.target.id)
+        element.classList.toggle("bg-gray-200")
+        element.classList.toggle("text-black")
+    }
 
     function colorChangeEvent(event) {
         const colorDisplay = document.getElementById("color-d");
