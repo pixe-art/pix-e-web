@@ -23,3 +23,8 @@
     background-color: #322828;
     color: black;
 }
+
+.draft-images-container {
+    max-height: 500px;
+    overflow-y: auto;
+}
