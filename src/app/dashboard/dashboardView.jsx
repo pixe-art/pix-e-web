@@ -42,7 +42,7 @@ export default function Dashboard(props) {
   }
 
   function setPicturesACB() {
-    props.model.pictures = [...props.model.pictures, {
+    props.model.images = [...props.model.images, {
       id: 'image4',
         testPicture: "https://brfenergi.se/iprog/loading.gif",
         title: "Loading",
