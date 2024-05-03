@@ -103,9 +103,24 @@ export default observer(
             const data = canvasToData(element);
             console.log("got data from canvas:", data);
             const out = buildModelPicture(Date.now(), data, model.pictures.length, "User");
+            let count = 0;
+            let duplicateFound = false;
+            model.pictures.forEach((picture) =>  {
+                if (data === picture.testPicture) {
+                    duplicateFound = true;
+                    console.log("You already have a duplicate saved at model.pictures.testPicture[", count, "]");
+                    return; 
+                } count++;
+            })
+            if (duplicateFound) {
+                return;
+            }
+            console.log("data: ", data);
+            console.log("model.pictures[model.pictures.length - 1]", model.pictures[model.pictures.length - 1].testPicture);
             model.pictures.push(out);
             console.log("model.pictures: ", model.pictures);
-            console.log(model.pictures.length);
+            console.log("model.pictures.length: ", model.pictures.length);
+            console.log("saved");
         }
 
         function isCanvasEmpty(canvas) {

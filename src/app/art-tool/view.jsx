@@ -13,6 +13,7 @@ const toolActiveButtonCSS = "active:bg-slate-200 active:text-black "
 
 function ArtTool(props) {
     const [isMounted, setIsMounted] = useState(false);
+    const [draftUpdate, setDraftUpdate] = useState(false);
 
     useEffect(() => {
         setIsMounted(true);
@@ -27,6 +28,14 @@ function ArtTool(props) {
         }
     
     }, [isMounted]);
+
+    useEffect(() => {
+        console.log("useEffect called");
+        if(draftUpdate) {
+            console.log("draftUpdate true");
+            setDraftUpdate(false);
+        }
+    }, [draftUpdate]);
 
     return( 
         <div>{isMounted &&
@@ -133,7 +142,7 @@ function ArtTool(props) {
         console.log("element: ", element);
         if (!props.isCanvasEmpty(element)) {
             props.uploadToFirebase(element);
-            console.log("saved");
+            setDraftUpdate(true);
         } else {
             console.log("Cannot save an empty canvas");
         }
