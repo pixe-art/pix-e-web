@@ -68,12 +68,12 @@ export function addToFavourites(imageUrl, filename, creator, id) {
 
                             // Store the reference in the Firebase database
                             const db = getDatabase(app);
-                            const imageID = filename + '' + uuidv4();
-                            const usersRef = dbRef(db, 'pixeModel/users/' + userId);
+                            //const imageID = filename + '' + uuidv4();
+                            const usersRef = dbRef(db, 'users/' + userId);
                             set(usersRef, true); // Set the user ID into the users object
-                            const imageRef = dbRef(db, 'pixeModel/users/' + userId + '/favourites/' + imageID);
+                            const imageRef = dbRef(db, 'users/' + userId + '/favourites/' + imageID);
                             set(imageRef, {
-                                id: imageID, 
+                                id: filename, 
                                 testPicture: url, // use the url here
                                 title: filename,
                                 creator: creator,
