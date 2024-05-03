@@ -25,7 +25,7 @@ export default function LoginPage() {
 
     const db = getDatabase();
 
-    const path = `users/${uid}`;
+    const path = `pixeModel/users/${uid}`;
     const userRef = databaseRef(db, path);
 
     console.log("Firebase Database Path: " + path);
@@ -40,7 +40,7 @@ export default function LoginPage() {
                     username: "",
                     bio: "",
                 },
-                favorites: {
+                favourites: {
                     initialized: true
                 },
                 images: {
@@ -78,7 +78,7 @@ export default function LoginPage() {
     try {
       const user = await useEmailPasswordLogin(email, password);
       console.log("Logged in user:", user);
-      await initializeUserData(user.uid);
+      await initializeUserData();
       router.push("/dashboard");
     } catch (error) {
       console.error("Error logging in:", error);
