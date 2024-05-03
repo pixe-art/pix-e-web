@@ -114,7 +114,7 @@ export default observer(
             const data = imageData.data;
 
             for (let i = 3; i < data.length; i += 4) {
-                if ((data[i-3] !== 0 && data[i-2] !== 0 && data[i-1] !== 0 && data[i] !== 255) || data[i] > 0) {
+                if ((data[i-3] !== 0 && data[i-2] !== 0 && data[i-1] !== 0 && (data[i] !== 255 || data[i] !== 0))) {
                     console.log("data[i-3]: ", data[i-3]);
                     console.log("data[i-2]: ", data[i-2]);
                     console.log("data[i-1]: ", data[i-1]);
