@@ -25,8 +25,10 @@ export function modelToPersistence(model) {
     let realtimeModel = null;
 
     //Model properties to be saved to the realtime database.
-    realtimeModel = {testText: model.testText};
-    realtimeModel.pictures = model.pictures;
+    realtimeModel = {users: model.users};
+    realtimeModel.images = model.images;
+    realtimeModel.screens = model.screens;
+    realtimeModel.paringCodes = model.paringCodes;
     //Add more properties here like: realtimeModel.color = model.color;
 
     return realtimeModel;
@@ -35,12 +37,20 @@ export function modelToPersistence(model) {
 export function persistenceToModel(data, model) {
     //Decide which data to be read from the realtime database.
     if (data){
-        if (data.testText) {
-            model.testText = data.testText;
+        if (data.images) {
+            model.images = data.images;
         }
 
-        if (data.pictures){
-            model.pictures = data.pictures;
+        if (data.users){
+            model.users = data.users;
+        }
+
+        if (data.screens){
+            model.screens = data.screens;
+        }
+
+        if (data.paringCodes){
+            model.paringCodes = data.paringCodes;
         }
 
         //Add more data here like: 
@@ -77,7 +87,7 @@ export function connectToFirebase(model) {
     }
 
     function modelChangedACB() {
-        return [model.testText, model.pictures];
+        return [model.users, model.images, model.screens, model.paringCodes];
     }
 }
 
