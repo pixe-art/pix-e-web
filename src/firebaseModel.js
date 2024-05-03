@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getDatabase, push, ref, get, set, onValue } from "firebase/database";
+import { getDatabase, push, ref, get, set, onValue, update } from "firebase/database";
 import { getAuth, signOut } from "firebase/auth";
 import { reaction } from "mobx"
 import { getStorage } from "firebase/storage";
@@ -63,7 +63,7 @@ export function saveToFirebase(model) {
     const rf = ref(db, PATH);
 
     if (model.ready) {
-        set(rf, modelToPersistence(model));
+        update(rf, modelToPersistence(model));
     }
 }
 
