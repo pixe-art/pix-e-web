@@ -36,6 +36,7 @@ export default function LoginPage() {
             console.log(`Initializing data for UID: ${uid}...`);
             await set(userRef, {
                 device: 0,
+                colorCurrent: "",
                 profile: {
                     username: "",
                     bio: "",
