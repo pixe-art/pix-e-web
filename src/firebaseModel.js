@@ -1,6 +1,6 @@
 import { initializeApp } from "firebase/app";
-import { getDatabase, push, ref, get, set, onValue } from "firebase/database";
-import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
+import { getDatabase, push, ref, get, set, onValue, update } from "firebase/database";
+import { getAuth, signOut } from "firebase/auth";
 import { reaction } from "mobx"
 import { getStorage } from "firebase/storage";
 import firebaseConfig from "./firebaseConfig.js"
@@ -39,9 +39,12 @@ export function modelToPersistence(model) {
     let realtimeModel = {};
 
     //Model properties to be saved to the realtime database.
-    vars.forEach(element => {
-        realtimeModel[element] = model[element]
-    });
+    realtimeModel = {users: model.users};
+    realtimeModel.images = model.images;
+    realtimeModel.screens = model.screens;
+    realtimeModel.paringCodes = model.paringCodes;
+    //Add more properties here like: realtimeModel.color = model.color;
+
     return realtimeModel;
 }
 
@@ -49,11 +52,25 @@ export function modelToPersistence(model) {
 export function persistenceToModel(data, model) {
     //Decide which data to be read from the realtime database.
     if (data){
-        vars.forEach(element => {
-            if (data[element]) {
-                model[element] = data[element]
-            }
-        });
+        if (data.images) {
+            model.images = data.images;
+        }
+
+        if (data.users){
+            model.users = data.users;
+        }
+
+        if (data.screens){
+            model.screens = data.screens;
+        }
+
+        if (data.paringCodes){
+            model.paringCodes = data.paringCodes;
+        }
+
+        //Add more data here like: 
+        //if (data.color)
+        //  model.color = data.color;
     }
 }
 
@@ -61,7 +78,7 @@ export function saveToFirebase(model) {
     const rf = ref(db, model.uid ||  PATH);
 
     if (model.ready) {
-        set(rf, modelToPersistence(model));
+        update(rf, modelToPersistence(model));
     }
 }
 
@@ -92,11 +109,7 @@ export function connectToFirebase(model) {
     }
 
     function modelChangedACB() {
-        let out = [];
-        vars.forEach(element => {
-            out.push(model[element]);
-        });
-        return out;
+        return [model.users, model.images, model.screens, model.paringCodes];
     }
 }
 
