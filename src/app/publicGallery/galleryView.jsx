@@ -126,7 +126,7 @@ export default function GalleryView(props) {
             <div className="flex-grow p-4">
                 <h1 className="text-2xl mb-2">Gallery</h1>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-                    {props.model.pictures.map((image) => (
+                    {props.model.images.map((image) => (
                         <ImageComponent key={image.id} image={image} />
                     ))}
                 </div>

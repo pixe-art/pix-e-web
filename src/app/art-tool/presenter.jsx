@@ -100,13 +100,18 @@ export default observer(
         }
 
         function uploadCanvasStateToFirebase(element) {
+            const userID = auth.currentUser.uid;
+            console.log("auth: ", auth.currentUser.uid);
             const data = canvasToData(element);
             console.log("got data from canvas:", data);
-            const out = buildModelPicture(Date.now(), data, model.pictures.length, "User");
+            console.log()
+            const out = buildModelPicture(userID, model.images.length, Date.now(), data, "Your mom");
             let count = 0;
             let duplicateFound = false;
-            model.pictures.forEach((picture) =>  {
-                if (data === picture.testPicture) {
+            console.log("model: ", model);
+
+            /* Ojbect.values(model.users[userID].drafts).forEach((image) =>  {
+                if (data === image.drafts) {
                     duplicateFound = true;
                     console.log("You already have a duplicate saved at model.pictures.testPicture[", count, "]");
                     return; 
@@ -114,12 +119,22 @@ export default observer(
             })
             if (duplicateFound) {
                 return;
+            }  */
+
+            /* for (const image in model.users[userID].drafts) {
+                if (data === image.testPicture) {
+                    duplicateFound = true;
+                    console.log("You already have a duplicate saved at model.pictures.testPicture[", count, "]");
+                    return; 
+                } count++;
+            
+            if (duplicateFound) {
+                return;
             }
+        } */
+
             console.log("data: ", data);
-            console.log("model.pictures[model.pictures.length - 1]", model.pictures[model.pictures.length - 1].testPicture);
-            model.pictures.push(out);
-            console.log("model.pictures: ", model.pictures);
-            console.log("model.pictures.length: ", model.pictures.length);
+            model.images = [...model.images, out];
             console.log("saved");
         }
 
