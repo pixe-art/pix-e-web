@@ -5,7 +5,6 @@ import ArtTool from "./view";
 import { observer } from "mobx-react-lite"; //? observer
 import React, { useState, useRef, useEffect } from "react";
 import { useModel } from "../model-provider.js";
-import Loading from "../loading";
 import { auth } from "@/firebaseModel";
 import { onAuthStateChanged } from "firebase/auth";
 import { buildModelPicture, canvasToData } from "@/utilities";
