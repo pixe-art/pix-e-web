@@ -2,7 +2,7 @@
 
 import { observer } from "mobx-react-lite";
 import { getAuth } from "firebase/auth";
-import { getDatabase, ref as dbRef , set, push } from "firebase/database";
+import { getDatabase, ref as dbRef , set, push, update } from "firebase/database";
 import { useModel } from "/src/app/model-provider.js";
 import { app } from "/src/firebaseModel.js";
 import { getStorage, ref as sRef , getDownloadURL, uploadBytesResumable } from "firebase/storage";
@@ -68,11 +68,8 @@ export function addToFavourites(imageUrl, filename, creator, id) {
 
                             // Store the reference in the Firebase database
                             const db = getDatabase(app);
-                            const imageID = filename;
-                            //const usersRef = dbRef(db, 'users/' + userId);
-                            //set(usersRef, true); 
-                            const imageRef = dbRef(db, 'users/' + userId + '/favourites/' + imageID);
-                            set(imageRef, {
+                            const imageRef = dbRef(db, 'pixeModel/users/' + userId + '/favourites/' + filename);
+                            update(imageRef, {
                                 id: filename, 
                                 testPicture: url, // use the url here
                                 title: filename,
@@ -89,6 +86,12 @@ export function addToFavourites(imageUrl, filename, creator, id) {
         .catch((error) => {
             console.error(error);
         });
+}
+
+export function displayImage(id){
+    const db = getDatabase(app);
+    const ref = dbRef(db, 'pixeModel/screens/pixedemodevice/');
+    update(ref, {activeImage: id});
 }
 
 export default observer(

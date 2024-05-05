@@ -49,13 +49,9 @@ export function persistenceToModel(data, model) {
             model.screens = data.screens;
         }
 
-        if (data.pictures){
-            model.pictures = data.pictures;
+        if (data.paringCodes){
+            model.paringCodes = data.paringCodes;
         }
-
-        //Add more data here like: 
-        //if (data.color)
-        //  model.color = data.color;
     }
 }
 

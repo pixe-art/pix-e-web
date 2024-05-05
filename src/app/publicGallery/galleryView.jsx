@@ -6,18 +6,14 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeart as solidHeart, faDownload, faQuestion } from '@fortawesome/free-solid-svg-icons';
 import { faHeart as outlineHeart } from '@fortawesome/free-regular-svg-icons';
 import { set } from 'firebase/database';
-import { addToFavourites, downloadImage } from './galleryPresenter';
+import { addToFavourites, downloadImage, displayImage } from './galleryPresenter';
 import { connectToFirebase } from '../../firebaseModel';
 
 function ImageComponent({ image, addToFavourites }) {
     const [isDropdownOpen, setDropdownOpen] = useState(false);
     const [isFavourite, setFavourite] = useState(false);
+    const [onDisplay, setOnDisplay] = useState(false);
     const [animate, setAnimate] = useState(false);
-    //const [isMounted, setIsMounted] = useState(false);
-
-    //useEffect(() => {
-    //    setIsMounted(true);
-    //}, []);
 
     const toggleFavourite = () => {
         setFavourite(!isFavourite);
@@ -27,6 +23,13 @@ function ImageComponent({ image, addToFavourites }) {
             addToFavourites(image.testPicture, image.title, image.creator, image.id); 
         }
     };
+
+    const toggleOnDisplay = () => {
+        setOnDisplay(!onDisplay);
+        if (!onDisplay) {
+            displayImage(image.id);
+        }
+    }
 
     return (
         <div className="relative rounded shadow-lg p-4 bg-cream transform transition duration-500 hover:scale-110 hover:z-10">
@@ -45,9 +48,9 @@ function ImageComponent({ image, addToFavourites }) {
                         <FontAwesomeIcon icon={faDownload} className="mr-2" />
                         Download
                     </Dropdown.Item>
-                    <Dropdown.Item className="hover:bg-gray-400 hover:text-white hover:rounded-md p-1" href="#/">
+                    <Dropdown.Item className="hover:bg-gray-400 hover:text-white hover:rounded-md p-1" onClick={() => toggleOnDisplay(image.id)} href="#/">
                         <FontAwesomeIcon icon={faQuestion} className="mr-2" />
-                        Something
+                        Display
                     </Dropdown.Item>
                 </Dropdown.Menu>
                 )} 
@@ -127,7 +130,7 @@ export default function GalleryView(props) {
             <div className="flex-grow p-4">
                 <h1 className="text-2xl mb-2">Gallery</h1>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-                    {props.model.pictures.map((image) => (
+                    {props.model.images.map((image) => (
                         <ImageComponent key={image.id} image={image} addToFavourites={addToFavourites} downloadImage={downloadImage} />
                     ))}
                 </div>
