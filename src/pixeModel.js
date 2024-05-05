@@ -1,6 +1,6 @@
 export default {
-    testText: "Try and change this!",
-    pictures:
+    users: [],
+    images:
     [{
         id: 'image1',
         testPicture: "https://firebasestorage.googleapis.com/v0/b/pix-e-b9fab.appspot.com/o/art1.png?alt=media&token=afd1e2a8-0da2-4524-a0b4-7f813fffd7d1",
@@ -22,11 +22,8 @@ export default {
         creator: "Bob",
         storage: "gs://pix-e-b9fab.appspot.com/art3.png"
     }],
-    canvasCurrent: "",
-    users: 
-    {
-        
-    },
+    screens: [],
+    paringCodes: []
 
     // Add more image objects as needed
 };
