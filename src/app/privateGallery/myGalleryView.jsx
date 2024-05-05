@@ -30,7 +30,7 @@ function ImageComponent({ image }) {
 
     return (
         <div className="relative rounded shadow-lg p-4 bg-cream transform transition duration-500 hover:scale-110 hover:z-10">
-            <img src={image.testPicture} alt="" className="w-full h-auto object-cover" />
+            <img src={image.testPicture} alt="" className="w-full h-auto object-cover image-pixelated" />
             <Dropdown className="absolute bottom-0 right-0 mb-2 mr-2" onClick={() => /*isMounted &&*/ setDropdownOpen(true)} onMouseLeave={() => /*isMounted &&*/ setDropdownOpen(false)}>
                 <Dropdown.Toggle variant="none" id="dropdown-basic">
                     <BsThreeDots />

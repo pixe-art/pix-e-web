@@ -5,7 +5,7 @@ import { BsThreeDots } from 'react-icons/bs';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeart as solidHeart, faDownload, faQuestion } from '@fortawesome/free-solid-svg-icons';
 import { faHeart as outlineHeart } from '@fortawesome/free-regular-svg-icons';
-import { set } from 'firebase/database';
+import { set, goOffline } from 'firebase/database';
 import { addToFavourites, downloadImage, displayImage } from './galleryPresenter';
 import { connectToFirebase } from '../../firebaseModel';
 
@@ -33,7 +33,7 @@ function ImageComponent({ image, addToFavourites }) {
 
     return (
         <div className="relative rounded shadow-lg p-4 bg-cream transform transition duration-500 hover:scale-110 hover:z-10">
-            <img src={image.testPicture} alt="" className="w-full h-auto object-cover" />
+            <img src={image.testPicture} alt="" className="w-full h-auto object-cover image-pixelated" />
             <Dropdown className="absolute bottom-0 right-0 mb-2 mr-2" onClick={() => /*isMounted &&*/ setDropdownOpen(true)} onMouseLeave={() => /*isMounted &&*/ setDropdownOpen(false)}>
                 <Dropdown.Toggle variant="none" id="dropdown-basic">
                     <BsThreeDots />

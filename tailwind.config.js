@@ -34,5 +34,14 @@ module.exports = {
       }
     },
   },
-  plugins: [],
+  plugins: [
+    function({ addUtilities }) {
+      const newUtilities = {
+        '.image-pixelated': {
+          'image-rendering': 'pixelated',
+        },
+      }
+      addUtilities(newUtilities)
+    }
+  ],
 };
