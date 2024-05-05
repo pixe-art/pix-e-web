@@ -102,13 +102,13 @@ export default observer(
         function uploadCanvasStateToFirebase(element) {
             const data = canvasToData(element);
             console.log("got data from canvas:", data);
-            const out = buildModelPicture(Date.now(), data, model.pictures.length, "User");
+            const out = buildModelPicture(Date.now(), data, model.images.length, "User");
             let count = 0;
             let duplicateFound = false;
-            model.pictures.forEach((picture) =>  {
+            model.images.forEach((picture) =>  {
                 if (data === picture.testPicture) {
                     duplicateFound = true;
-                    console.log("You already have a duplicate saved at model.pictures.testPicture[", count, "]");
+                    console.log("You already have a duplicate saved at model.images.testPicture[", count, "]");
                     return; 
                 } count++;
             })
@@ -116,10 +116,10 @@ export default observer(
                 return;
             }
             console.log("data: ", data);
-            console.log("model.pictures[model.pictures.length - 1]", model.pictures[model.pictures.length - 1].testPicture);
-            model.pictures.push(out);
-            console.log("model.pictures: ", model.pictures);
-            console.log("model.pictures.length: ", model.pictures.length);
+            console.log("model.images[model.images.length - 1]", model.images[model.images.length - 1].testPicture);
+            model.images.push(out);
+            console.log("model.images: ", model.images);
+            console.log("model.images.length: ", model.images.length);
             console.log("saved");
         }
 

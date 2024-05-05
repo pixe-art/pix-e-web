@@ -1,6 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getDatabase, push, ref, get, set, onValue, update } from "firebase/database";
-import { getAuth, signOut } from "firebase/auth";
+import { getAuth, signOut, onAuthStateChanged } from "firebase/auth";
 import { reaction } from "mobx"
 import { getStorage } from "firebase/storage";
 import firebaseConfig from "./firebaseConfig.js"
