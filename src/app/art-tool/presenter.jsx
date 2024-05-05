@@ -113,7 +113,7 @@ export default observer(
             /* Ojbect.values(model.users[userID].drafts).forEach((image) =>  {
                 if (data === image.drafts) {
                     duplicateFound = true;
-                    console.log("You already have a duplicate saved at model.pictures.testPicture[", count, "]");
+                    console.log("You already have a duplicate saved at model.images.testPicture[", count, "]");
                     return; 
                 } count++;
             })
