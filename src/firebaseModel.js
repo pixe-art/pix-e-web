@@ -79,7 +79,8 @@ export function readFromFirebase(model) {
 }
 
 export function connectToFirebase(model) {
-    readFromFirebase(model);
+    console.log(auth.currentUser);
+    //console.log(model.users[auth.currentUser].drafts);
     reaction(modelChangedACB, storedStateEffectACB);
 
     function storedStateEffectACB() {
