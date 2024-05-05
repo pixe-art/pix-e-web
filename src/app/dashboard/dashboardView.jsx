@@ -46,11 +46,11 @@ export default function Dashboard(props) {
   function setPicturesACB() {
     props.model.images = [...props.model.images, 
       {
-        id: '7',
-        testPicture: "https://firebasestorage.googleapis.com/v0/b/pix-e-b9fab.appspot.com/o/images%2F7.png?alt=media&token=31016838-d9eb-494c-bdec-62034c06404d",
+        id: '8',
+        testPicture: "https://firebasestorage.googleapis.com/v0/b/pix-e-b9fab.appspot.com/o/images%2F8.png?alt=media&token=1ada47e4-ba8a-47ba-9f2f-1ab673deadd3",
         title: "Some flag idunno",
         creator: "Some weirdo",
-        storage: "gs://pix-e-b9fab.appspot.com/images/7.png",
+        storage: "gs://pix-e-b9fab.appspot.com/images/8.png",
         lastEdited: "3",
     }];
   }

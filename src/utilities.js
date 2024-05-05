@@ -11,3 +11,41 @@ export function getCords(element, x, y, offset) {
 
     return [posX, posY];
 }
+
+export function canvasToData(canvas) {
+    const dataImage = canvas.toDataURL("image/png")
+    return dataImage;
+}
+
+export function buildModelPicture(userID, imageID, lastEdited, URL, imageTitle) {
+    console.log("userID util: ", userID);
+    if(!(imageID && URL && imageTitle && userID)){
+        console.error("function requires all arguments to be filled");
+        return
+    }
+    let out = {
+        creator: userID,
+        id: imageID,
+        lastEdited: lastEdited,
+        testPicture: URL,
+        title: imageTitle,
+        
+    }
+    return out;
+}
+
+/* export function buildUserDraft(creator, imageID, URL, imageTitle) {
+    if(!(imageID && URL && imageTitle && creator)){
+        console.error("function requires all arguments to be filled");
+        return
+    }
+    let out = {
+        creator: creator,
+        id: imageID,
+        testPicture: URL,
+        title: imageTitle,
+        
+    }
+    return out;
+}
+ */

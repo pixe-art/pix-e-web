@@ -4,32 +4,40 @@
 import ArtTool from "./view";
 import { observer } from "mobx-react-lite"; //? observer
 import React, { useState, useRef, useEffect } from "react";
+import { useModel } from "../model-provider.js";
+import { auth } from "@/firebaseModel";
+import { onAuthStateChanged } from "firebase/auth";
+import { buildModelPicture, canvasToData } from "@/utilities";
 
 export default observer(
-    
     function Tool() {
+        const historyLength = 10;
 
-        
+        const model = useModel();
         const [mouseCheck, setMouseCheck] = useState(false);
         const [lastXY, setLastXY] = useState([-1, -1]);
-        const [color, setColor] = useState("#000000");
-        /*const [showPicker, setShowpicker] = useState(false);
-         */
+        const [color, setColor] = useState("black");
 
-        //const mouseCheck = useRef(false);
-        //const lastXY = useRef([0, 0]);
         const penSize = useRef(1);
         const eraser = useRef(false);
         const undoHistory = useRef(new Array(10).fill(null));
         const redoHistory = useRef(new Array(10).fill(null));
         const showPicker = useRef(false);
-        const historyLength = 10;
 
         useEffect(() => {
-            updateCanvasColor(); //update color for canvas whenever color changes
-        }, [color]);
-        
-        
+            const unsubscribe = onAuthStateChanged(auth, (user) => {
+                if(!user)
+                    return Loading();
+            })
+
+            return () => {unsubscribe()};
+        }, []);
+
+        useEffect(() => {
+            setColor(model.colorCurrent);   // update color if color changes in model
+            updateCanvasColor();    // change draw color for canvas
+        }, [color, model.colorCurrent]);
+
         function printDebugInfo(canvas) {
             const foo = canvas.getBoundingClientRect();
             const style = getComputedStyle(canvas);
@@ -42,6 +50,8 @@ export default observer(
             console.log("canvas edges:\nlft = " + foo.left + "\nrgt = " + foo.right + "\ntop = " + foo.top + "\nbot = " + foo.bottom);
             console.log("border = " + style.border + "\n(needs offset of " + style.border.split(" ")[0] + ")");
             console.log("padding = " + style.padding + "\n(needs offset of " + style.padding.split(" ")[0] + ")");
+            console.log("model = ", model);
+            console.log("user = ", auth.currentUser);
         }
     
         function mouseChecker(state) {
@@ -64,7 +74,8 @@ export default observer(
             }
             if (undoHistory.current.at(historyLength)) {
                 undoHistory.current.pop()
-            }            
+            }    
+            model.canvasCurrent = canvas.toDataURL(); // persistance bby letsgo
             undoHistory.current.unshift(canvas.toDataURL())
         }
         function clearRedoHistory(){
@@ -85,6 +96,64 @@ export default observer(
             const last = redoHistory.current[0];
             redoHistory.current = redoHistory.current.slice(1)
             return last;
+        }
+
+        function uploadCanvasStateToFirebase(element) {
+            const userID = auth.currentUser.uid;
+            console.log("auth: ", auth.currentUser.uid);
+            const data = canvasToData(element);
+            console.log("got data from canvas:", data);
+            console.log()
+            const out = buildModelPicture(userID, model.images.length, Date.now(), data, "Your mom");
+            let count = 0;
+            let duplicateFound = false;
+            console.log("model: ", model);
+
+            /* Ojbect.values(model.users[userID].drafts).forEach((image) =>  {
+                if (data === image.drafts) {
+                    duplicateFound = true;
+                    console.log("You already have a duplicate saved at model.images.testPicture[", count, "]");
+                    return; 
+                } count++;
+            })
+            if (duplicateFound) {
+                return;
+            }  */
+
+            /* for (const image in model.users[userID].drafts) {
+                if (data === image.testPicture) {
+                    duplicateFound = true;
+                    console.log("You already have a duplicate saved at model.pictures.testPicture[", count, "]");
+                    return; 
+                } count++;
+            
+            if (duplicateFound) {
+                return;
+            }
+        } */
+
+            console.log("data: ", data);
+            model.images = [...model.images, out];
+            console.log("saved");
+        }
+
+        function isCanvasEmpty(canvas) {
+            const ctx = canvas.getContext('2d');
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const data = imageData.data;
+
+            for (let i = 3; i < data.length; i += 4) {
+                if ((data[i-3] !== 0 && data[i-2] !== 0 && data[i-1] !== 0 && (data[i] !== 255 || data[i] !== 0))) {
+                    console.log("data[i-3]: ", data[i-3]);
+                    console.log("data[i-2]: ", data[i-2]);
+                    console.log("data[i-1]: ", data[i-1]);
+                    console.log("data[i]: ", data[i]);
+                    console.log("Canvas is not empty");
+                    return false;
+                }
+            }
+            console.log("Canvas is empty");
+            return true;
         }
 
         function setPenSize(size){
@@ -114,6 +183,9 @@ export default observer(
         }
         const handleColorChange = (newColor) => {
             setColor(newColor);  // Update the color state, useEffect runs to updateCanvasColor once color is set
+            if (model.colorCurrent !== newColor) {
+                model.colorCurrent = newColor; // update color in model
+            }
             return newColor;
         }
         
@@ -172,10 +244,10 @@ export default observer(
 
         function downloadCanvas() {
             const canvas = document.getElementById("drawing-area");
-            const dataURL = canvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
+            const data = canvasToData(canvas).replace("image/png", "image/octet-stream")
             const link = document.createElement('a');
             link.download = "canvas.png";
-            link.href = dataURL;
+            link.href = data;
             link.click();
         }
 
@@ -192,16 +264,16 @@ export default observer(
                 console.error(error);
             }
         }
-        
-
 
         return(
             <ArtTool
-                drawLine={drawLine}
+                model = {model}
+                color = {color}
                 lastXY = {lastXY}
+                eraser = {eraser.current}
                 penSize = {penSize.current}
                 undoHistory = {undoHistory.current}
-                color = {color}
+                drawLine={drawLine}
                 drawRect = {drawRect}
                 setColor = {setColor}
                 setShowPicker = {setShowPicker}
@@ -219,8 +291,9 @@ export default observer(
                 eraserToggle = {eraserToggle}
                 downloadCanvas = {downloadCanvas}
                 clearCanvas = {clearCanvas}
-                eraser = {eraser.current}
+                uploadToFirebase = {uploadCanvasStateToFirebase}
+                isCanvasEmpty = {isCanvasEmpty}
             />
-        );
+        )
     }
 )

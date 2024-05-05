@@ -2,57 +2,103 @@
 import "../globals.css"
 import "./artToolStyles.css"
 import { getCords } from "@/utilities";
-import { React } from "react";
+import { React, useEffect, useState } from "react";
 import { SketchPicker } from 'react-color';
 import Draggable from './draggable';
+import Draft from "./draft";
 
-
+let init = true
+const toolButtonCSS = "transition-all bg-slate-800 border rounded-lg md:hover:bg-slate-600 "
+const toolActiveButtonCSS = "active:bg-slate-200 active:text-black "
 
 function ArtTool(props) {
-    return( 
-        <div id="parent" className="inset-0 bg-cover bg-slate-800 touch-none" onMouseUp={mouseUp}>
-            <div id="topbar" className="hidden w-screen bg-slate-950 text-pretty justify-center p-2 md:flex hmd:hidden">
-                <div id="instrutions" className="flex justify-center max-w-fit border self-center text-center *:mx-1 *:px-1 flex-row border-none">
-                    <h1>Left-Click to draw</h1>
-                    <h1>Right-Click to erase</h1>
-                    <h1>Middle-Click to place a single pixel</h1>
-                    <button id="debug" className="mx-2 border rounded max-w-fit self-center" onClick={debugEvent} type="button">Click here for debug info</button>
-                </div>
-            </div>
-            <div id="content" className="h-screen flex flex-col md:flex-row justify-evenly md:justify-between items-center">
-                <div id="color-picker">
-                    <Draggable>
-                        <div className="flex flex-col items-center justify-center">
-                            <button className="min-h-12 min-w-56 w-full bg-slate-800 border rounded-lg md:hover:bg-slate-600" onClick={paletteButtonClick}>Toggle Color Palette</button>
-                            {(
-                                <div id="sketch-picker" style={{ display: '' }} className="self-center">
-                                    <SketchPicker color={props.color} onChangeComplete={colorChangeEvent} className="self-center"/>
-                                </div>
-                            )}
-                        </div>
-                    </Draggable>
-                </div>
-                <div>
-                    <canvas className="canvas cursor-crosshair select-none touch-none bg-white border border-slate-600" id="drawing-area" width="64" height="32" onContextMenu={(event)=>{event.preventDefault()}}
-                    onTouchStart={touchDrawEvent} onMouseDown={mouseClickEvent}  onMouseMove={mouseDragEvent} onMouseLeave={resetLastCoords} onTouchMove={touchDragEvent}/>
-                </div>
-                <div id="tools" className="mt-20 grid md:mt-0 md:ml-4 md:flex md:flex-col items-stretch [&_button]:my-2 [&_button]:select-none">
-                    <input id="color-d" className="min-w-full bg-slate-800 cursor-no-drop" type="color" name="" value={props.color} disabled={true} />
-                    <button id="erase" className="transition-all bg-slate-800 border rounded-lg md:hover:bg-slate-600" onClick={toggleEraser}>Eraser</button>
-                    <button id="undo" className="transition-all bg-slate-800 border rounded-lg md:hover:bg-slate-600 active:bg-slate-200 active:text-black" onClick={undo}>Undo</button>
-                    <button id="redo" className="transition-all bg-slate-800 border rounded-lg md:hover:bg-slate-600 active:bg-slate-200 active:text-black" onClick={redo}>Redo</button>
-                    <button id="clear" className="transition-all bg-slate-800 border rounded-lg md:hover:bg-slate-600 active:bg-slate-200 active:text-black" onClick={clearCanvas} type="button">Clear</button>
-                    <button id="download" className="transition-all bg-slate-800 border rounded-lg md:hover:bg-slate-600 active:bg-slate-200 active:text-black" onClick={props.downloadCanvas} type="button">Download</button>
-                    <div className="flex flex-row">
-                        <p>pen size</p>
-                        <p>&nbsp;</p>                            
-                        <p id="pen-size-d">1</p>                            
-                    </div>
-                    <input type="range" name="pen-size" id="pen-size" className="cursor-w-resize" defaultValue={props.changePenSize()} min={"1"} max={"12"} onChange={penSizeEvent}/>
-                </div>
-            </div>
+    const [isMounted, setIsMounted] = useState(false);
+    const [draftUpdate, setDraftUpdate] = useState(false);
 
-        </div>
+    useEffect(() => {
+        setIsMounted(true);
+    }, []);
+
+    useEffect(() => {
+        if (isMounted) {    
+            if (init){
+                overwriteCanvas(props.model.canvasCurrent);
+                init = false
+            }
+        }
+    
+    }, [isMounted]);
+
+    useEffect(() => {
+        console.log("useEffect called");
+        if(draftUpdate) {
+            console.log("draftUpdate true");
+            setDraftUpdate(false);
+        }
+    }, [draftUpdate]);
+
+    return( 
+        <div>{isMounted &&
+            <div id="parent" className="inset-0 bg-cover bg-slate-800 touch-none" onMouseUp={mouseUp}>
+                <div id="topbar" className="hidden w-screen bg-slate-950 text-pretty justify-center p-2 md:flex hmd:hidden">
+                    <div id="instrutions" className="flex justify-center max-w-fit border self-center text-center *:mx-1 *:px-1 flex-row border-none">
+                        <h1>Left-Click to draw</h1>
+                        <h1>Right-Click to erase</h1>
+                        <h1>Middle-Click to place a single pixel</h1>
+                        <button id="debug" className="mx-2 border rounded max-w-fit self-center" onClick={debugEvent} type="button">Click here for debug info</button>
+                    </div>
+                </div>
+                <div id="draft" className="hidden">
+                    <Draft  model = {props.model}>
+                    </Draft>
+                </div>
+                <div id="content" className="h-screen flex flex-col md:flex-row justify-evenly md:justify-between items-center">
+                    <div id="color-picker">
+                        <Draggable>
+                            <div className="flex flex-col items-center justify-center">
+                                <button className="min-h-12 min-w-56 w-full bg-slate-800 border rounded-lg md:hover:bg-slate-600" onClick={paletteButtonClick}>Toggle Color Palette</button>
+                                {(
+                                    <div id="sketch-picker" style={{ display: '' }} className="self-center">
+                                        <SketchPicker color={props.color} onChangeComplete={colorChangeEvent} className="self-center"/>
+                                    </div>
+                                )}
+                            </div>
+                        </Draggable>
+                    </div>
+                    <div>
+                    <canvas className="canvas transition-colors cursor-crosshair select-none touch-none bg-white border border-slate-600" id="drawing-area" width="64" height="32" onContextMenu={(event)=>{event.preventDefault()}}
+                        onTouchStart={touchDrawEvent} onMouseDown={mouseClickEvent}  onMouseMove={mouseDragEvent} onMouseLeave={resetLastCoords} onTouchMove={touchDragEvent}/>
+                         {/*<script>{
+                            //render image in model on first canvas load
+                            useEffect(() => {
+                                if (init){
+                                        overwriteCanvas(props.model.canvasCurrent);
+                                }
+                                init = false
+                            }, [])
+                            }</script>*/}
+                    </div>
+                    <div id="tools" className="mt-20 grid md:mt-0 md:ml-4 md:flex md:flex-col items-stretch [&_button]:my-2 [&_button]:select-none">
+                        <button id="save" className={toolButtonCSS + toolActiveButtonCSS} onClick={uploadToFirebase}>Save</button>
+                        <button id="save" className={toolButtonCSS + toolActiveButtonCSS} onClick={toggleDraft}>Draft Menu</button>
+                        <button id="bg" className={toolButtonCSS} onClick={toggleBg}>Background Color</button>
+                        <input id="color-d" className="min-w-full bg-slate-800 cursor-no-drop" type="color" name="" value={props.color} disabled={true} />
+                        <button id="erase" className={toolButtonCSS} onClick={toggleEraser}>Eraser</button>
+                        <button id="undo" className={toolButtonCSS + toolActiveButtonCSS} onClick={undo}>Undo</button>
+                        <button id="redo" className={toolButtonCSS + toolActiveButtonCSS} onClick={redo}>Redo</button>
+                        <button id="clear" className={toolButtonCSS + toolActiveButtonCSS} onClick={clearCanvas} type="button">Clear</button>
+                        <button id="download" className={toolButtonCSS + toolActiveButtonCSS} onClick={props.downloadCanvas} type="button">Download</button>
+                        <div className="flex flex-row">
+                            <p>pen size</p>
+                            <p>&nbsp;</p>                            
+                            <p id="pen-size-d">1</p>                            
+                        </div>
+                        <input type="range" name="pen-size" id="pen-size" className="cursor-w-resize" defaultValue={props.changePenSize()} min={"1"} max={"12"} onChange={penSizeEvent}/>
+                    </div>
+                </div>
+
+            </div>
+        }</div>
     );
     function mouseUp() {
         props.checkReset(false)
@@ -64,6 +110,14 @@ function ArtTool(props) {
         } else {
             style.display = 'none'
         }
+    }
+    function toggleBg(event){
+        const canv = document.getElementById("drawing-area");
+        canv.classList.toggle("bg-white")
+        canv.classList.toggle("bg-black")
+        const element = document.getElementById(event.target.id)
+        element.classList.toggle("bg-gray-200")
+        element.classList.toggle("text-black")
     }
 
     function colorChangeEvent(event) {
@@ -78,6 +132,21 @@ function ArtTool(props) {
         props.printDebugInfo(element)
     }
 
+    function toggleDraft() {
+        const element = document.getElementById("draft")
+        element.classList.toggle("hidden")
+    }
+    function uploadToFirebase() {
+        console.warn("attempting to upload...");
+        const element = document.getElementById("drawing-area")
+        console.log("element: ", element);
+        if (!props.isCanvasEmpty(element)) {
+            props.uploadToFirebase(element);
+            setDraftUpdate(true);
+        } else {
+            console.log("Cannot save an empty canvas");
+        }
+    }
     function saveCurrent() {
         // saves current canvas history to undo history 
         const element = document.getElementById("drawing-area");
