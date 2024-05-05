@@ -43,20 +43,16 @@ export default function Dashboard(props) {
     }
   };
 
-  function logACB() {
-    props.setText("Cool!");
-    console.log("Clicked!");
-  }
-
   function setPicturesACB() {
-    props.model.images = [...props.model.images, {
-      id: 'image4',
-        testPicture: "https://brfenergi.se/iprog/loading.gif",
-        title: "Loading",
-        creator: "Chuck Loadis"
+    props.model.images = [...props.model.images, 
+      {
+        id: '7',
+        testPicture: "https://firebasestorage.googleapis.com/v0/b/pix-e-b9fab.appspot.com/o/images%2F7.png?alt=media&token=31016838-d9eb-494c-bdec-62034c06404d",
+        title: "Some flag idunno",
+        creator: "Some weirdo",
+        storage: "gs://pix-e-b9fab.appspot.com/images/7.png",
+        lastEdited: "3",
     }];
-    //props.setPictures("Cool!");
-    console.log("Clicked!");
   }
 
   return (
