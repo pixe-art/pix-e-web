@@ -1,29 +1,68 @@
+import { auth } from "./firebaseModel";
+const user = auth.currentUser;
+
 export default {
+    ready: false,
     users: [],
     images:
     [{
-        id: 'image1',
-        testPicture: "https://firebasestorage.googleapis.com/v0/b/pix-e-b9fab.appspot.com/o/art1.png?alt=media&token=afd1e2a8-0da2-4524-a0b4-7f813fffd7d1",
+        id: '0',
+        testPicture: "https://firebasestorage.googleapis.com/v0/b/pix-e-b9fab.appspot.com/o/images%2F0.png?alt=media&token=a072e11d-6c25-44f5-a82a-f35719120b4d",
         title: "Home",
         creator: "John Wick",
-        storage: "gs://pix-e-b9fab.appspot.com/art1.png"
+        storage: "gs://pix-e-b9fab.appspot.com/images/0.png",
+        lastEdited: "1",
     },
     {
-        id: 'image2',
-        testPicture: "https://firebasestorage.googleapis.com/v0/b/pix-e-b9fab.appspot.com/o/art2.png?alt=media&token=66b78655-8e99-4388-994e-e113c6cca3fe",
+        id: '1',
+        testPicture: "https://firebasestorage.googleapis.com/v0/b/pix-e-b9fab.appspot.com/o/images%2F1.png?alt=media&token=ab259418-100d-4723-87e9-d307e56e4824",
         title: "Night",
         creator: "Barabara Streisand",
-        storage: "gs://pix-e-b9fab.appspot.com/art2.png"
+        storage: "gs://pix-e-b9fab.appspot.com/images/1.png",
+        lastEdited: "2",
     },
     {
-        id: 'image3',
-        testPicture: "https://firebasestorage.googleapis.com/v0/b/pix-e-b9fab.appspot.com/o/art3.png?alt=media&token=99360445-22e7-4b40-bce3-63cfbafc0bcb",
+        id: '2',
+        testPicture: "https://firebasestorage.googleapis.com/v0/b/pix-e-b9fab.appspot.com/o/images%2F2.png?alt=media&token=5a3028c1-b71f-46dc-bca2-8b9b35e2df8d",
         title: "Day",
         creator: "Bob",
-        storage: "gs://pix-e-b9fab.appspot.com/art3.png"
+        storage: "gs://pix-e-b9fab.appspot.com/images/2.png",
+        lastEdited: "3",
+    },
+    {
+        id: '3',
+        testPicture: "https://firebasestorage.googleapis.com/v0/b/pix-e-b9fab.appspot.com/o/images%2F3.png?alt=media&token=a5d92c8b-a90e-438d-96da-a2ccd160b3d8",
+        title: "Blue",
+        creator: "Blueman group",
+        storage: "gs://pix-e-b9fab.appspot.com/images/3.png",
+        lastEdited: "1",
+    },
+    {
+          id: '4',
+          testPicture: "https://firebasestorage.googleapis.com/v0/b/pix-e-b9fab.appspot.com/o/images%2F4.png?alt=media&token=265e8c66-32bd-4063-a6c9-fb4acee3c1ce",
+          title: "Car",
+          creator: "Mulle Meck",
+          storage: "gs://pix-e-b9fab.appspot.com/images/4.png",
+          lastEdited: "0",
+    },
+    {
+        id: '5',
+        testPicture: "https://firebasestorage.googleapis.com/v0/b/pix-e-b9fab.appspot.com/o/images%2F5.png?alt=media&token=aa72a902-2c22-4196-b930-4dd5dd67eb0b",
+        title: "Green",
+        creator: "Lepi the Leprechaun",
+        storage: "gs://pix-e-b9fab.appspot.com/images/5.png",
+        lastEdited: "2",
+    },
+    {
+        id: '6',
+        testPicture: "https://firebasestorage.googleapis.com/v0/b/pix-e-b9fab.appspot.com/o/images%2F6.png?alt=media&token=26287cc2-e5ce-4aeb-a8d7-7dabed0a9e42",
+        title: "Red",
+        creator: "Soviet Onion",
+        storage: "gs://pix-e-b9fab.appspot.com/images/6.png",
+        lastEdited: "3",
     }],
     screens: [],
-    paringCodes: []
+    paringCodes: [],
 
     // Add more image objects as needed
 };
