@@ -8,7 +8,7 @@ import Draggable from './draggable';
 import Draft from "./draft";
 
 let init = true
-const toolButtonCSS = "transition-all bg-white border border-brown text-black rounded-lg md:hover:bg-gray-200 my-2 select-none "
+const toolButtonCSS = "transition-all bg-white border border-brown text-black rounded-lg md:hover:bg-gray-200 my-2 select-none md:hover:text-black"
 const toolActiveButtonCSS = " md:active:bg-gray-400 active:bg-gray-200 md:active:text-white active:text-white "
 
 function ArtTool(props) {
@@ -85,9 +85,9 @@ function ArtTool(props) {
                     <button id="draft" className={toolButtonCSS + toolActiveButtonCSS} onClick={toggleDraft}>Draft Menu</button>
                         <button id="save" className={toolButtonCSS + toolActiveButtonCSS} onClick={uploadToFirebase}>Save</button>
                         <button id="download" className={toolButtonCSS + toolActiveButtonCSS} onClick={props.downloadCanvas} type="button">Download</button>
-                        <button id="bg" className={toolButtonCSS} onClick={toggleBg}>Background Color</button>
+                        <button id="bg" className={toolButtonCSS + toolActiveButtonCSS} onClick={toggleBg}>Background Color</button>
                         <div className="select-none cursor-default">&nbsp;</div>
-                        <button id="erase" className={toolButtonCSS} onClick={toggleEraser}>Eraser</button>
+                        <button id="erase" className={toolButtonCSS + toolActiveButtonCSS} onClick={toggleEraser}>Eraser</button>
                         <button id="undo" className={toolButtonCSS + toolActiveButtonCSS} onClick={undo}>Undo</button>
                         <button id="redo" className={toolButtonCSS + toolActiveButtonCSS} onClick={redo}>Redo</button>
                         <button id="clear" className={toolButtonCSS + toolActiveButtonCSS} onClick={clearCanvas} type="button">Clear</button>
@@ -122,8 +122,10 @@ function ArtTool(props) {
         canv.classList.toggle("bg-white")
         canv.classList.toggle("bg-black")
         const element = document.getElementById(event.target.id)
-        element.classList.toggle("bg-gray-200")
+        element.classList.toggle("bg-gray-400")
         element.classList.toggle("text-black")
+        element.classList.toggle('md:hover:text-black')
+        element.classList.toggle('md:hover:bg-gray-200')
     }
 
     function colorChangeEvent(event) {
@@ -198,8 +200,10 @@ function ArtTool(props) {
     }
     function toggleEraser(event) {
         const element = document.getElementById(event.target.id);
-        const ebg = element.classList.toggle('bg-gray-200')
+        const ebg = element.classList.toggle('bg-gray-400')
         element.classList.toggle('text-black')
+        element.classList.toggle('md:hover:text-black')
+        element.classList.toggle('md:hover:bg-gray-200')
         props.eraserToggle(ebg)
     }
     function penSizeEvent(event) {
