@@ -14,7 +14,9 @@ function Draft(props) {
             <div className="flex flex-col items-center w-40 h-auto mb-4">
                 <img key={img.id} src={img.testPicture} alt="" className="w-full h-auto mb-2" />
                 <div className="text-center w-full">
-                    <p className="break-words" title={img.title + ": " + img.creator}> {img.title + ": " + img.creator}</p>
+                <p className="break-words" title={`${img.title} Created by: ${img.creator}`}>
+                    {img.title}<br />Created by: {img.creator}
+                </p>
                 </div>
             </div>
         ) 
