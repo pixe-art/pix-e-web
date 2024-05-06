@@ -28,3 +28,14 @@
     max-height: 500px;
     overflow-y: auto;
 }
+
+.img-hover-effect {
+    transition: all 0.3s ease;
+    border: 1px solid purple;
+}
+
+.img-hover-effect:hover {
+    cursor: pointer; /* Changes cursor to indicate clickability */
+    opacity: 0.8; /* Slightly fades the image to indicate hover */
+    box-shadow: 0 0 8px #000; /* Adds shadow for depth */
+}
