@@ -5,7 +5,6 @@ import ArtTool from "./view";
 import { observer } from "mobx-react-lite"; //? observer
 import React, { useState, useRef, useEffect } from "react";
 import { useModel } from "../model-provider.js";
-import Loading from "../loading";
 import { auth } from "@/firebaseModel";
 import { onAuthStateChanged } from "firebase/auth";
 import { buildModelPicture, canvasToData } from "@/utilities";
@@ -100,12 +99,61 @@ export default observer(
         }
 
         function uploadCanvasStateToFirebase(element) {
-            const data = canvasToData(element) 
+            const userID = auth.currentUser.uid;
+            console.log("auth: ", auth.currentUser.uid);
+            const data = canvasToData(element);
             console.log("got data from canvas:", data);
-            const out = buildModelPicture(Date.now(), data, model.pictures.length, "User")
-            model.pictures.push(out);
-            console.log(model.pictures);
-            console.log(model.pictures.length);
+            console.log()
+            const out = buildModelPicture(userID, model.images.length, Date.now(), data, "Your mom");
+            let count = 0;
+            let duplicateFound = false;
+            console.log("model: ", model);
+
+            /* Ojbect.values(model.users[userID].drafts).forEach((image) =>  {
+                if (data === image.drafts) {
+                    duplicateFound = true;
+                    console.log("You already have a duplicate saved at model.images.testPicture[", count, "]");
+                    return; 
+                } count++;
+            })
+            if (duplicateFound) {
+                return;
+            }  */
+
+            /* for (const image in model.users[userID].drafts) {
+                if (data === image.testPicture) {
+                    duplicateFound = true;
+                    console.log("You already have a duplicate saved at model.pictures.testPicture[", count, "]");
+                    return; 
+                } count++;
+            
+            if (duplicateFound) {
+                return;
+            }
+        } */
+
+            console.log("data: ", data);
+            model.images = [...model.images, out];
+            console.log("saved");
+        }
+
+        function isCanvasEmpty(canvas) {
+            const ctx = canvas.getContext('2d');
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const data = imageData.data;
+
+            for (let i = 3; i < data.length; i += 4) {
+                if ((data[i-3] !== 0 && data[i-2] !== 0 && data[i-1] !== 0 && (data[i] !== 255 || data[i] !== 0))) {
+                    console.log("data[i-3]: ", data[i-3]);
+                    console.log("data[i-2]: ", data[i-2]);
+                    console.log("data[i-1]: ", data[i-1]);
+                    console.log("data[i]: ", data[i]);
+                    console.log("Canvas is not empty");
+                    return false;
+                }
+            }
+            console.log("Canvas is empty");
+            return true;
         }
 
         function setPenSize(size){
@@ -244,6 +292,7 @@ export default observer(
                 downloadCanvas = {downloadCanvas}
                 clearCanvas = {clearCanvas}
                 uploadToFirebase = {uploadCanvasStateToFirebase}
+                isCanvasEmpty = {isCanvasEmpty}
             />
         )
     }

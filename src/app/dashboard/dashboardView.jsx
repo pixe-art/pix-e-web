@@ -2,19 +2,27 @@ import Link from "next/link";
 import { useEffect, useState } from 'react';
 import { auth, signOut } from '@/firebaseModel';
 import { useRouter } from 'next/navigation';
-import { onAuthStateChanged } from "firebase/auth"; // Import the onAuthStateChanged listener
+import { onAuthStateChanged } from "firebase/auth";
+import { ref as databaseRef, getDatabase, get } from "firebase/database";
 
 export default function Dashboard(props) {
   const router = useRouter();
   const [user, setUser] = useState(null);
+  const [username, setUsername] = useState("");
 
   useEffect(() => {
-    // Listen for authentication state changes
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       if (currentUser) {
-        // User is signed in, see docs for a list of available properties
-        // https://firebase.google.com/docs/reference/js/firebase.User
         setUser(currentUser);
+        // Fetch username from Firebase
+        const userRef = databaseRef(getDatabase(), `pixeModel/users/${currentUser.uid}/profile`);
+        const snapshot = await get(userRef);
+        if (snapshot.exists() && snapshot.val().username) {
+          setUsername(snapshot.val().username);
+        } else {
+          // Redirect to username setting page if username is not set
+          router.push('/auth/set-username');
+        }
       } else {
         // User is signed out
         setUser(null);
@@ -22,7 +30,6 @@ export default function Dashboard(props) {
       }
     });
 
-    // Cleanup subscription on unmount
     return () => unsubscribe();
   }, [router]);
 
@@ -36,20 +43,16 @@ export default function Dashboard(props) {
     }
   };
 
-  function logACB() {
-    props.setText("Cool!");
-    console.log("Clicked!");
-  }
-
   function setPicturesACB() {
-    props.model.pictures = [...props.model.pictures, {
-      id: 'image4',
-        testPicture: "https://brfenergi.se/iprog/loading.gif",
-        title: "Loading",
-        creator: "Chuck Loadis"
+    props.model.images = [...props.model.images, 
+      {
+        id: '7',
+        testPicture: "https://firebasestorage.googleapis.com/v0/b/pix-e-b9fab.appspot.com/o/images%2F7.png?alt=media&token=31016838-d9eb-494c-bdec-62034c06404d",
+        title: "Some flag idunno",
+        creator: "Some weirdo",
+        storage: "gs://pix-e-b9fab.appspot.com/images/7.png",
+        lastEdited: "3",
     }];
-    //props.setPictures("Cool!");
-    console.log("Clicked!");
   }
 
   return (
@@ -62,7 +65,8 @@ export default function Dashboard(props) {
       </button>
       <div className="max-w-md w-full px-8 py-6 bg-white shadow-md rounded-lg text-center border-8 border-black rounded-xl">
         {user && (
-          <p className="text-sm text-gray-600 mb-4">Logged in as: {user.uid}</p>
+          <p className="text-sm text-gray-600 mb-4">Logged in as: {username || user.uid}</p>
+
         )}
         <h1 className="text-3xl font-bold text-gray-800 mb-4">
           Welcome to Pix-E Dashboard!
