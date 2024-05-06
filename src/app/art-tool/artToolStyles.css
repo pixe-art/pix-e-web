@@ -19,9 +19,14 @@
     display: inline-block;
 }
 
-.sketch-picker {
+#sketch-picker {
     background-color: #322828;
     color: black;
+
+}
+
+#color-picker {
+    
 }
 
 .draft-images-container {
@@ -38,4 +43,15 @@
     cursor: pointer; /* Changes cursor to indicate clickability */
     opacity: 0.8; /* Slightly fades the image to indicate hover */
     box-shadow: 0 0 8px #000; /* Adds shadow for depth */
+}
+
+#content {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+
+canvas {
+    flex: 2;
 }
