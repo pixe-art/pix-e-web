@@ -156,6 +156,12 @@ export default function profileView({
             <Link href='#' className='text-white no-underline hover:underline'>
               My Profile
             </Link>
+            <Link 
+              href="/favourites" 
+              className="text-white no-underline hover:underline"
+              >
+                Favourites
+            </Link>
             <Link
               href='/publicGallery'
               className='text-white no-underline hover:underline'

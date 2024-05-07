@@ -97,7 +97,7 @@ export default function Dashboard(props) {
             </span>
           </Link>
           <Link href="/favourites">
-            <span className="inline-block px-6 py-2 text-white bg-green-500 rounded hover:bg-green-600 cursor-pointer">
+            <span className="inline-block px-6 py-2 text-white bg-yellow-500 rounded hover:bg-yellow-600 cursor-pointer">
               Favourites
             </span>
           </Link>
