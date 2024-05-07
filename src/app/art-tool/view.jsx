@@ -153,6 +153,7 @@ function ArtTool(props) {
     function clearCanvas() {
         const element = document.getElementById("drawing-area")
         props.unshiftUndoHistory(element)
+        props.clearRedoHistory()
         props.clearCanvas()
     }
     function overwriteCanvas(source) {
