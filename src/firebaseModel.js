@@ -19,6 +19,7 @@ const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 const PATH = "pixeModel";
 export const auth = getAuth(app);
+export const storage = getStorage(app);
 export {signOut};
 
 export function modelToPersistence(model) {
