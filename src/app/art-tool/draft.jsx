@@ -23,6 +23,9 @@ function Draft(props) {
 
         function handleImgClick(img) {
             console.log("clicked on img: ", img);
+            console.log("props: ", props);
+            props.overwriteCanvas(img.testPicture);
+            
         }
     }
 }

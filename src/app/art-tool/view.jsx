@@ -23,7 +23,7 @@ function ArtTool(props) {
     useEffect(() => {
         if (isMounted) {    
             if (init){
-                overwriteCanvas(props.model.canvasCurrent);
+                //overwriteCanvas(props.model.canvasCurrent.testPicture);
                 init = false
             }
         }
@@ -54,7 +54,7 @@ function ArtTool(props) {
                     </div>
                 </div>
                 <div id="draft" className="hidden">
-                    <Draft  model = {props.model}>
+                    <Draft  model = {props.model} overwriteCanvas = {overwriteCanvas}>
                     </Draft>
                 </div>
                 <div id="content" className="h-screen flex flex-col md:flex-row justify-between items-center color-picker mx-4">
@@ -159,6 +159,7 @@ function ArtTool(props) {
     }
     function overwriteCanvas(source) {
         // overwrites canvas with an img url
+        console.log("overwriteCanvas source: ", source);
         const element = document.getElementById("drawing-area");
         const extra = element.getContext("2d")
         let img = new Image()
@@ -169,9 +170,11 @@ function ArtTool(props) {
                 + "\tImg should be equal to Canvas (" + element.width + "x" + element.height + ")");
                 return;
             }
-            props.clearCanvas()
-            extra.drawImage(img,0,0);
-            img.remove();
+            Promise.all(createImageBitmap(img)).then((bit) => {
+                props.clearCanvas()
+                extra.drawImage(bit[0],0,0);
+                img.remove()
+            });
         }
     }
     function undo() {
