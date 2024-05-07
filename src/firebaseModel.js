@@ -25,9 +25,17 @@ export {signOut};
 export function modelToPersistence(model) {
     let realtimeModel = null;
 
+    function toObject(arr) {
+        const obj = {};
+        for (const element of arr)
+          obj[element.id] = element;
+        return obj;
+    }
+
     //Model properties to be saved to the realtime database.
     realtimeModel = {users: model.users};
-    realtimeModel.images = model.images;
+    realtimeModel.images = toObject(model.images);
+    //realtimeModel.images = model.images.reduce(toObjextCB);
     realtimeModel.screens = model.screens;
     realtimeModel.paringCodes = model.paringCodes;
     //Add more properties here like: realtimeModel.color = model.color;
@@ -37,9 +45,17 @@ export function modelToPersistence(model) {
 
 export function persistenceToModel(data, model) {
     //Decide which data to be read from the realtime database.
+
+    function toArray(obj) {
+        const arr = [];
+        for (const element in obj)
+            arr.push(obj[element]);
+        return arr;
+    }
+
     if (data){
         if (data.images) {
-            model.images = data.images;
+            model.images = toArray(data.images);
         }
 
         if (data.users){
@@ -76,8 +92,6 @@ export function readFromFirebase(model) {
 }
 
 export function connectToFirebase(model) {
-    console.log(auth.currentUser);
-    //console.log(model.users[auth.currentUser].drafts);
     reaction(modelChangedACB, storedStateEffectACB);
 
     function storedStateEffectACB() {
