@@ -91,6 +91,11 @@ export default function Dashboard(props) {
               Art Tool
             </span>
           </Link>
+          <Link href="/profile">
+            <span className="inline-block px-6 py-2 text-white bg-green-500 rounded hover:bg-green-600 cursor-pointer">
+              Profile
+            </span>
+          </Link>
           <Link href="/favourites">
             <span className="inline-block px-6 py-2 text-white bg-green-500 rounded hover:bg-green-600 cursor-pointer">
               Favourites

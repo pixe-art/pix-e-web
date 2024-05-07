@@ -110,6 +110,7 @@ export default function GalleryView(props) {
                     <>
                         {/* Add menu items here */}
                         <Link href="/dashboard" className="text-white no-underline hover:underline">Dashboard</Link>
+                        <Link href="/profile" className="text-white no-underline hover:underline">My Profile</Link>
                         <Link href="/favourites" className="text-white no-underline hover:underline">Favourites</Link>
                         <Link href="#" className="text-white no-underline hover:underline">Public Gallery</Link>
                         <Link href="/art-tool" className="text-white no-underline hover:underline">Create a picture</Link>
