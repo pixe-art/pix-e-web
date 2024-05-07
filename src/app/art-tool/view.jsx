@@ -8,8 +8,8 @@ import Draggable from './draggable';
 import Draft from "./draft";
 
 let init = true
-const toolButtonCSS = "transition-all bg-slate-800 border rounded-lg md:hover:bg-slate-600 "
-const toolActiveButtonCSS = "active:bg-slate-200 active:text-black "
+const toolButtonCSS = "transition-all bg-white border border-brown text-black rounded-lg md:hover:bg-gray-200 my-2 select-none md:hover:text-black"
+const toolActiveButtonCSS = " md:active:bg-gray-400 active:bg-gray-200 md:active:text-white active:text-white "
 
 function ArtTool(props) {
     const [isMounted, setIsMounted] = useState(false);
@@ -40,9 +40,12 @@ function ArtTool(props) {
 
     return( 
         <div>{isMounted &&
-            <div id="parent" className="inset-0 bg-cover bg-slate-800 touch-none" onMouseUp={mouseUp}>
-                <div id="topbar" className="hidden w-screen bg-slate-950 text-pretty justify-center p-2 md:flex hmd:hidden">
-                    <div id="instrutions" className="flex justify-center max-w-fit border self-center text-center *:mx-1 *:px-1 flex-row border-none">
+            <div id="parent" className="inset-0 bg-cover bg-cream touch-none max-h-screen overflow-hidden" onMouseUp={mouseUp}>
+                <div id="topbar" className="hidden align-middle bg-brown text-pretty justify-center py-2 md:flex hmd:hidden">
+                    <div>
+                    <a href="/dashboard/" className="mx-2">Home</a>
+                </div>
+                <div id="instrutions" className="flex justify-center w-screen self-center text-center *:mx-1 *:px-1 flex-row">
                         <h1>Left-Click to draw</h1>
                         <h1>Right-Click to erase</h1>
                         <h1>Middle-Click to place a single pixel</h1>
@@ -53,10 +56,10 @@ function ArtTool(props) {
                     <Draft  model = {props.model}>
                     </Draft>
                 </div>
-                <div id="content" className="h-screen flex flex-col md:flex-row justify-evenly md:justify-between items-center color-picker">
+                <div id="content" className="h-screen flex flex-col md:flex-row justify-between items-center color-picker mx-4">
                     <div id="color-picker">
                             <div className="flex flex-col items-center justify-center">
-                                <button className="min-h-12 min-w-56 w-full bg-slate-800 border rounded-lg md:hover:bg-slate-600 color-button" onClick={paletteButtonClick}>Toggle Color Palette</button>
+                                <button className="min-h-12 min-w-56 w-full bg-white border rounded-lg md:hover:bg-gray-200 text-black border-brown color-button" onClick={paletteButtonClick}>Toggle Color Palette</button>
                                 {(
                                     <div id="sketch-picker" className="self-center">
                                         <SketchPicker color={props.color} onChangeComplete={colorChangeEvent} className="self-center"/>
@@ -65,26 +68,29 @@ function ArtTool(props) {
                             </div>
                     </div>
                 <div>
-                    <canvas className="canvas transition-colors cursor-crosshair select-none touch-none bg-white border border-slate-600" id="drawing-area" width="64" height="32" onContextMenu={(event)=>{event.preventDefault()}}
+                    <canvas className="canvas transition-colors cursor-crosshair select-none touch-none bg-white border border-brown shadow-md" id="drawing-area" width="64" height="32" onContextMenu={(event)=>{event.preventDefault()}}
                         onTouchStart={touchDrawEvent} onMouseDown={mouseClickEvent}  onMouseMove={mouseDragEvent} onMouseLeave={resetLastCoords} onTouchMove={touchDragEvent}/>
                     </div>
-                    <div id="tools" className="mt-20 grid md:mt-0 md:ml-4 md:flex md:flex-col items-stretch [&_button]:my-2 [&_button]:select-none">
+                    <div id="tools" className="mt-20 grid md:mt-0 md:ml-4 md:flex md:flex-col items-stretch">
+                    <button id="draft" className={toolButtonCSS + toolActiveButtonCSS} onClick={toggleDraft}>Draft Menu</button>
                         <button id="save" className={toolButtonCSS + toolActiveButtonCSS} onClick={uploadToFirebase}>Save</button>
-                        <button id="draft" className={toolButtonCSS + toolActiveButtonCSS} onClick={toggleDraft}>Draft Menu</button>
-                        <button id="bg" className={toolButtonCSS} onClick={toggleBg}>Background Color</button>
-                        <input id="color-d" className="min-w-full bg-slate-800 cursor-no-drop" type="color" name="" value={props.color} disabled={true} />
-                        <button id="erase" className={toolButtonCSS} onClick={toggleEraser}>Eraser</button>
+                        <button id="download" className={toolButtonCSS + toolActiveButtonCSS} onClick={props.downloadCanvas} type="button">Download</button>
+                        <button id="bg" className={toolButtonCSS + toolActiveButtonCSS} onClick={toggleBg}>Background Color</button>
+                        <div className="select-none cursor-default">&nbsp;</div>
+                        <button id="erase" className={toolButtonCSS + toolActiveButtonCSS} onClick={toggleEraser}>Eraser</button>
                         <button id="undo" className={toolButtonCSS + toolActiveButtonCSS} onClick={undo}>Undo</button>
                         <button id="redo" className={toolButtonCSS + toolActiveButtonCSS} onClick={redo}>Redo</button>
                         <button id="clear" className={toolButtonCSS + toolActiveButtonCSS} onClick={clearCanvas} type="button">Clear</button>
-                        <button id="download" className={toolButtonCSS + toolActiveButtonCSS} onClick={props.downloadCanvas} type="button">Download</button>
-                        <div className="flex flex-row">
-                            <p>Pen Size:</p>
-                            <p>&nbsp;</p>                            
-                            <p id="pen-size-d">1</p>                            
+                        <input id="color-d" className="min-w-full bg-white cursor-default rounded-lg" type="color" title="Selected Color" name="" value={props.color} disabled={true} />
+                    <div className="text-black my-2 ">
+                            <div className="flex flex-row">
+                                <p>Pen Size:</p>
+                                <p>&nbsp;</p>                            
+                                <p id="pen-size-d">1</p>                            
+                            </div>
+                            <input type="range" name="pen-size" id="pen-size" className="cursor-w-resize" defaultValue={props.changePenSize()} min={"1"} max={"12"} onChange={penSizeEvent}/>
                         </div>
-                        <input type="range" name="pen-size" id="pen-size" className="cursor-w-resize" defaultValue={props.changePenSize()} min={"1"} max={"12"} onChange={penSizeEvent}/>
-                    </div>
+                </div>
                 </div>
 
             </div>
@@ -106,8 +112,10 @@ function ArtTool(props) {
         canv.classList.toggle("bg-white")
         canv.classList.toggle("bg-black")
         const element = document.getElementById(event.target.id)
-        element.classList.toggle("bg-gray-200")
+        element.classList.toggle("bg-gray-400")
         element.classList.toggle("text-black")
+        element.classList.toggle('md:hover:text-black')
+        element.classList.toggle('md:hover:bg-gray-200')
     }
 
     function colorChangeEvent(event) {
@@ -182,8 +190,10 @@ function ArtTool(props) {
     }
     function toggleEraser(event) {
         const element = document.getElementById(event.target.id);
-        const ebg = element.classList.toggle('bg-gray-200')
+        const ebg = element.classList.toggle('bg-gray-400')
         element.classList.toggle('text-black')
+        element.classList.toggle('md:hover:text-black')
+        element.classList.toggle('md:hover:bg-gray-200')
         props.eraserToggle(ebg)
     }
     function penSizeEvent(event) {
