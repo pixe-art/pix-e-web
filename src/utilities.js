@@ -13,7 +13,7 @@ export function getCords(element, x, y, offset) {
 }
 
 export function canvasToData(canvas) {
-    const dataImage = canvas.toDataURL("image/png")
+    const dataImage = canvas.toDataURL("image/png");
     return dataImage;
 }
 

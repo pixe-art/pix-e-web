@@ -29,6 +29,7 @@ function ArtTool(props) {
     
     }, [isMounted]);
 
+
     useEffect(() => {
         console.log("useEffect called");
         if(draftUpdate) {
@@ -52,35 +53,24 @@ function ArtTool(props) {
                     <Draft  model = {props.model}>
                     </Draft>
                 </div>
-                <div id="content" className="h-screen flex flex-col md:flex-row justify-evenly md:justify-between items-center">
+                <div id="content" className="h-screen flex flex-col md:flex-row justify-evenly md:justify-between items-center color-picker">
                     <div id="color-picker">
-                        <Draggable>
                             <div className="flex flex-col items-center justify-center">
-                                <button className="min-h-12 min-w-56 w-full bg-slate-800 border rounded-lg md:hover:bg-slate-600" onClick={paletteButtonClick}>Toggle Color Palette</button>
+                                <button className="min-h-12 min-w-56 w-full bg-slate-800 border rounded-lg md:hover:bg-slate-600 color-button" onClick={paletteButtonClick}>Toggle Color Palette</button>
                                 {(
-                                    <div id="sketch-picker" style={{ display: '' }} className="self-center">
+                                    <div id="sketch-picker" className="self-center">
                                         <SketchPicker color={props.color} onChangeComplete={colorChangeEvent} className="self-center"/>
                                     </div>
                                 )}
                             </div>
-                        </Draggable>
                     </div>
-                    <div>
+                <div>
                     <canvas className="canvas transition-colors cursor-crosshair select-none touch-none bg-white border border-slate-600" id="drawing-area" width="64" height="32" onContextMenu={(event)=>{event.preventDefault()}}
                         onTouchStart={touchDrawEvent} onMouseDown={mouseClickEvent}  onMouseMove={mouseDragEvent} onMouseLeave={resetLastCoords} onTouchMove={touchDragEvent}/>
-                         {/*<script>{
-                            //render image in model on first canvas load
-                            useEffect(() => {
-                                if (init){
-                                        overwriteCanvas(props.model.canvasCurrent);
-                                }
-                                init = false
-                            }, [])
-                            }</script>*/}
                     </div>
                     <div id="tools" className="mt-20 grid md:mt-0 md:ml-4 md:flex md:flex-col items-stretch [&_button]:my-2 [&_button]:select-none">
                         <button id="save" className={toolButtonCSS + toolActiveButtonCSS} onClick={uploadToFirebase}>Save</button>
-                        <button id="save" className={toolButtonCSS + toolActiveButtonCSS} onClick={toggleDraft}>Draft Menu</button>
+                        <button id="draft" className={toolButtonCSS + toolActiveButtonCSS} onClick={toggleDraft}>Draft Menu</button>
                         <button id="bg" className={toolButtonCSS} onClick={toggleBg}>Background Color</button>
                         <input id="color-d" className="min-w-full bg-slate-800 cursor-no-drop" type="color" name="" value={props.color} disabled={true} />
                         <button id="erase" className={toolButtonCSS} onClick={toggleEraser}>Eraser</button>
@@ -89,7 +79,7 @@ function ArtTool(props) {
                         <button id="clear" className={toolButtonCSS + toolActiveButtonCSS} onClick={clearCanvas} type="button">Clear</button>
                         <button id="download" className={toolButtonCSS + toolActiveButtonCSS} onClick={props.downloadCanvas} type="button">Download</button>
                         <div className="flex flex-row">
-                            <p>pen size</p>
+                            <p>Pen Size:</p>
                             <p>&nbsp;</p>                            
                             <p id="pen-size-d">1</p>                            
                         </div>
@@ -105,10 +95,10 @@ function ArtTool(props) {
     }
     function paletteButtonClick() {
         let style = document.getElementById("sketch-picker").style
-        if (String(style.display).includes("none")) {
-            style.display = ''
-        } else {
-            style.display = 'none'
+        if (style.visibility === "hidden") {
+            style.visibility = "visible";
+        }else {
+            style.visibility = "hidden";
         }
     }
     function toggleBg(event){
@@ -132,9 +122,9 @@ function ArtTool(props) {
         props.printDebugInfo(element)
     }
 
-    function toggleDraft() {
-        const element = document.getElementById("draft")
-        element.classList.toggle("hidden")
+    function toggleDraft(event) {
+        const element = document.getElementById(event.target.id);
+        element.classList.toggle("hidden");
     }
     function uploadToFirebase() {
         console.warn("attempting to upload...");

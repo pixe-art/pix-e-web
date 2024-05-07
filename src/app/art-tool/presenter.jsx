@@ -105,32 +105,20 @@ export default observer(
             console.log("got data from canvas:", data);
             console.log()
             const out = buildModelPicture(userID, model.images.length, Date.now(), data, "Your mom");
-            let count = 0;
             let duplicateFound = false;
-            console.log("model: ", model);
 
-            /* Ojbect.values(model.users[userID].drafts).forEach((image) =>  {
-                if (data === image.drafts) {
+            //checks for duplicates in firebase
+             for (const idx in model.images) {
+                if (data === model.images[idx].testPicture) {
                     duplicateFound = true;
-                    console.log("You already have a duplicate saved at model.images.testPicture[", count, "]");
+                    console.log("You already have a duplicate saved at model.pictures.testPicture[", idx, "]");
                     return; 
-                } count++;
-            })
-            if (duplicateFound) {
-                return;
-            }  */
-
-            /* for (const image in model.users[userID].drafts) {
-                if (data === image.testPicture) {
-                    duplicateFound = true;
-                    console.log("You already have a duplicate saved at model.pictures.testPicture[", count, "]");
-                    return; 
-                } count++;
+                }
             
             if (duplicateFound) {
                 return;
             }
-        } */
+        } 
 
             console.log("data: ", data);
             model.images = [...model.images, out];
