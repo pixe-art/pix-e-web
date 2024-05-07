@@ -2,13 +2,29 @@
 
 import { observer } from "mobx-react-lite";
 import { useState, useEffect } from 'react';
+import { getAuth } from "firebase/auth";
 import { app } from "/src/firebaseModel.js";
 import { useModel } from "../model-provider.js";
 import FavouritesView from "./favouritesView.jsx";
 import { auth } from "@/firebaseModel";
-import { getDatabase, ref, get, update, onValue, off } from "firebase/database";
+import { getDatabase, ref, get, update, onValue, off, remove } from "firebase/database";
 import { ref as storageRef, uploadBytes, getDownloadURL, getStorage } from "firebase/storage";
 
+
+export function removeFavourite(filename) {
+  const auth = getAuth();
+  const userId = auth.currentUser.uid;
+  const db = getDatabase(app);
+  const favRef = ref(db, 'pixeModel/users/' + userId + '/favourites/' + filename); 
+
+  return remove(favRef)
+      .then(() => {
+          console.log(`Removed favourite with id: ${id}`);
+      })
+      .catch((error) => {
+          console.error(`Error removing favourite: ${error}`);
+      });
+}
 
 export function downloadImage(url, filename) {
   const storage = getStorage(app);
@@ -31,6 +47,12 @@ export function downloadImage(url, filename) {
       .catch((error) => {
           console.error(error);
       });
+}
+
+export function displayImage(id){
+  const db = getDatabase(app);
+  const dbRef = ref(db, 'pixeModel/screens/pixedemodevice/');
+  update(dbRef, {activeImage: id});
 }
 
 export default observer(

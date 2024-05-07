@@ -15,13 +15,23 @@ function ImageComponent({ image, addToFavourites }) {
     const [onDisplay, setOnDisplay] = useState(false);
     const [animate, setAnimate] = useState(false);
 
+    useEffect(() => {
+        const favouriteState = localStorage.getItem(`favouriteState-${image.id}`);
+        if (favouriteState !== null) {
+            setFavourite(JSON.parse(favouriteState));
+        }
+    }, [image.id]);
+
     const toggleFavourite = () => {
-        setFavourite(!isFavourite);
-        if (!isFavourite) {
+        const newFavouriteState = !isFavourite;
+        setFavourite(newFavouriteState);
+        if (newFavouriteState) {
             setAnimate(true);
             setTimeout(() => setAnimate(false), 500);
             addToFavourites(image.testPicture, image.title, image.creator, image.id); 
         }
+
+        localStorage.setItem(`favouriteState-${image.id}`, JSON.stringify(newFavouriteState));
     };
 
     const toggleOnDisplay = () => {
