@@ -44,6 +44,7 @@ export default observer(
             const multH = foo.height/canvas.height;
             const multW = foo.width/canvas.width;
             console.log("\n[ DEBUG INFO ]\n");
+            console.log(window);
             console.log("canvas scaling = " + style.scale);
             console.log("size difference (mult):\nwidth = " + multW + "x\nheight = " + multH + "x");
             console.log("canvas size:\nwidth = " + foo.width + "\nheight = " + foo.height);
