@@ -174,6 +174,10 @@ export default function profileView({
             >
               Create a Picture
             </Link>
+            <Link 
+            href="/drafts" 
+            className="text-white no-underline hover:underline">My Drafts</Link>
+
           </>
         )}
       </div>

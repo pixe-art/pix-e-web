@@ -41,6 +41,9 @@ export default function LoginPage() {
                     username: "",
                     bio: "",
                 },
+                drafts: {
+                  initialized: true,
+                }
             }).then(() => {
                 console.log("User data initialized.");
             }).catch((error) => {

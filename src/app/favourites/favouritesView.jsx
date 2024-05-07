@@ -131,6 +131,8 @@ export default function FavouritesView(props) {
                                 <Link href="#" className="text-white no-underline hover:underline">Favourites</Link>
                                 <Link href="/publicGallery" className="text-white no-underline hover:underline">Public Gallery</Link>
                                 <Link href="/art-tool" className="text-white no-underline hover:underline">Create a picture</Link>
+                                <Link href="/drafts" className="text-white no-underline hover:underline">My Drafts</Link>
+
                             </>
                         )}
                     </div>
