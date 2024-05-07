@@ -31,9 +31,9 @@ function ArtTool(props) {
 
 
     useEffect(() => {
-        console.log("useEffect called");
+        // console.log("useEffect called");
         if(draftUpdate) {
-            console.log("draftUpdate true");
+            // console.log("draftUpdate true");
             setDraftUpdate(false);
         }
     }, [draftUpdate]);
@@ -161,6 +161,7 @@ function ArtTool(props) {
         const element = document.getElementById("drawing-area");
         const extra = element.getContext("2d")
         let img = new Image()
+        img.crossOrigin = "anonymous";
         img.src = source;
         img.onload = () => {
             if (img.width !== element.width || img.height !== element.height) {
@@ -168,11 +169,9 @@ function ArtTool(props) {
                 + "\tImg should be equal to Canvas (" + element.width + "x" + element.height + ")");
                 return;
             }
-            Promise.all(createImageBitmap(img)).then((bit) => {
-                props.clearCanvas()
-                extra.drawImage(bit[0],0,0);
-                img.remove()
-            });
+            props.clearCanvas();
+            extra.drawImage(img, 0, 0);
+            img.remove();
         }
     }
     function undo() {

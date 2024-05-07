@@ -5,7 +5,7 @@ function Draft(props) {
         <div id="draft-parent" className={testCSS + " absolute text-black flex flex-col items-center"}>
             <h1 className="text-center text-4xl font-bold m-4">YOUR DRAFTS</h1>
             <div id="draft-images" className="grid grid-cols-3 gap-6 draft-images-container">
-                {/* {props.model.images.map(renderImages)} */}
+                {props.model.images.map(renderImages)}
             </div>
         </div>
     )
@@ -22,8 +22,8 @@ function Draft(props) {
         ) 
 
         function handleImgClick(img) {
-            console.log("clicked on img: ", img);
-            console.log("props: ", props);
+            // console.log("clicked on img: ", img);
+            // console.log("props: ", props);
             props.overwriteCanvas(img.testPicture);
             
         }
