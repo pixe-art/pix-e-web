@@ -7,7 +7,7 @@ module.exports = {
   ],
   theme: {
     screens:{
-      'md': '660px',
+      'md': '770px',
       // => @media (min-width: 660px) { ... }
       'hmd': {'raw': '(max-height: 550px)' },
       // => @media (max-height: 550px) { ... }
