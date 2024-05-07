@@ -1,12 +1,12 @@
 'use client'
 import { useState, useEffect } from 'react';
-import MyGalleryView from "./myGalleryView.jsx";
+import ProfileView from "./profileView.jsx";
 import { auth, storage } from "@/firebaseModel";
 import { getDatabase, ref, get, update, onValue, off } from "firebase/database";
 import { ref as storageRef, uploadBytes, getDownloadURL } from "firebase/storage";
 
 
-function MyGallery() {
+function Profile() {
   const [pictures, setPictures] = useState([]);
   const [profile, setProfile] = useState({
     username: 'Anonymous',
@@ -100,7 +100,7 @@ function MyGallery() {
           }
         })
         .catch((error) => {
-          console.error("Failed to load gallery:", error);
+          console.error("Failed to load profile:", error);
         });
     }
   };
@@ -121,7 +121,7 @@ function MyGallery() {
   }, []); // Empty dependency array ensures this effect runs only once when the component mounts
 
   return (
-    <MyGalleryView
+    <ProfileView
       pictures={pictures}
       profile={profile}
       saveBioToFirebase={saveBioToFirebase}
@@ -130,4 +130,4 @@ function MyGallery() {
   );
 }
 
-export default MyGallery;
+export default Profile;

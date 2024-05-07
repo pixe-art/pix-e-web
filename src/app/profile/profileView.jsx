@@ -7,7 +7,7 @@ import { faHeart as solidHeart, faDownload, faQuestion, faPen, faCamera } from '
 import { faHeart as outlineHeart } from '@fortawesome/free-regular-svg-icons';
 import { saveToFirebase } from '@/firebaseModel';
 
-export default function MyGalleryView({
+export default function profileView({
   pictures,
   profile,
   saveBioToFirebase,
@@ -60,7 +60,7 @@ export default function MyGalleryView({
       <div className="relative rounded shadow-lg p-4 bg-cream transform transition duration-500 hover:scale-110 hover:z-10">
         <img
           src={picture.testPicture}
-          alt={`Gallery Picture ${index + 1}`}
+          alt={`Picture ${index + 1}`}
           className="w-full h-auto object-cover"
         />
         <Dropdown
@@ -154,7 +154,7 @@ export default function MyGalleryView({
               Dashboard
             </Link>
             <Link href='#' className='text-white no-underline hover:underline'>
-              My Gallery
+              My Profile
             </Link>
             <Link
               href='/publicGallery'
