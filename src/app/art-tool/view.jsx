@@ -159,6 +159,10 @@ function ArtTool(props) {
     function overwriteCanvas(source) {
         // overwrites canvas with an img url
         console.log("overwriteCanvas source: ", source);
+        const draftClass = document.getElementById("draft").classList
+        if (!draftClass.contains("hidden")) {
+            draftClass.toggle("hidden")
+        }
         const element = document.getElementById("drawing-area");
         const extra = element.getContext("2d")
         let img = new Image()
