@@ -8,9 +8,8 @@ import Draggable from './draggable';
 import Draft from "./draft";
 
 let init = true
-const toolButtonCSS = "transition-all bg-white border border-brown text-black rounded-lg md:hover:bg-gray-200 my-2 select-none md:hover:text-black"
-const toolActiveButtonCSS = " md:active:bg-gray-400 active:bg-gray-200  "
-// md:active:text-white active:text-white
+const toolButtonCSS = "transition-color bg-white border border-brown text-black select-none my-0 w-96 md:rounded-lg md:hover:bg-gray-200 md:w-auto md:my-2 hmd:md:my-0.5 md:hover:text-black "
+const toolActiveButtonCSS = " active:text-white active:bg-gray-200 md:active:text-white md:active:bg-gray-400  "
 
 function ArtTool(props) {
     const [isMounted, setIsMounted] = useState(false);
@@ -57,41 +56,40 @@ function ArtTool(props) {
                     <Draft  model = {props.model}>
                     </Draft>
                 </div>
-                <div id="content" className="h-screen flex flex-col md:flex-row justify-between items-center color-picker mx-4">
-                    <div id="color-picker">
+                <div id="content" className="h-screen flex flex-col md:flex-row justify-between items-center mx-4">
+                    <div id="color-picker" className="">
                             <div className="flex flex-col items-center justify-center">
-                                <button className="min-h-12 min-w-56 w-full bg-white border rounded-lg md:hover:bg-gray-200 text-black border-brown color-button" onClick={paletteButtonClick}>Toggle Color Palette</button>
-                                {(
-                                    <div id="sketch-picker" className="self-center">
-                                        <SketchPicker color={props.color} onChangeComplete={colorChangeEvent} className="self-center"/>
+                                    <div id="sketch-picker" style={{ display: '' }} className="self-center">
+                                        <SketchPicker color={props.color} onChangeComplete={colorChangeEvent} className="self-center hidden md:flex md:flex-col"/>
                                     </div>
-                                )}
                             </div>
                     </div>
                 <div>
                     <canvas className="canvas transition-colors cursor-crosshair select-none touch-none bg-white border border-brown shadow-md" id="drawing-area" width="64" height="32" onContextMenu={(event)=>{event.preventDefault()}}
                         onTouchStart={touchDrawEvent} onMouseDown={mouseClickEvent}  onMouseMove={mouseDragEvent} onMouseLeave={resetLastCoords} onTouchMove={touchDragEvent}/>
                     </div>
-                    <div id="tools" className="mt-20 grid md:mt-0 md:ml-4 md:flex md:flex-col items-stretch">
-                    <button id="draft" className={toolButtonCSS + toolActiveButtonCSS} onClick={toggleDraft}>Draft Menu</button>
+                    <div id="tools" className="mt-0 hmd:mt-20 grid hmd:md:mt-0 hmd:md:ml-4 md:flex md:flex-col items-stretch">
+                        <button id="draft" className={toolButtonCSS + toolActiveButtonCSS + "w-auto"} onClick={toggleDraft}>Draft Menu</button>
                         <button id="save" className={toolButtonCSS + toolActiveButtonCSS} onClick={uploadToFirebase}>Save</button>
                         <button id="download" className={toolButtonCSS + toolActiveButtonCSS} onClick={props.downloadCanvas} type="button">Download</button>
                         <button id="bg" className={toolButtonCSS + toolActiveButtonCSS} onClick={toggleBg}>Background Color</button>
-                        <div className="select-none cursor-default">&nbsp;</div>
+                        <div className="select-none cursor-default hmd:hidden">&nbsp;</div>
                         <button id="erase" className={toolButtonCSS + toolActiveButtonCSS} onClick={toggleEraser}>Eraser</button>
                         <button id="undo" className={toolButtonCSS + toolActiveButtonCSS} onClick={undo}>Undo</button>
                         <button id="redo" className={toolButtonCSS + toolActiveButtonCSS} onClick={redo}>Redo</button>
                         <button id="clear" className={toolButtonCSS + toolActiveButtonCSS} onClick={clearCanvas} type="button">Clear</button>
-                        <input id="color-d" className="min-w-full cursor-default rounded-lg" type="color" title="Selected Color" name="" value={props.color} disabled={true} />
-                    <div className="text-black my-2 ">
+                        <p className="text-black text-center font-extrabold md:hidden">Select Color</p>
+                        <input id="color-d" className="min-w-full bg-white cursor-default rounded-lg md:pointer-events-none" type="color" title="Selected Color" name="" value={props.color} onChange={colorChangeEvent}/>
+                        <div className="text-black my-2 ">
                             <div className="flex flex-row">
                                 <p>Pen Size:</p>
                                 <p>&nbsp;</p>                            
                                 <p id="pen-size-d">1</p>                            
                             </div>
-                            <input type="range" name="pen-size" id="pen-size" className="cursor-w-resize" defaultValue={props.changePenSize()} min={"1"} max={"12"} onChange={penSizeEvent}/>
+                            <input type="range" name="pen-size" id="pen-size" className="cursor-w-resize w-96 md:w-auto" defaultValue={props.changePenSize()} min={"1"} max={"12"} onChange={penSizeEvent}/>
                         </div>
-                </div>
+                    </div>
+                    <div id="bottom-spacing" className="min-h-10 md:hidden"></div>
                 </div>
 
             </div>
@@ -122,7 +120,7 @@ function ArtTool(props) {
 
     function colorChangeEvent(event) {
         const colorDisplay = document.getElementById("color-d");
-        const newColor = event.hex;
+        const newColor = event?.hex || event.target?.value;
         const colorVar = props.handleColorChange(newColor);
         colorDisplay.value = colorVar;  // Update the UI element showing the color
     }
