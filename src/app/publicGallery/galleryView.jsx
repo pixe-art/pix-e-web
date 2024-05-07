@@ -92,40 +92,44 @@ export default function GalleryView(props) {
                 className={`transition-all duration-300 ${isMenuOpen ? 'w-64' : 'w-16'} bg-brown text-white p-4 flex flex-col`}
                 onMouseLeave={() => setMenuOpen(false)}
             >
+            <div className="sticky top-5">
                 <div className="flex items-center mb-4">
-                <button
-                    className="flex flex-col h-10 w-12 border-2 border-cream rounded justify-center items-center group"
-                    onMouseEnter={() => setMenuOpen(true)}
-                    onClick={() => setMenuOpen(!isMenuOpen)} 
-                >
-                    <div
-                        className={`${genericHamburgerLine} ${
-                            isMenuOpen
-                                ? "rotate-45 translate-y-3 opacity-50 group-hover:opacity-100"
-                                : "opacity-50 group-hover:opacity-100"
-                        }`}
-                    />
-                    <div className={`${genericHamburgerLine} ${isMenuOpen ? "opacity-0" : "opacity-50 group-hover:opacity-100"}`} />
-                    <div
-                        className={`${genericHamburgerLine} ${
-                            isMenuOpen
-                                ? "-rotate-45 -translate-y-3 opacity-50 group-hover:opacity-100"
-                                : "opacity-50 group-hover:opacity-100"
-                        }`}
-                    />
-                </button>
+                    <button
+                        className="flex flex-col h-10 w-12 border-2 border-cream rounded justify-center items-center group"
+                        onMouseEnter={() => setMenuOpen(true)}
+                        onClick={() => setMenuOpen(!isMenuOpen)} 
+                    >
+                        <div
+                            className={`${genericHamburgerLine} ${
+                                isMenuOpen
+                                    ? "rotate-45 translate-y-3 opacity-50 group-hover:opacity-100"
+                                    : "opacity-50 group-hover:opacity-100"
+                            }`}
+                        />
+                        <div className={`${genericHamburgerLine} ${isMenuOpen ? "opacity-0" : "opacity-50 group-hover:opacity-100"}`} />
+                        <div
+                            className={`${genericHamburgerLine} ${
+                                isMenuOpen
+                                    ? "-rotate-45 -translate-y-3 opacity-50 group-hover:opacity-100"
+                                    : "opacity-50 group-hover:opacity-100"
+                            }`}
+                        />
+                    </button>
                     {isMenuOpen && <h1 className="text-2xl ml-4">Menu</h1>}
                 </div>
                 {isMenuOpen && (
                     <>
                         {/* Add menu items here */}
-                        <Link href="/dashboard" className="text-white no-underline hover:underline">Dashboard</Link>
-                        <Link href="/profile" className="text-white no-underline hover:underline">My Profile</Link>
-                        <Link href="/favourites" className="text-white no-underline hover:underline">Favourites</Link>
-                        <Link href="#" className="text-white no-underline hover:underline">Public Gallery</Link>
-                        <Link href="/art-tool" className="text-white no-underline hover:underline">Create a picture</Link>
+                        <div className="flex flex-col">
+                            <Link href="/dashboard" className="text-white no-underline hover:underline">Dashboard</Link>
+                            <Link href="/profile" className="text-white no-underline hover:underline">My Profile</Link>
+                            <Link href="/favourites" className="text-white no-underline hover:underline">Favourites</Link>
+                            <Link href="#" className="text-white no-underline hover:underline">Public Gallery</Link>
+                            <Link href="/art-tool" className="text-white no-underline hover:underline">Create a picture</Link>
+                        </div>
                     </>
                 )}
+                </div>
             </div>
             <div className="flex-grow p-4">
                 <h1 className="text-2xl mb-2">Gallery</h1>

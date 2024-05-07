@@ -96,7 +96,7 @@ export default function FavouritesView(props) {
             <div> {isMounted &&
                 <div className="min-h-screen bg-cream flex text-black">
                     <div 
-                        className={`transition-all duration-300 ${isMenuOpen ? 'w-64' : 'w-16'} bg-brown text-white p-4 flex flex-col`}
+                        className={`transition-all duration-300 sticky top-0 ${isMenuOpen ? 'w-64' : 'w-16'} bg-brown text-white p-4 flex flex-col`}
                         onMouseLeave={() => setMenuOpen(false)}
                     >
                         <div className="flex items-center mb-4">
