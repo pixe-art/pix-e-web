@@ -110,7 +110,7 @@ export default function GalleryView(props) {
                     <>
                         {/* Add menu items here */}
                         <Link href="/dashboard" className="text-white no-underline hover:underline">Dashboard</Link>
-                        <Link href="/privateGallery" className="text-white no-underline hover:underline">My Gallery</Link>
+                        <Link href="/favourites" className="text-white no-underline hover:underline">Favourites</Link>
                         <Link href="#" className="text-white no-underline hover:underline">Public Gallery</Link>
                         <Link href="/art-tool" className="text-white no-underline hover:underline">Create a picture</Link>
                     </>
@@ -119,7 +119,7 @@ export default function GalleryView(props) {
             <div className="flex-grow p-4">
                 <h1 className="text-2xl mb-2">Gallery</h1>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-                    {props.model.images.map((image) => (
+                    {Object.values(props.model.images).map((image) => (
                         <ImageComponent key={image.id} image={image} addToFavourites={addToFavourites} downloadImage={downloadImage} />
                     ))}
                 </div>

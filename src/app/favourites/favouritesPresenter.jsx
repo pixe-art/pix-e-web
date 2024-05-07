@@ -3,7 +3,8 @@
 import { observer } from "mobx-react-lite";
 import { useState, useEffect } from 'react';
 import { app } from "/src/firebaseModel.js";
-import MyGalleryView from "./myGalleryView.jsx";
+import { useModel } from "../model-provider.js";
+import FavouritesView from "./favouritesView.jsx";
 import { auth } from "@/firebaseModel";
 import { getDatabase, ref, get, update, onValue, off } from "firebase/database";
 import { ref as storageRef, uploadBytes, getDownloadURL, getStorage } from "firebase/storage";
@@ -33,7 +34,7 @@ export function downloadImage(url, filename) {
 }
 
 export default observer(
-  function MyGallery() {
+  function Favourites() {
     const model = useModel();
     const storage = getStorage(app);
     const [pictures, setPictures] = useState([]);
@@ -150,7 +151,7 @@ export default observer(
     }, []); // Empty dependency array ensures this effect runs only once when the component mounts
 
     return (
-      <MyGalleryView
+      <FavouritesView
         model={model}
         pictures={pictures}
         profile={profile}

@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeart as solidHeart, faDownload, faQuestion, faPen, faCamera } from '@fortawesome/free-solid-svg-icons';
 import { faHeart as outlineHeart } from '@fortawesome/free-regular-svg-icons';
 import { saveToFirebase } from '@/firebaseModel';
-import { downloadImage } from './myGalleryPresenter';
+import { downloadImage } from './favouritesPresenter';
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 
 function ImageComponent({ image }) {
@@ -56,7 +56,7 @@ function ImageComponent({ image }) {
     );
 }
 
-export default function MyGalleryView(props) {
+export default function FavouritesView(props) {
         const [isMenuOpen, setMenuOpen] = useState(false);
         const [userID, setUserID] = useState(null);
         const [isMounted, setIsMounted] = useState(false);
@@ -124,14 +124,14 @@ export default function MyGalleryView(props) {
                             <>
                                 {/* Add menu items here */}
                                 <Link href="/dashboard" className="text-white no-underline hover:underline">Dashboard</Link>
-                                <Link href="#" className="text-white no-underline hover:underline">My Gallery</Link>
+                                <Link href="#" className="text-white no-underline hover:underline">Favourites</Link>
                                 <Link href="/publicGallery" className="text-white no-underline hover:underline">Public Gallery</Link>
                                 <Link href="/art-tool" className="text-white no-underline hover:underline">Create a picture</Link>
                             </>
                         )}
                     </div>
                     <div className="flex-grow p-4">
-                        <h1 className="text-2xl mb-2">My Gallery</h1>
+                        <h1 className="text-2xl mb-2">My Favourites</h1>
                         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
                             {Object.values(props.model.users[userID].favourites).map((image) => (
                                 <ImageComponent key={image.id} image={image} />
