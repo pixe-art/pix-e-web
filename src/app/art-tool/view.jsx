@@ -56,20 +56,20 @@ function ArtTool(props) {
                     <Draft  model = {props.model} overwriteCanvas = {overwriteCanvas}>
                     </Draft>
                 </div>
-                <div id="content" className="h-screen flex flex-col md:flex-row justify-between items-center mx-4">
+                <div id="content" className="h-screen flex flex-col md:flex-row justify-between items-center mx-4" onMouseDown={closeDraft} onTouchStart={closeDraft}>
                     <div id="color-picker" className="">
                             <div className="flex flex-col items-center justify-center">
                                     <div id="sketch-picker" style={{ display: '' }} className="self-center">
                                         <SketchPicker color={props.color} onChangeComplete={colorChangeEvent} className="self-center hidden md:flex md:flex-col"/>
                                     </div>
                             </div>
-                    </div>
-                <div>
-                    <canvas className="canvas transition-colors cursor-crosshair select-none touch-none bg-white border border-brown shadow-md" id="drawing-area" width="64" height="32" onContextMenu={(event)=>{event.preventDefault()}}
-                        onTouchStart={touchDrawEvent} onMouseDown={mouseClickEvent}  onMouseMove={mouseDragEvent} onMouseLeave={resetLastCoords} onTouchMove={touchDragEvent}/>
+                        </div>
+                    <div>
+                        <canvas className="canvas transition-colors cursor-crosshair select-none touch-none bg-white border border-brown shadow-md" id="drawing-area" width="64" height="32" onContextMenu={(event)=>{event.preventDefault()}}
+                            onTouchStart={touchDrawEvent} onMouseDown={mouseClickEvent}  onMouseMove={mouseDragEvent} onMouseLeave={resetLastCoords} onTouchMove={touchDragEvent}/>
                     </div>
                     <div id="tools" className="mt-0 hmd:mt-20 grid hmd:md:mt-0 hmd:md:ml-4 md:flex md:flex-col items-stretch">
-                        <button id="draft" className={toolButtonCSS + toolActiveButtonCSS + "w-auto"} onClick={toggleDraft}>Draft Menu</button>
+                        <button id="show-draft" className={toolButtonCSS + toolActiveButtonCSS + "w-auto"} onClick={toggleDraft}>Draft Menu</button>
                         <button id="save" className={toolButtonCSS + toolActiveButtonCSS} onClick={uploadToFirebase}>Save</button>
                         <button id="download" className={toolButtonCSS + toolActiveButtonCSS} onClick={props.downloadCanvas} type="button">Download</button>
                         <button id="bg" className={toolButtonCSS + toolActiveButtonCSS} onClick={toggleBg}>Background Color</button>
@@ -97,6 +97,11 @@ function ArtTool(props) {
     );
     function mouseUp() {
         props.checkReset(false)
+    }
+    function closeDraft() {
+        const draft = document.getElementById("draft").classList; 
+        if (!draft.contains("hidden"))
+            draft.toggle("hidden");
     }
     function paletteButtonClick() {
         let style = document.getElementById("sketch-picker").style
@@ -131,7 +136,7 @@ function ArtTool(props) {
     }
 
     function toggleDraft(event) {
-        const element = document.getElementById(event.target.id);
+        const element = document.getElementById("draft");
         element.classList.toggle("hidden");
     }
     function uploadToFirebase() {
