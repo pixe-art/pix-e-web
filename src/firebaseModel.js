@@ -43,6 +43,17 @@ export function modelToPersistence(model) {
     return realtimeModel;
 }
 
+export function userModelToPersistence(model) { 
+    let realtimeModel = null;
+
+    realtimeModel = {colorCurrent: model.users[auth.currentUser.uid].colorCurrent};
+    realtimeModel.favorites = model.users[auth.currentUser.uid].favorites;
+    realtimeModel.device = model.users[auth.currentUser.uid].device;
+    realtimeModel.profile = model.users[auth.currentUser.uid].profile;
+
+    return realtimeModel;
+}
+
 export function persistenceToModel(data, model) {
     //Decide which data to be read from the realtime database.
 
@@ -72,11 +83,46 @@ export function persistenceToModel(data, model) {
     }
 }
 
+export function userPersistenceToModel(data, model) { 
+    function toArray(obj) {
+        const arr = [];
+        for (const element in obj)
+            arr.push(obj[element]);
+        return arr;
+    }
+
+    if (data){
+        if (data.colorCurrent) {
+            model.users[auth.currentUser.uid].colorCurrent = data.colorCurrent;
+        }
+
+        if (data.favorites){
+            model.users[auth.currentUser.uid].favorites = toArray(data.favorites);
+        }
+
+        if (data.device){
+            model.users[auth.currentUser.uid].device = data.device;
+        }
+
+        if (data.profile){
+            model.users[auth.currentUser.uid].profile = data.profile;
+        }
+    }
+}
+
 export function saveToFirebase(model) {
     const rf = ref(db, PATH);
 
     if (model.ready) {
         update(rf, modelToPersistence(model));
+    }
+}
+
+export function saveUserData(model) {
+    const rf = ref(db, (PATH + "/users/" + auth.currentUser.uid));
+
+    if (model.ready) {
+        update(rf, userModelToPersistence(model));
     }
 }
 
@@ -91,8 +137,35 @@ export function readFromFirebase(model) {
     }
 }
 
+export function readUserData(model) {
+    model.ready = false;
+    const rf = ref(db, (PATH + "/users/" + auth.currentUser.uid));
+    return get(rf).then(convertACB);
+
+    function convertACB(snapshot) {
+        userPersistenceToModel(snapshot.val(), model);
+        model.ready = true;
+    }
+}
+
 export function connectToFirebase(model) {
     reaction(modelChangedACB, storedStateEffectACB);
+    onAuthStateChanged(auth, onLoginACB);
+
+    function onLoginACB(user) {
+        readUserData(model);
+        reaction(userDataChangedACB, saveUserDataACB);
+    }
+
+    function userDataChangedACB() {
+        return [model.users[auth.currentUser.uid].colorCurrent, model.users[auth.currentUser.uid].favorites, 
+                model.users[auth.currentUser.uid].device, model.users[auth.currentUser.uid].profile.bio,
+                model.users[auth.currentUser.uid].profile.username]
+    }
+
+    function saveUserDataACB() {
+        saveUserData(model);
+    }
 
     function storedStateEffectACB() {
         saveToFirebase(model);

@@ -44,7 +44,31 @@ export default function Dashboard(props) {
   };
 
   function setPicturesACB() {
+    //props.model.users[auth.currentUser.uid].colorCurrent = "blue";
+    console.log(props.model.users);
     
+    if (props.model.users[auth.currentUser.uid].favorites !== undefined)
+        props.model.users[auth.currentUser.uid].favorites = [...props.model.users[auth.currentUser.uid].favorites, 
+          {
+            id: '9',
+            testPicture: "https://firebasestorage.googleapis.com/v0/b/pix-e-b9fab.appspot.com/o/images%2F9.png?alt=media&token=e6a19dff-146a-4210-a9db-75b04f4ebc3a",
+            title: "Wide Putin",
+            creator: "Some memester",
+            storage: "gs://pix-e-b9fab.appspot.com/images/9.png",
+            lastEdited: "3",
+        }];
+
+    else
+        props.model.users[auth.currentUser.uid].favorites = [{
+          id: '9',
+          testPicture: "https://firebasestorage.googleapis.com/v0/b/pix-e-b9fab.appspot.com/o/images%2F9.png?alt=media&token=e6a19dff-146a-4210-a9db-75b04f4ebc3a",
+          title: "Wide Putin",
+          creator: "Some memester",
+          storage: "gs://pix-e-b9fab.appspot.com/images/9.png",
+          lastEdited: "3",
+      }];
+
+    /*
     props.model.images = [...props.model.images, 
       {
         id: '9',
@@ -53,7 +77,7 @@ export default function Dashboard(props) {
         creator: "Some memester",
         storage: "gs://pix-e-b9fab.appspot.com/images/9.png",
         lastEdited: "3",
-    }];
+    }];*/
   }
 
   return (
