@@ -4,14 +4,14 @@ import Head from 'next/head';
 
 export default function Home() {
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-cream">
       <Head>
         <title>Pix-E | Pixel Art Display</title>
         <meta name="description" content="Display and create beautiful pixel art with Pix-E." />
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <main className="max-w-md w-full p-8 bg-white shadow-md rounded-lg text-center">
+      <main className="max-w-md w-full p-8 bg-white border border-4 border-brown shadow-md rounded-lg text-center">
         <h1 className="text-3xl font-bold text-gray-800 mb-4">Welcome to Pix-E!</h1>
         <p className="text-lg text-gray-600 mb-6">Create and share your pixel art creations.</p>
         <div>

@@ -74,14 +74,14 @@ export default function Dashboard(props) {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-cream">
       <button
         onClick={handleLogout}
         className="absolute top-4 left-4 px-4 py-2 text-white bg-gray-500 rounded hover:bg-gray-600"
       >
         Logout
       </button>
-      <div className="max-w-md w-full px-8 py-6 bg-white shadow-md rounded-lg text-center border-8 border-black rounded-xl">
+      <div className="max-w-md w-full px-8 py-6 bg-white shadow-md text-center border-8 border-brown rounded-lg">
         {user && (
           <p className="text-sm text-gray-600 mb-4">Logged in as: {username || user.uid}</p>
 
@@ -103,19 +103,19 @@ export default function Dashboard(props) {
           />
         </div>
 
-        <div className="flex flex-wrap gap-4 justify-center mb-6">
+        <div className="flex flex-wrap gap-4 justify-center mb-6 *:*:min-w-40 /*<- sets all spans to same width*/">
           <Link href="/art-tool">
-            <span className="inline-block px-6 py-2 text-white bg-blue-500 rounded hover:bg-blue-600 cursor-pointer">
+            <span className="inline-block px-6 py-2 text-white bg-slate-500 rounded hover:bg-slate-600 cursor-pointer">
               Art Tool
             </span>
           </Link>
           <Link href="/profile">
-            <span className="inline-block px-6 py-2 text-white bg-green-500 rounded hover:bg-green-600 cursor-pointer">
+            <span className="inline-block px-6 py-2 text-white bg-emerald-500 rounded hover:bg-emerald-600 cursor-pointer">
               Profile
             </span>
           </Link>
           <Link href="/favourites">
-            <span className="inline-block px-6 py-2 text-white bg-yellow-500 rounded hover:bg-yellow-600 cursor-pointer">
+            <span className="inline-block px-6 py-2 text-white bg-amber-500 rounded hover:bg-amber-600 cursor-pointer">
               Favourites
             </span>
           </Link>
