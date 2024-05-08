@@ -3,7 +3,7 @@ import Link  from 'next/link';
 import { Dropdown } from 'react-bootstrap';
 import { BsThreeDots } from 'react-icons/bs';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faDownload, faQuestion, faPen, faCamera, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faDownload, faImage, faPen, faCamera, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { downloadImage, displayImage, removeFavourite } from './favouritesPresenter';
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { set } from 'firebase/database';
@@ -40,12 +40,12 @@ function ImageComponent({ image }) {
     return (
         <div className="relative rounded shadow-lg p-4 bg-cream transform transition duration-500 hover:scale-110 hover:z-10">
             <img src={image.testPicture} alt="" className="w-full h-auto object-cover image-pixelated" />
-            <Dropdown className="absolute bottom-0 right-0 mb-2 mr-2" onClick={() => setDropdownOpen(true)} onMouseLeave={() => setDropdownOpen(false)}>
+            <Dropdown className="absolute bottom-0 right-0 mb-2 mr-2" onClick={() => /*isMounted &&*/ setDropdownOpen(true)} >
                 <Dropdown.Toggle variant="none" id="dropdown-basic">
-                    <BsThreeDots />
+                    <BsThreeDots size={24}/>
                 </Dropdown.Toggle>
                 {isDropdownOpen && (
-                <Dropdown.Menu className="bg-cream text-black rounded-md shadow-lg text-sm flex flex-col p-2">
+                <Dropdown.Menu className="bg-cream text-black rounded-md shadow-lg text-sm flex flex-col p-2 right-0 left-auto" onMouseLeave={() => /*isMounted &&*/ setDropdownOpen(false)}>
                     <Dropdown.Item className={`text-red-500 hover:bg-gray-400 hover:text-white hover:rounded-md flex items-center p-1 ${isRemoved ? 'text-black' : ''}`} onClick={toggleRemoved}>
                         <FontAwesomeIcon icon={faTimes} className={`mr-2 ${isRemoved ? 'animate-pulse' : ''}`} /> 
                     {removing ? 'Removing...' : 'Remove'}    
@@ -55,7 +55,7 @@ function ImageComponent({ image }) {
                         Download
                     </Dropdown.Item>
                     <Dropdown.Item className="hover:bg-gray-400 hover:text-white hover:rounded-md p-1" onClick={() => toggleOnDisplay(image.id)} href="#/">
-                        <FontAwesomeIcon icon={faQuestion} className="mr-2" />
+                        <FontAwesomeIcon icon={faImage} className="mr-2" />
                         Display
                     </Dropdown.Item>
                 </Dropdown.Menu>
@@ -99,42 +99,45 @@ export default function FavouritesView(props) {
                         className={`transition-all duration-300 sticky top-0 ${isMenuOpen ? 'w-64' : 'w-16'} bg-brown text-white p-4 flex flex-col`}
                         onMouseLeave={() => setMenuOpen(false)}
                     >
-                        <div className="flex items-center mb-4">
-                        <button
-                            className="flex flex-col h-10 w-12 border-2 border-cream rounded justify-center items-center group"
-                            onMouseEnter={() => setMenuOpen(true)}
-                            onClick={() => setMenuOpen(!isMenuOpen)} 
-                        >
-                            <div
-                                className={`${genericHamburgerLine} ${
-                                    isMenuOpen
-                                        ? "rotate-45 translate-y-3 opacity-50 group-hover:opacity-100"
-                                        : "opacity-50 group-hover:opacity-100"
-                                }`}
-                            />
-                            <div className={`${genericHamburgerLine} ${isMenuOpen ? "opacity-0" : "opacity-50 group-hover:opacity-100"}`} />
-                            <div
-                                className={`${genericHamburgerLine} ${
-                                    isMenuOpen
-                                        ? "-rotate-45 -translate-y-3 opacity-50 group-hover:opacity-100"
-                                        : "opacity-50 group-hover:opacity-100"
-                                }`}
-                            />
-                        </button>
-                            {isMenuOpen && <h1 className="text-2xl ml-4">Menu</h1>}
-                        </div>
-                        {isMenuOpen && (
-                            <>
-                                {/* Add menu items here */}
-                                <Link href="/dashboard" className="text-white no-underline hover:underline">Dashboard</Link>
-                                <Link href="/profile" className="text-white no-underline hover:underline">My Profile</Link>
-                                <Link href="#" className="text-white no-underline hover:underline">Favourites</Link>
-                                <Link href="/publicGallery" className="text-white no-underline hover:underline">Public Gallery</Link>
-                                <Link href="/art-tool" className="text-white no-underline hover:underline">Create a picture</Link>
-                                <Link href="/drafts" className="text-white no-underline hover:underline">My Drafts</Link>
-
-                            </>
-                        )}
+                        <div className="sticky top-5">
+                            <div className="flex items-center mb-4">
+                                <button
+                                    className="flex flex-col h-10 w-12 border-2 border-cream rounded justify-center items-center group"
+                                    onMouseEnter={() => setMenuOpen(true)}
+                                    onClick={() => setMenuOpen(!isMenuOpen)} 
+                                >
+                                    <div
+                                        className={`${genericHamburgerLine} ${
+                                            isMenuOpen
+                                                ? "rotate-45 translate-y-3 opacity-50 group-hover:opacity-100"
+                                                : "opacity-50 group-hover:opacity-100"
+                                        }`}
+                                    />
+                                    <div className={`${genericHamburgerLine} ${isMenuOpen ? "opacity-0" : "opacity-50 group-hover:opacity-100"}`} />
+                                    <div
+                                        className={`${genericHamburgerLine} ${
+                                            isMenuOpen
+                                                ? "-rotate-45 -translate-y-3 opacity-50 group-hover:opacity-100"
+                                                : "opacity-50 group-hover:opacity-100"
+                                        }`}
+                                    />
+                                </button>
+                                {isMenuOpen && <h1 className="text-2xl ml-4">Menu</h1>}
+                            </div>
+                            {isMenuOpen && (
+                                <>
+                                    {/* Add menu items here */}
+                                    <div className="flex flex-col">
+                                        <Link href="/dashboard" className="text-white no-underline hover:underline">Dashboard</Link>
+                                        <Link href="/profile" className="text-white no-underline hover:underline">My Profile</Link>
+                                        <Link href="#" className="text-white no-underline hover:underline">Favourites</Link>
+                                        <Link href="/publicGallery" className="text-white no-underline hover:underline">Public Gallery</Link>
+                                        <Link href="/art-tool" className="text-white no-underline hover:underline">Create a picture</Link>
+                                        <Link href="/drafts" className="text-white no-underline hover:underline">My Drafts</Link>
+                                    </div>
+                                </>
+                            )}
+                            </div>
                     </div>
                     <div className="flex-grow p-4">
                         <h1 className="text-2xl mb-2">My Favourites</h1>

@@ -19,7 +19,7 @@ export function removeFavourite(filename) {
 
   return remove(favRef)
       .then(() => {
-          console.log(`Removed favourite with id: ${id}`);
+          console.log(`Removed favourite with name: ${filename}`);
       })
       .catch((error) => {
           console.error(`Error removing favourite: ${error}`);

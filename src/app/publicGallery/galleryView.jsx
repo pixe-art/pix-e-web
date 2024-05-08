@@ -3,35 +3,45 @@ import  Link  from 'next/link';
 import { Dropdown } from 'react-bootstrap';
 import { BsThreeDots } from 'react-icons/bs';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHeart as solidHeart, faDownload, faQuestion } from '@fortawesome/free-solid-svg-icons';
+import { faHeart as solidHeart, faDownload, faImage } from '@fortawesome/free-solid-svg-icons';
 import { faHeart as outlineHeart } from '@fortawesome/free-regular-svg-icons';
-import { set, goOffline } from 'firebase/database';
-import { addToFavourites, downloadImage, displayImage } from './galleryPresenter';
-import { connectToFirebase } from '../../firebaseModel';
+import { addToFavourites, downloadImage, displayImage, removeFavourite } from './galleryPresenter';
+import { getDatabase, ref, get } from 'firebase/database';
+import { app } from "/src/firebaseModel.js";
+import { getAuth } from 'firebase/auth';
 
 function ImageComponent({ image, addToFavourites }) {
     const [isDropdownOpen, setDropdownOpen] = useState(false);
-    const [isFavourite, setFavourite] = useState(false);
+    const [isFavourite, setIsFavourite] = useState(false);
     const [onDisplay, setOnDisplay] = useState(false);
     const [animate, setAnimate] = useState(false);
 
     useEffect(() => {
-        const favouriteState = localStorage.getItem(`favouriteState-${image.id}`);
-        if (favouriteState !== null) {
-            setFavourite(JSON.parse(favouriteState));
-        }
-    }, [image.id]);
+        const db = getDatabase(app);
+        const auth = getAuth();
+        const userId = auth.currentUser.uid;
+        const dbRef = ref(db, 'pixeModel/users/' + userId + '/favourites/' + image.id);
+        get(dbRef).then((snapshot) => {
+            if (snapshot.exists()) {
+                setIsFavourite(true);
+            }
+        }).catch((error) => {
+            console.error(error);
+        });
+    }, []);
 
     const toggleFavourite = () => {
-        const newFavouriteState = !isFavourite;
-        setFavourite(newFavouriteState);
-        if (newFavouriteState) {
-            setAnimate(true);
-            setTimeout(() => setAnimate(false), 500);
-            addToFavourites(image.testPicture, image.title, image.creator, image.id); 
+        if (isFavourite) {
+            removeFavourite(image.title).then(() => {
+                setIsFavourite(false);
+                setAnimate(false);
+            });
+        } else {
+            addToFavourites(image.testPicture, image.title, image.creator, image.id).then(() => {
+                setIsFavourite(true);
+                setAnimate(true);
+            });
         }
-
-        localStorage.setItem(`favouriteState-${image.id}`, JSON.stringify(newFavouriteState));
     };
 
     const toggleOnDisplay = () => {
@@ -44,14 +54,22 @@ function ImageComponent({ image, addToFavourites }) {
     return (
         <div className="relative rounded shadow-lg p-4 bg-cream transform transition duration-500 hover:scale-110 hover:z-10">
             <img src={image.testPicture} alt="" className="w-full h-auto object-cover image-pixelated" />
-            <Dropdown className="absolute bottom-0 right-0 mb-2 mr-2" onClick={() => /*isMounted &&*/ setDropdownOpen(true)} onMouseLeave={() => /*isMounted &&*/ setDropdownOpen(false)}>
+            <Dropdown className="absolute bottom-0 right-0 mb-2 mr-2" onClick={() => /*isMounted &&*/ setDropdownOpen(true)} >
                 <Dropdown.Toggle variant="none" id="dropdown-basic">
-                    <BsThreeDots />
+                    <BsThreeDots size={24}/>
                 </Dropdown.Toggle>
                 {isDropdownOpen && (
-                <Dropdown.Menu className="bg-cream text-black rounded-md shadow-lg text-sm flex flex-col p-2">
-                    <Dropdown.Item className={`hover:bg-gray-400 hover:text-white hover:rounded-md flex items-center p-1 ${isFavourite ? 'text-red-500' : ''}`} onClick={toggleFavourite}>
-                        <FontAwesomeIcon icon={isFavourite ? solidHeart : outlineHeart} className={`mr-2 ${isFavourite ? 'animate-pulse' : ''}`} />
+                <Dropdown.Menu className="bg-cream text-black rounded-md shadow-lg text-sm flex flex-col p-2 right-0 left-auto" onMouseLeave={() => /*isMounted &&*/ setDropdownOpen(false)}>
+                    <Dropdown.Item 
+                        onClick={() => {
+                            toggleFavourite();
+                            //setAnimate(true);
+                            //setTimeout(() => setAnimate(false), 500);
+                    }}
+                        className={`hover:bg-gray-400 hover:text-white hover:rounded-md flex items-center p-1 ${isFavourite || animate ? 'text-red-500' : 'text-black'}`} 
+
+                    >
+                        <FontAwesomeIcon icon={animate ? solidHeart : outlineHeart} className={`mr-2 ${animate ? 'animate-pulse' : ''}`} />
                         Favourite
                     </Dropdown.Item>
                     <Dropdown.Item className="hover:bg-gray-400 hover:text-white hover:rounded-md flex items-center p-1" onClick={() => downloadImage(image.storage, image.title)}>
@@ -59,7 +77,7 @@ function ImageComponent({ image, addToFavourites }) {
                         Download
                     </Dropdown.Item>
                     <Dropdown.Item className="hover:bg-gray-400 hover:text-white hover:rounded-md p-1" onClick={() => toggleOnDisplay(image.id)} href="#/">
-                        <FontAwesomeIcon icon={faQuestion} className="mr-2" />
+                        <FontAwesomeIcon icon={faImage} className="mr-2" />
                         Display
                     </Dropdown.Item>
                 </Dropdown.Menu>
@@ -78,7 +96,6 @@ function ImageComponent({ image, addToFavourites }) {
 export default function GalleryView(props) {
     const [isMenuOpen, setMenuOpen] = useState(false);
     const [isMounted, setIsMounted] = useState(false);
-    const [isLoading, setIsLoading] = useState(true);
     const genericHamburgerLine = `h-1 w-6 my-1 rounded-full bg-cream transition ease transform duration-300`;
 
     useEffect(() => {
