@@ -13,8 +13,8 @@ function Draft(props) {
     )
     function renderImages(img) {
         return (
-            <div className="flex flex-col items-center w-full h-auto mb-4 img-hover-effect" onClick={() => handleImgClick(img)}>
-                <img key={img.id} src={img.testPicture} alt="" className="w-full mb-2" />
+            <div key={img.id} className="flex flex-col items-center w-full h-auto mb-4 img-hover-effect" onClick={() => handleImgClick(img)}>
+                <img src={img.testPicture} alt="" className="w-full mb-2" />
                 <div className="text-center w-full">
                 <p className="break-words" title={`${img.title} Created by: ${img.creator}`}>
                     {img.title}<br /> Created by: {img.creator}

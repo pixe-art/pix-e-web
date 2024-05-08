@@ -98,9 +98,9 @@ function ArtTool(props) {
     function mouseUp() {
         props.checkReset(false)
     }
-    function closeDraft() {
+    function closeDraft(event) {
         const draft = document.getElementById("draft").classList; 
-        if (!draft.contains("hidden"))
+        if (!draft.contains("hidden") && !(event.target.id === "show-draft"))
             draft.toggle("hidden");
     }
     function paletteButtonClick() {
