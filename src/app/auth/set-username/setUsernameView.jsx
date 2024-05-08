@@ -1,7 +1,7 @@
 const SetUsernameView = ({ username, onChangeUsername, onSaveUsername, loading, error }) => {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-cream">
-      <div className="max-w-md w-full px-8 py-6 bg-white shadow-md rounded-lg text-center border-4 border-brown rounded-lg">
+      <div className="max-w-md w-full px-8 py-6 bg-white shadow-md text-center border-4 border-brown rounded-lg">
         <h1 className="text-3xl font-bold text-gray-800 mb-4">Set Your Username</h1>
         <input
           type="text"
