@@ -1,18 +1,22 @@
-// Alvin
+
 import "../globals.css"
 import "./artToolStyles.css"
 import { getCords } from "@/utilities";
-import { React, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { SketchPicker } from 'react-color';
 import Draggable from './draggable';
 import Draft from "./draft";
-import { toggleDrafts } from "./presenter";
+import { addToDrafts } from "./presenter";
+import { buildModelPicture, canvasToData } from "@/utilities";
+import { auth } from "@/firebaseModel";
+import { onAuthStateChanged } from "firebase/auth";
+
 
 let init = true
 const toolButtonCSS = "transition-color bg-white border border-brown text-black select-none my-0 w-96 md:rounded-lg md:hover:bg-gray-200 md:w-auto md:my-2 hmd:md:my-0.5 md:hover:text-black "
 const toolActiveButtonCSS = " active:text-white active:bg-gray-200 md:active:text-white md:active:bg-gray-400  "
-
-function ImageComponent({ image, toggleDrafts }) {
+/*
+function ImageComponent({ image, addToDrafts }) {
     const [isDropdownOpen, setDropdownOpen] = useState(false);
     const [isDraft, setDraft] = useState(false);
     const [onDisplay, setOnDisplay] = useState(false);
@@ -25,22 +29,24 @@ function ImageComponent({ image, toggleDrafts }) {
         }
     }, [image.id]);
 
-    const toggleDraft = () => {
+    const setToDraft = () => {
         const newDraftState = !isDraft;
         setDraft(newDraftState);
         if (newDraftState) {
             setAnimate(true);
             setTimeout(() => setAnimate(false), 500);
-            toggleDrafts(image.testPicture, image.title, image.creator, image.id); 
+            addToDrafts(image.testPicture, image.title, image.creator, image.id); 
         }
 
         localStorage.setItem(`draftState-${image.id}`, JSON.stringify(newDraftState));
     };
-}
+}*/
 
 function ArtTool(props) {
     const [isMounted, setIsMounted] = useState(false);
     const [draftUpdate, setDraftUpdate] = useState(false);
+    const [isDraft, setDraft] = useState(false);
+    console.log("props art tool: ", props);
 
     useEffect(() => {
         setIsMounted(true);
@@ -64,6 +70,41 @@ function ArtTool(props) {
             setDraftUpdate(false);
         }
     }, [draftUpdate]);
+
+    useEffect(() => {
+        const draftState = localStorage.getItem(`draftState-${props.model.images[0].id}`);
+        if (draftState !== null) {
+            setDraft(JSON.parse(draftState));
+        }
+    }, [props.model.images.id]);
+
+    const setToDraft = () => {
+        //skapar bilden med alla fält
+        const userID = auth.currentUser.uid;
+        const element = document.getElementById("drawing-area")
+        console.log("element: ", element);
+        if (!props.isCanvasEmpty(element)) {
+            props.uploadToFirebase(element);
+            setDraftUpdate(true);
+        } else {
+            console.log("Cannot save an empty canvas");
+        }
+
+        const data = canvasToData(element);
+        console.log("got data from canvas:", data);
+        const imgObj = buildModelPicture(userID, Date.now(), Date.now(), data, "Your dad");
+        console.log("imgObj: ", imgObj);
+
+        const newDraftState = !isDraft;
+        setDraft(newDraftState);
+        if (newDraftState) {
+            //setAnimate(true);
+            //setTimeout(() => setAnimate(false), 500);
+            addToDrafts(imgObj); 
+        }
+
+        localStorage.setItem(`draftState-${image.id}`, JSON.stringify(newDraftState));
+    };
 
     return( 
         <div>{isMounted &&
@@ -96,6 +137,7 @@ function ArtTool(props) {
                         onTouchStart={touchDrawEvent} onMouseDown={mouseClickEvent}  onMouseMove={mouseDragEvent} onMouseLeave={resetLastCoords} onTouchMove={touchDragEvent}/>
                     </div>
                     <div id="tools" className="mt-0 hmd:mt-20 grid hmd:md:mt-0 hmd:md:ml-4 md:flex md:flex-col items-stretch">
+                        <button id="save-to-draft" className={toolButtonCSS + toolActiveButtonCSS} onClick={() => setToDraft(props.model.images)}>Save to Draft</button>
                         <button id="draft" className={toolButtonCSS + toolActiveButtonCSS + "w-auto"} onClick={toggleDraft}>Draft Menu</button>
                         <button id="save" className={toolButtonCSS + toolActiveButtonCSS} onClick={uploadToFirebase}>Save</button>
                         <button id="download" className={toolButtonCSS + toolActiveButtonCSS} onClick={props.downloadCanvas} type="button">Download</button>
@@ -118,12 +160,11 @@ function ArtTool(props) {
                     </div>
                     <div id="bottom-spacing" className="min-h-10 md:hidden"></div>
                 </div>
-                {Object.values(props.model.images).map((image) => (
-                    <ImageComponent key={image.id} image={image} toggleDrafts={toggleDrafts}/>
-                ))}
+                
             </div>
         }</div>
     );
+}
     function mouseUp() {
         props.checkReset(false)
     }
@@ -260,6 +301,7 @@ function ArtTool(props) {
 
     function mouseDragEvent(event) {
         const canvas = document.getElementById("drawing-area");
+        console.log("props: ", props);
         const xy = getCords(canvas, event.clientX, event.clientY, (props.penSize - 1) / 2);
         if ((event.buttons === 1 || event.buttons === 2) && props.checkReset()) {
             if (props.lastXY[0] === -1 && props.lastXY[1] === -1) {
@@ -294,5 +336,5 @@ function ArtTool(props) {
             props.drawLine(element, xy[0], xy[1]);
         }
     }
-}
+
 export default ArtTool;
