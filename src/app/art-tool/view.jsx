@@ -6,10 +6,37 @@ import { React, useEffect, useState } from "react";
 import { SketchPicker } from 'react-color';
 import Draggable from './draggable';
 import Draft from "./draft";
+import { toggleDrafts } from "./presenter";
 
 let init = true
 const toolButtonCSS = "transition-color bg-white border border-brown text-black select-none my-0 w-96 md:rounded-lg md:hover:bg-gray-200 md:w-auto md:my-2 hmd:md:my-0.5 md:hover:text-black "
 const toolActiveButtonCSS = " active:text-white active:bg-gray-200 md:active:text-white md:active:bg-gray-400  "
+
+function ImageComponent({ image, toggleDrafts }) {
+    const [isDropdownOpen, setDropdownOpen] = useState(false);
+    const [isDraft, setDraft] = useState(false);
+    const [onDisplay, setOnDisplay] = useState(false);
+    const [animate, setAnimate] = useState(false);
+
+    useEffect(() => {
+        const draftState = localStorage.getItem(`draftState-${image.id}`);
+        if (draftState !== null) {
+            setDraft(JSON.parse(draftState));
+        }
+    }, [image.id]);
+
+    const toggleDraft = () => {
+        const newDraftState = !isDraft;
+        setDraft(newDraftState);
+        if (newDraftState) {
+            setAnimate(true);
+            setTimeout(() => setAnimate(false), 500);
+            toggleDrafts(image.testPicture, image.title, image.creator, image.id); 
+        }
+
+        localStorage.setItem(`draftState-${image.id}`, JSON.stringify(newDraftState));
+    };
+}
 
 function ArtTool(props) {
     const [isMounted, setIsMounted] = useState(false);
@@ -91,7 +118,9 @@ function ArtTool(props) {
                     </div>
                     <div id="bottom-spacing" className="min-h-10 md:hidden"></div>
                 </div>
-
+                {Object.values(props.model.images).map((image) => (
+                    <ImageComponent key={image.id} image={image} toggleDrafts={toggleDrafts}/>
+                ))}
             </div>
         }</div>
     );
