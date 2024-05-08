@@ -44,24 +44,7 @@ export default function Dashboard(props) {
   };
 
   function setPicturesACB() {
-    console.log(toObject(props.model.images));
-    console.log(toArray(toObject(props.model.images)));
-
-    function toObject(arr) {
-        const obj = {};
-        for (const element of arr)
-          obj[element.id] = element;
-        return obj;
-    }
-
-    function toArray(obj) {
-      const arr = [];
-      for (const element in obj)
-          arr.push(obj[element]);
-      return arr;
-    }
-
-    /*
+    
     props.model.images = [...props.model.images, 
       {
         id: '9',
@@ -70,7 +53,7 @@ export default function Dashboard(props) {
         creator: "Some memester",
         storage: "gs://pix-e-b9fab.appspot.com/images/9.png",
         lastEdited: "3",
-    }];*/
+    }];
   }
 
   return (
