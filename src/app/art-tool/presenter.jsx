@@ -56,7 +56,8 @@ export default observer(
 
             //check for duplicate
             for (const idx in model.users[userId].drafts) {
-                if (imgObj.testPicture === model.users[userId].drafts.testPicture) {
+                console.log("imgObj.testPicture: ", imgObj.testPicture, " model.users[userId].drafts.testPicture: ", model.users[userId].drafts[idx].testPicture, " index: ", idx);
+                if (imagePath === model.users[userId].drafts[idx].testPicture) {
                     duplicateFound = true;
                     console.log("You already have a duplicate saved at model.pictures.testPicture[", idx, "]");
                     return; 
