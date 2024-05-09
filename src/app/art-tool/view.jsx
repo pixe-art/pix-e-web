@@ -1,7 +1,7 @@
 // Alvin
 import "../globals.css"
 import "./artToolStyles.css"
-import { getCords } from "@/utilities";
+import { fetchFileUpload, getCords } from "@/utilities";
 import { React, useEffect, useState } from "react";
 import { SketchPicker } from 'react-color';
 import Draggable from './draggable';
@@ -69,6 +69,10 @@ function ArtTool(props) {
                             onTouchStart={touchDrawEvent} onMouseDown={mouseClickEvent}  onMouseMove={mouseDragEvent} onMouseLeave={resetLastCoords} onTouchMove={touchDragEvent}/>
                     </div>
                     <div id="tools" className="mt-0 hmd:mt-20 grid hmd:md:mt-0 hmd:md:ml-4 md:flex md:flex-col items-stretch">
+                        <form action="" className="flex flex-col *:m-0 *:p-0 *:y-0" onChange={handleSubmit}>
+                            <label htmlFor="upload" className={toolButtonCSS + toolActiveButtonCSS + "text-center"}>Upload Image</label>
+                            <input id="upload" className="hidden" type="file" name="img" accept="image/*" />
+                        </form>
                         <button id="show-draft" className={toolButtonCSS + toolActiveButtonCSS + "w-auto"} onClick={toggleDraft}>Draft Menu</button>
                         <button id="save" className={toolButtonCSS + toolActiveButtonCSS} onClick={uploadToFirebase}>Save</button>
                         <button id="download" className={toolButtonCSS + toolActiveButtonCSS} onClick={props.downloadCanvas} type="button">Download</button>
@@ -110,6 +114,17 @@ function ArtTool(props) {
         }else {
             style.visibility = "hidden";
         }
+    }
+    function handleSubmit(event) {
+        const img = event.target.files[0]
+        if (!img) return;
+        const reader = new FileReader();
+        //assign onLoad event
+        reader.onload = ((e) => {
+            overwriteCanvas(e.target.result)            
+        });
+        //give reader img, triggers onLoad event
+        reader.readAsDataURL(img)
     }
     function toggleBg(event){
         const canv = document.getElementById("drawing-area");
@@ -174,13 +189,13 @@ function ArtTool(props) {
         img.crossOrigin = "anonymous";
         img.src = source;
         img.onload = () => {
-            if (img.width !== element.width || img.height !== element.height) {
-                console.error("Preventing Canvas overwrite due to img with incorrect dimensions (" + img.width + "x" + img.height + ")\n"
-                + "\tImg should be equal to Canvas (" + element.width + "x" + element.height + ")");
-                return;
-            }
+            // if (img.width !== element.width || img.height !== element.height) {
+            //     console.error("Preventing Canvas overwrite due to img with incorrect dimensions (" + img.width + "x" + img.height + ")\n"
+            //     + "\tImg should be equal to Canvas (" + element.width + "x" + element.height + ")");
+            //     return;
+            // }
             props.clearCanvas();
-            extra.drawImage(img, 0, 0);
+            extra.drawImage(img, 0, 0, 64, 32);
             img.remove();
         }
     }
