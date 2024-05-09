@@ -44,22 +44,29 @@ export default function Dashboard(props) {
   };
 
   function setPicturesACB() {
-    console.log(toObject(props.model.images));
-    console.log(toArray(toObject(props.model.images)));
+    //props.model.users[auth.currentUser.uid].colorCurrent = "blue";
+    console.log(props.model.users);
+    
+    if (props.model.users[auth.currentUser.uid].favorites !== undefined)
+        props.model.users[auth.currentUser.uid].favorites = [...props.model.users[auth.currentUser.uid].favorites, 
+          {
+            id: '9',
+            testPicture: "https://firebasestorage.googleapis.com/v0/b/pix-e-b9fab.appspot.com/o/images%2F9.png?alt=media&token=e6a19dff-146a-4210-a9db-75b04f4ebc3a",
+            title: "Wide Putin",
+            creator: "Some memester",
+            storage: "gs://pix-e-b9fab.appspot.com/images/9.png",
+            lastEdited: "3",
+        }];
 
-    function toObject(arr) {
-        const obj = {};
-        for (const element of arr)
-          obj[element.id] = element;
-        return obj;
-    }
-
-    function toArray(obj) {
-      const arr = [];
-      for (const element in obj)
-          arr.push(obj[element]);
-      return arr;
-    }
+    else
+        props.model.users[auth.currentUser.uid].favorites = [{
+          id: '9',
+          testPicture: "https://firebasestorage.googleapis.com/v0/b/pix-e-b9fab.appspot.com/o/images%2F9.png?alt=media&token=e6a19dff-146a-4210-a9db-75b04f4ebc3a",
+          title: "Wide Putin",
+          creator: "Some memester",
+          storage: "gs://pix-e-b9fab.appspot.com/images/9.png",
+          lastEdited: "3",
+      }];
 
     /*
     props.model.images = [...props.model.images, 
