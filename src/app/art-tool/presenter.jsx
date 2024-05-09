@@ -5,9 +5,12 @@ import ArtTool from "./view";
 import { observer } from "mobx-react-lite"; //? observer
 import React, { useState, useRef, useEffect } from "react";
 import { useModel } from "../model-provider.js";
-import { auth } from "@/firebaseModel";
+import { auth, getAuth } from "@/firebaseModel";
 import { onAuthStateChanged } from "firebase/auth";
 import { buildModelPicture, canvasToData } from "@/utilities";
+import { app } from "/src/firebaseModel.js";
+import { getStorage, ref as sRef , getDownloadURL, uploadBytesResumable } from "firebase/storage";
+import { getDatabase, ref as dbRef , set, push, update, remove } from "firebase/database";
 
 
 export default observer(
@@ -40,19 +43,32 @@ export default observer(
         }, [color, model.colorCurrent]);
 
 
-        function addToDrafts(imageUrl, filename, creator, id) {
-            const auth = getAuth();
+        function addToDrafts(imgObj) {
+            let duplicateFound = false;
             const userId = auth.currentUser.uid;
         
-            const imagePath = new URL(imageUrl).pathname.split('/').pop();
+            const imagePath = new URL(imgObj.testPicture).pathname.split('/').pop();
             
             // Create a copy of the image in Firebase storage
             const storage = getStorage(app);
             const imageRef = sRef(storage, imagePath);
-            const userImageRef = sRef(storage, 'users/' + userId + '/drafts/' + filename);
+            const userImageRef = sRef(storage, 'users/' + userId + '/drafts/' + imgObj.title);
+
+            //check for duplicate
+            for (const idx in model.users[userId].drafts) {
+                if (imgObj.testPicture === model.users[userId].drafts.testPicture) {
+                    duplicateFound = true;
+                    console.log("You already have a duplicate saved at model.pictures.testPicture[", idx, "]");
+                    return; 
+                }
+            
+            if (duplicateFound) {
+                return;
+            }
+        } 
         
             // Fetch the image data
-            fetch(imageUrl)
+            fetch(imgObj.testPicture)
                 .then(response => response.blob())
                 .then(blob => {
                     // Upload the image data to the new path
@@ -75,13 +91,13 @@ export default observer(
         
                                     // Store the reference in the Firebase database
                                     const db = getDatabase(app);
-                                    const imageRef = dbRef(db, 'pixeModel/users/' + userId + '/drafts/' + filename);
+                                    const imageRef = dbRef(db, 'pixeModel/users/' + userId + '/drafts/' + imgObj.title);
                                     update(imageRef, {
-                                        id: filename, 
+                                        id: imgObj.title, 
                                         testPicture: url, // use the url here
-                                        title: filename,
-                                        creator: creator,
-                                        storage: "gs://pix-e-b9fab.appspot.com/users/" + userId + '/drafts/' + filename
+                                        title: imgObj.title,
+                                        creator: imgObj.creator,
+                                        storage: "gs://pix-e-b9fab.appspot.com/users/" + userId + '/drafts/' + imgObj.title
                                     });
                                 })
                                 .catch((error) => {

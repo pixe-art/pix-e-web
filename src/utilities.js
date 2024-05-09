@@ -19,6 +19,7 @@ export function canvasToData(canvas) {
 
 export function buildModelPicture(userID, imageID, lastEdited, URL, imageTitle) {
     console.log("userID util: ", userID);
+    console.log("imageTitle: ", imageTitle);
     if(!(imageID && URL && imageTitle && userID)){
         console.error("function requires all arguments to be filled");
         return

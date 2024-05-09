@@ -1,7 +1,6 @@
 import "./artToolStyles.css";
 const testCSS = "bg-yellow-100 border border-red-600  w-2/4 h-2/4 left-1/4 top-1/4 z-30 "
 function Draft(props) {
-    console.log(props.model);
     return(
         <div id="draft-parent" className={testCSS + " absolute text-black flex flex-col items-center"}>
             <h1 className="text-center text-4xl font-bold m-4">YOUR DRAFTS</h1>

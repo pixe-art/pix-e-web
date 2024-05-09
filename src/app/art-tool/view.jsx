@@ -1,4 +1,3 @@
-
 import "../globals.css"
 import "./artToolStyles.css"
 import { getCords } from "@/utilities";
@@ -11,42 +10,16 @@ import { buildModelPicture, canvasToData } from "@/utilities";
 import { auth } from "@/firebaseModel";
 import { onAuthStateChanged } from "firebase/auth";
 
-
 let init = true
 const toolButtonCSS = "transition-color bg-white border border-brown text-black select-none my-0 w-96 md:rounded-lg md:hover:bg-gray-200 md:w-auto md:my-2 hmd:md:my-0.5 md:hover:text-black "
 const toolActiveButtonCSS = " active:text-white active:bg-gray-200 md:active:text-white md:active:bg-gray-400  "
-/*
-function ImageComponent({ image, addToDrafts }) {
-    const [isDropdownOpen, setDropdownOpen] = useState(false);
-    const [isDraft, setDraft] = useState(false);
-    const [onDisplay, setOnDisplay] = useState(false);
-    const [animate, setAnimate] = useState(false);
-
-    useEffect(() => {
-        const draftState = localStorage.getItem(`draftState-${image.id}`);
-        if (draftState !== null) {
-            setDraft(JSON.parse(draftState));
-        }
-    }, [image.id]);
-
-    const setToDraft = () => {
-        const newDraftState = !isDraft;
-        setDraft(newDraftState);
-        if (newDraftState) {
-            setAnimate(true);
-            setTimeout(() => setAnimate(false), 500);
-            addToDrafts(image.testPicture, image.title, image.creator, image.id); 
-        }
-
-        localStorage.setItem(`draftState-${image.id}`, JSON.stringify(newDraftState));
-    };
-}*/
 
 function ArtTool(props) {
     const [isMounted, setIsMounted] = useState(false);
     const [draftUpdate, setDraftUpdate] = useState(false);
     const [isDraft, setDraft] = useState(false);
-    console.log("props art tool: ", props);
+    const [propsBool, setPropsBool] = useState(false);
+
 
     useEffect(() => {
         setIsMounted(true);
@@ -56,32 +29,82 @@ function ArtTool(props) {
         if (isMounted) {    
             if (init){
                 //overwriteCanvas(props.model.canvasCurrent.testPicture);
-                init = false
+                init = false;
             }
         }
-    
     }, [isMounted]);
 
-
     useEffect(() => {
-        // console.log("useEffect called");
         if(draftUpdate) {
-            // console.log("draftUpdate true");
             setDraftUpdate(false);
         }
     }, [draftUpdate]);
 
-    useEffect(() => {
-        const draftState = localStorage.getItem(`draftState-${props.model.images[0].id}`);
-        if (draftState !== null) {
-            setDraft(JSON.parse(draftState));
-        }
-    }, [props.model.images.id]);
-
     const setToDraft = () => {
-        //skapar bilden med alla fält
+        console.log("uid: ", auth.currentUser.uid);
         const userID = auth.currentUser.uid;
-        const element = document.getElementById("drawing-area")
+        console.log(" drafts: ", props.model.users[userID].drafts)
+        const element = document.getElementById("drawing-area");
+        console.log("element: ", element);
+        if (props.isCanvasEmpty(element)) {
+            console.log("Cannot save an empty canvas");
+            return;
+        }
+
+        const data = canvasToData(element);
+        console.log("got data from canvas:", data);
+        const imgObj = buildModelPicture(userID, Date.now(), Date.now(), data, Date.now());
+        console.log("imgObj: ", imgObj);
+
+        const newDraftState = !isDraft;
+        setDraft(newDraftState);
+        if (newDraftState) {
+            props.addToDrafts(imgObj); 
+        }
+
+        localStorage.setItem(`draftState-${imgObj.id}`, JSON.stringify(newDraftState));
+    };
+
+    const mouseUp = () => {
+        props.checkReset(false);
+    };
+
+    const paletteButtonClick = () => {
+        let style = document.getElementById("sketch-picker").style;
+        style.visibility = style.visibility === "hidden" ? "visible" : "hidden";
+    };
+
+    const toggleBg = (event) => {
+        const canv = document.getElementById("drawing-area");
+        canv.classList.toggle("bg-white");
+        canv.classList.toggle("bg-black");
+        const element = document.getElementById(event.target.id);
+        element.classList.toggle("bg-gray-300");
+        element.classList.toggle("bg-white");
+        element.classList.toggle('md:hover:text-black');
+        element.classList.toggle('md:hover:bg-gray-200');
+    };
+
+    const colorChangeEvent = (event) => {
+        const colorDisplay = document.getElementById("color-d");
+        const newColor = event?.hex || event.target?.value;
+        const colorVar = props.handleColorChange(newColor);
+        colorDisplay.value = colorVar;
+    };
+
+    const debugEvent = () => {
+        const element = document.getElementById("drawing-area");
+        props.printDebugInfo(element);
+    };
+
+    const toggleDraft = (event) => {
+        const element = document.getElementById(event.target.id);
+        element.classList.toggle("hidden");
+    };
+
+    const uploadToFirebase = () => {
+        console.warn("attempting to upload...");
+        const element = document.getElementById("drawing-area");
         console.log("element: ", element);
         if (!props.isCanvasEmpty(element)) {
             props.uploadToFirebase(element);
@@ -89,24 +112,125 @@ function ArtTool(props) {
         } else {
             console.log("Cannot save an empty canvas");
         }
-
-        const data = canvasToData(element);
-        console.log("got data from canvas:", data);
-        const imgObj = buildModelPicture(userID, Date.now(), Date.now(), data, "Your dad");
-        console.log("imgObj: ", imgObj);
-
-        const newDraftState = !isDraft;
-        setDraft(newDraftState);
-        if (newDraftState) {
-            //setAnimate(true);
-            //setTimeout(() => setAnimate(false), 500);
-            addToDrafts(imgObj); 
-        }
-
-        localStorage.setItem(`draftState-${image.id}`, JSON.stringify(newDraftState));
     };
 
-    return( 
+    const saveCurrent = () => {
+        const element = document.getElementById("drawing-area");
+        props.unshiftUndoHistory(element);
+    };
+
+    const clearCanvas = () => {
+        const element = document.getElementById("drawing-area");
+        props.unshiftUndoHistory(element);
+        props.clearCanvas();
+    };
+
+    const overwriteCanvas = (source) => {
+        console.log("overwriteCanvas source: ", source);
+        const element = document.getElementById("drawing-area");
+        const extra = element.getContext("2d");
+        let img = new Image();
+        img.crossOrigin = "anonymous";
+        img.src = source;
+        img.onload = () => {
+            if (img.width !== element.width || img.height !== element.height) {
+                console.error("Preventing Canvas overwrite due to img with incorrect dimensions (" + img.width + "x" + img.height + ")\n" + "\tImg should be equal to Canvas (" + element.width + "x" + element.height + ")");
+                return;
+            }
+            props.clearCanvas();
+            extra.drawImage(img, 0, 0);
+            img.remove();
+        };
+    };
+
+    const undo = () => {
+        const last = props.grabLastImage();
+        if (last) {
+            const element = document.getElementById("drawing-area");
+            props.unshiftRedoHistory(element);
+            overwriteCanvas(last);
+        }
+    };
+
+    const redo = () => {
+        const last = props.restoreLastImage();
+        if (last) {
+            saveCurrent();
+            overwriteCanvas(last);
+        }
+    };
+
+    const toggleEraser = (event) => {
+        const element = document.getElementById(event.target.id);
+        const ebg = element.classList.toggle('bg-gray-300');
+        element.classList.toggle("bg-white");
+        element.classList.toggle('md:hover:text-black');
+        element.classList.toggle('md:hover:bg-gray-200');
+        props.eraserToggle(ebg);
+    };
+
+    const penSizeEvent = (event) => {
+        document.getElementById("pen-size-d").innerHTML = props.changePenSize(event.target.value);
+    };
+
+    const resetLastCoords = () => {
+        props.setLastCords([-1, -1]);
+    };
+
+    const mouseClickEvent = (event) => {
+        event.preventDefault();
+        saveCurrent();
+        props.checkReset(true);
+        const element = document.getElementById(event.target.id);
+        const cords = getCords(element, event.clientX, event.clientY, (props.changePenSize()-1)/2);
+        const con = element.getContext("2d");
+
+        if (event.button === 2 && !props.eraser) {
+            props.eraserToggle(true);
+            props.drawRect(cords[0], cords[1], con);
+            props.eraserToggle(false);
+        } else {
+            props.drawRect(cords[0], cords[1], con);
+        }
+        props.setLastCords(cords);
+    };
+
+    const mouseDragEvent = (event) => {
+        const canvas = document.getElementById("drawing-area");
+        const xy = getCords(canvas, event.clientX, event.clientY, (props.penSize - 1) / 2);
+        if ((event.buttons === 1 || event.buttons === 2) && props.checkReset()) {
+            if (props.lastXY[0] === -1 && props.lastXY[1] === -1) {
+                props.setLastCords(xy);
+            } else if (event.buttons === 2 && !props.eraser) {
+                props.eraserToggle(true);
+                props.drawLine(canvas, xy[0], xy[1]);
+                props.eraserToggle(false);
+            } else {
+                props.drawLine(canvas, xy[0], xy[1]);
+            }
+        }
+    };
+
+    const touchDrawEvent = (event) => {
+        const element = document.getElementById(event.target.id);
+        const touch = event.targetTouches[0];
+        const xy = getCords(element, touch.clientX, touch.clientY, (props.penSize - 1) / 2);
+        saveCurrent();
+        props.setLastCords(xy);
+    };
+
+    const touchDragEvent = (event) => {
+        const element = document.getElementById(event.target.id);
+        const touch = event.targetTouches[0];
+        const xy = getCords(element, touch.clientX, touch.clientY, (props.penSize - 1) / 2);
+        if (props.lastXY[0] === -1 && props.lastXY[1] === -1) {
+            props.setLastCords(xy);
+        } else {
+            props.drawLine(element, xy[0], xy[1]);
+        }
+    };
+
+    return (
         <div>{isMounted &&
             <div id="parent" className="inset-0 bg-cover bg-cream touch-none max-h-screen overflow-hidden" onMouseUp={mouseUp}>
                 <div id="topbar" className="hidden align-middle bg-brown text-pretty justify-center py-2 md:flex hmd:hidden">
@@ -121,20 +245,19 @@ function ArtTool(props) {
                     </div>
                 </div>
                 <div id="draft" className="hidden">
-                    <Draft  model = {props.model} overwriteCanvas = {overwriteCanvas}>
-                    </Draft>
+                    <Draft model={props.model} overwriteCanvas={overwriteCanvas}></Draft>
                 </div>
                 <div id="content" className="h-screen flex flex-col md:flex-row justify-between items-center mx-4">
                     <div id="color-picker" className="">
-                            <div className="flex flex-col items-center justify-center">
-                                    <div id="sketch-picker" style={{ display: '' }} className="self-center">
-                                        <SketchPicker color={props.color} onChangeComplete={colorChangeEvent} className="self-center hidden md:flex md:flex-col"/>
-                                    </div>
+                        <div className="flex flex-col items-center justify-center">
+                            <div id="sketch-picker" style={{ display: '' }} className="self-center">
+                                <SketchPicker color={props.color} onChangeComplete={colorChangeEvent} className="self-center hidden md:flex md:flex-col"/>
                             </div>
+                        </div>
                     </div>
-                <div>
-                    <canvas className="canvas transition-colors cursor-crosshair select-none touch-none bg-white border border-brown shadow-md" id="drawing-area" width="64" height="32" onContextMenu={(event)=>{event.preventDefault()}}
-                        onTouchStart={touchDrawEvent} onMouseDown={mouseClickEvent}  onMouseMove={mouseDragEvent} onMouseLeave={resetLastCoords} onTouchMove={touchDragEvent}/>
+                    <div>
+                        <canvas className="canvas transition-colors cursor-crosshair select-none touch-none bg-white border border-brown shadow-md" id="drawing-area" width="64" height="32" onContextMenu={(event)=>{event.preventDefault()}}
+                            onTouchStart={touchDrawEvent} onMouseDown={mouseClickEvent}  onMouseMove={mouseDragEvent} onMouseLeave={resetLastCoords} onTouchMove={touchDragEvent}/>
                     </div>
                     <div id="tools" className="mt-0 hmd:mt-20 grid hmd:md:mt-0 hmd:md:ml-4 md:flex md:flex-col items-stretch">
                         <button id="save-to-draft" className={toolButtonCSS + toolActiveButtonCSS} onClick={() => setToDraft(props.model.images)}>Save to Draft</button>
@@ -165,176 +288,5 @@ function ArtTool(props) {
         }</div>
     );
 }
-    function mouseUp() {
-        props.checkReset(false)
-    }
-    function paletteButtonClick() {
-        let style = document.getElementById("sketch-picker").style
-        if (style.visibility === "hidden") {
-            style.visibility = "visible";
-        }else {
-            style.visibility = "hidden";
-        }
-    }
-    function toggleBg(event){
-        const canv = document.getElementById("drawing-area");
-        canv.classList.toggle("bg-white")
-        canv.classList.toggle("bg-black")
-        const element = document.getElementById(event.target.id)
-        element.classList.toggle("bg-gray-300")
-        element.classList.toggle("bg-white")
-        // element.classList.toggle("text-black")
-        element.classList.toggle('md:hover:text-black')
-        element.classList.toggle('md:hover:bg-gray-200')
-    }
-
-    function colorChangeEvent(event) {
-        const colorDisplay = document.getElementById("color-d");
-        const newColor = event?.hex || event.target?.value;
-        const colorVar = props.handleColorChange(newColor);
-        colorDisplay.value = colorVar;  // Update the UI element showing the color
-    }
-    function debugEvent() {
-        //! log outputs for checking canvas size
-        const element = document.getElementById("drawing-area");
-        props.printDebugInfo(element)
-    }
-
-    function toggleDraft(event) {
-        const element = document.getElementById(event.target.id);
-        element.classList.toggle("hidden");
-    }
-    function uploadToFirebase() {
-        console.warn("attempting to upload...");
-        const element = document.getElementById("drawing-area")
-        console.log("element: ", element);
-        if (!props.isCanvasEmpty(element)) {
-            props.uploadToFirebase(element);
-            setDraftUpdate(true);
-        } else {
-            console.log("Cannot save an empty canvas");
-        }
-    }
-    function saveCurrent() {
-        // saves current canvas history to undo history 
-        const element = document.getElementById("drawing-area");
-        props.unshiftUndoHistory(element)     
-    }
-    function clearCanvas() {
-        const element = document.getElementById("drawing-area")
-        props.unshiftUndoHistory(element)
-        props.clearCanvas()
-    }
-    function overwriteCanvas(source) {
-        // overwrites canvas with an img url
-        console.log("overwriteCanvas source: ", source);
-        const element = document.getElementById("drawing-area");
-        const extra = element.getContext("2d")
-        let img = new Image()
-        img.crossOrigin = "anonymous";
-        img.src = source;
-        img.onload = () => {
-            if (img.width !== element.width || img.height !== element.height) {
-                console.error("Preventing Canvas overwrite due to img with incorrect dimensions (" + img.width + "x" + img.height + ")\n"
-                + "\tImg should be equal to Canvas (" + element.width + "x" + element.height + ")");
-                return;
-            }
-            props.clearCanvas();
-            extra.drawImage(img, 0, 0);
-            img.remove();
-        }
-    }
-    function undo() {
-        // grabs and replaces canvas with last image in undo history 
-        const last = props.grabLastImage()
-        if (last) {
-            const element = document.getElementById("drawing-area");
-            props.unshiftRedoHistory(element)
-            overwriteCanvas(last)
-        }
-    }
-    function redo() {
-        const last = props.restoreLastImage()
-        if (last) {
-            saveCurrent()
-            overwriteCanvas(last)
-        }
-    }
-    function toggleEraser(event) {
-        const element = document.getElementById(event.target.id);
-        const ebg = element.classList.toggle('bg-gray-300')
-        element.classList.toggle("bg-white")
-        // element.classList.toggle("text-black")
-        element.classList.toggle('md:hover:text-black')
-        element.classList.toggle('md:hover:bg-gray-200')
-        props.eraserToggle(ebg)
-    }
-    function penSizeEvent(event) {
-        document.getElementById("pen-size-d").innerHTML = props.changePenSize(event.target.value);
-    }
-
-    function resetLastCoords(){
-        props.setLastCords([-1, -1]);
-    }
-    function mouseClickEvent(event) {
-        event.preventDefault();
-        // save current canvas state in undoHistory
-        saveCurrent();
-        props.checkReset(true)
-        const element = document.getElementById(event.target.id);
-        //* translate event coordiantes to the canvas 
-        const cords = getCords(element, event.clientX, event.clientY, (props.changePenSize()-1)/2);
-        const con = element.getContext("2d");
-
-        if (event.button === 2 && !props.eraser) {
-            //* right click erase
-            props.eraserToggle(true)
-            props.drawRect(cords[0], cords[1], con)
-            props.eraserToggle(false)
-        } else { 
-            //* regualr draw
-            props.drawRect(cords[0], cords[1], con)
-        }
-        // save cords for fallback in mouseDragEvent, prevents gaps in fast movements
-        props.setLastCords(cords); 
-    }
-
-    function mouseDragEvent(event) {
-        const canvas = document.getElementById("drawing-area");
-        console.log("props: ", props);
-        const xy = getCords(canvas, event.clientX, event.clientY, (props.penSize - 1) / 2);
-        if ((event.buttons === 1 || event.buttons === 2) && props.checkReset()) {
-            if (props.lastXY[0] === -1 && props.lastXY[1] === -1) {
-                props.setLastCords(xy);  // Update without drawing if last coordinates were invalid
-            } else if (event.buttons === 2 && !props.eraser) {
-                //* right click erase
-                props.eraserToggle(true)
-                props.drawLine(canvas, xy[0], xy[1]);
-                props.eraserToggle(false)
-            } else {
-                //* regular draw
-                props.drawLine(canvas, xy[0], xy[1]);
-            }
-        }
-    }
-        
-    function touchDrawEvent(event){
-        const element = document.getElementById(event.target.id);
-        const touch = event.targetTouches[0];
-        const xy = getCords(element, touch.clientX, touch.clientY, (props.penSize - 1) / 2);
-        saveCurrent();
-        props.setLastCords(xy); 
-    }
-
-    function touchDragEvent(event) {
-        const element = document.getElementById(event.target.id);
-        const touch = event.targetTouches[0];
-        const xy = getCords(element, touch.clientX, touch.clientY, (props.penSize - 1) / 2);
-        if (props.lastXY[0] === -1 && props.lastXY[1] === -1) {
-            props.setLastCords(xy);  // Update without drawing if last coordinates were invalid
-        } else {
-            props.drawLine(element, xy[0], xy[1]);
-        }
-    }
 
 export default ArtTool;
