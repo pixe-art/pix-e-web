@@ -135,9 +135,14 @@ export default function DraftsView(props) {
                     <div className="flex-grow p-4">
                         <h1 className="text-2xl mb-2">My Drafts</h1>
                         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-                            {Object.values(props.model.images).map((image) => (
-                            <ImageComponent key={image.id} image={image}  downloadImage={downloadImage} />
-                            ))}
+                                {
+                                props.model.users[userID] && props.model.users[userID].drafts ? 
+                                Object.values(props.model.users[userID].drafts).map((image) => {
+                                return <ImageComponent key={image.id} image={image} />
+                            })
+                            :
+                            <div className="text-2xl text-center text-gray-700">No drafts yet!</div>
+                            }
                         </div>
                     </div>
                 </div>

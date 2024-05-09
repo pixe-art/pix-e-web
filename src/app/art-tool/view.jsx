@@ -41,9 +41,9 @@ function ArtTool(props) {
     }, [draftUpdate]);
 
     const setToDraft = () => {
-        console.log("uid: ", auth.currentUser.uid);
+        //console.log("uid: ", auth.currentUser.uid);
         const userID = auth.currentUser.uid;
-        console.log(" drafts: ", props.model.users[userID].drafts)
+        //console.log(" drafts: ", props.model.users[userID].drafts)
         const element = document.getElementById("drawing-area");
         console.log("element: ", element);
         if (props.isCanvasEmpty(element)) {
