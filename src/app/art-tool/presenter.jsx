@@ -44,7 +44,6 @@ export default observer(
 
 
         function addToDrafts(imgObj) {
-            let duplicateFound = false;
             const userId = auth.currentUser.uid;
         
             const imagePath = new URL(imgObj.testPicture).pathname.split('/').pop();
@@ -54,19 +53,6 @@ export default observer(
             const imageRef = sRef(storage, imagePath);
             const userImageRef = sRef(storage, 'users/' + userId + '/drafts/' + imgObj.title);
 
-            //check for duplicate
-            for (const idx in model.users[userId].drafts) {
-                console.log("imgObj.testPicture: ", imgObj.testPicture, " model.users[userId].drafts.testPicture: ", model.users[userId].drafts[idx].testPicture, " index: ", idx);
-                if (imagePath === model.users[userId].drafts[idx].testPicture) {
-                    duplicateFound = true;
-                    console.log("You already have a duplicate saved at model.pictures.testPicture[", idx, "]");
-                    return; 
-                }
-            
-            if (duplicateFound) {
-                return;
-            }
-        } 
         
             // Fetch the image data
             fetch(imgObj.testPicture)
