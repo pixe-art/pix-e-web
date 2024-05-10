@@ -3,7 +3,8 @@ const user = auth.currentUser;
 
 export default {
     ready: false,
-    users: [],
+    userReady: false,
+    users: {},
     images:
     [{
         id: '0',
@@ -78,7 +79,7 @@ export default {
         lastEdited: "3",
     }],
     screens: [],
-    paringCodes: [],
+    pairingCodes: [],
 
     // Add more image objects as needed
 };

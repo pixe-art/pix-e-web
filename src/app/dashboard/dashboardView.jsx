@@ -44,11 +44,29 @@ export default function Dashboard(props) {
   };
 
   function setPicturesACB() {
-    //props.model.users[auth.currentUser.uid].colorCurrent = "blue";
-    console.log(props.model.users);
+    //props.model.users[props.model.user.uid].colorCurrent = "blue";
+    //console.log(props.model.users);
+    if (props.model.users[props.model.user.uid].drafts)
+        props.model.users[props.model.user.uid].drafts = [...props.model.users[props.model.user.uid].drafts, 
+          {
+            creator:"LfnQG42xtHPrtVncuY8hnqQHuRp1",
+            id: 1715257651329,
+            storage: "gs://pix-e-b9fab.appspot.com/users/LfnQG42xtHPrtVncuY8hnqQHuRp1/drafts/1715257651329",
+            testPicture: "https://firebasestorage.googleapis.com/v0/b/pix-e-b9fab.appspot.com/o/users%2FLfnQG42xtHPrtVncuY8hnqQHuRp1%2Fdrafts%2F1715257651329?alt=media&token=0b60877a-a8c7-4e0f-919b-c31cd362e586",
+            title: 1715257651329 }];
+
+    else {
+        props.model.users[props.model.user.uid].drafts = [{
+        creator:"LfnQG42xtHPrtVncuY8hnqQHuRp1",
+        id: 1715257651329,
+        storage: "gs://pix-e-b9fab.appspot.com/users/LfnQG42xtHPrtVncuY8hnqQHuRp1/drafts/1715257651329",
+        testPicture: "https://firebasestorage.googleapis.com/v0/b/pix-e-b9fab.appspot.com/o/users%2FLfnQG42xtHPrtVncuY8hnqQHuRp1%2Fdrafts%2F1715257651329?alt=media&token=0b60877a-a8c7-4e0f-919b-c31cd362e586",
+        title: 1715257651329 }];
+    }
     
-    if (props.model.users[auth.currentUser.uid].favorites !== undefined)
-        props.model.users[auth.currentUser.uid].favorites = [...props.model.users[auth.currentUser.uid].favorites, 
+    /*
+    if (props.model.users[props.model.user.uid].favorites)
+        props.model.users[props.model.user.uid].favorites = [...props.model.users[props.model.user.uid].favorites, 
           {
             id: '9',
             testPicture: "https://firebasestorage.googleapis.com/v0/b/pix-e-b9fab.appspot.com/o/images%2F9.png?alt=media&token=e6a19dff-146a-4210-a9db-75b04f4ebc3a",
@@ -58,16 +76,15 @@ export default function Dashboard(props) {
             lastEdited: "3",
         }];
 
-    else
-        props.model.users[auth.currentUser.uid].favorites = [{
-          id: '9',
-          testPicture: "https://firebasestorage.googleapis.com/v0/b/pix-e-b9fab.appspot.com/o/images%2F9.png?alt=media&token=e6a19dff-146a-4210-a9db-75b04f4ebc3a",
-          title: "Wide Putin",
-          creator: "Some memester",
-          storage: "gs://pix-e-b9fab.appspot.com/images/9.png",
-          lastEdited: "3",
-      }];
-
+    else {
+        props.model.users[props.model.user.uid].favorites = [{
+        id: '9',
+        testPicture: "https://firebasestorage.googleapis.com/v0/b/pix-e-b9fab.appspot.com/o/images%2F9.png?alt=media&token=e6a19dff-146a-4210-a9db-75b04f4ebc3a",
+        title: "Wide Putin",
+        creator: "Some memester",
+        storage: "gs://pix-e-b9fab.appspot.com/images/9.png",
+        lastEdited: "3"}];
+    }*/
     /*
     props.model.images = [...props.model.images, 
       {

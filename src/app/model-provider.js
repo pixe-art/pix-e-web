@@ -16,7 +16,6 @@ export function ModelProvider({ children })  {
   }, []); 
 
     function loadingACB() {
-      console.log("How many?");
       setIsLoading(false);
     }
 
@@ -36,5 +35,5 @@ export function ModelProvider({ children })  {
 }
 
 export const useModel = () => useContext(ModelContext);
-connectToFirebase(reactiveModel);
 console.log(reactiveModel);
+connectToFirebase(reactiveModel);

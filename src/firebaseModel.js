@@ -35,9 +35,8 @@ export function modelToPersistence(model) {
     //Model properties to be saved to the realtime database.
     realtimeModel = {users: model.users};
     realtimeModel.images = toObject(model.images);
-    //realtimeModel.images = model.images.reduce(toObjextCB);
     realtimeModel.screens = model.screens;
-    realtimeModel.paringCodes = model.paringCodes;
+    realtimeModel.pairingCodes = model.pairingCodes;
     //Add more properties here like: realtimeModel.color = model.color;
 
     return realtimeModel;
@@ -46,10 +45,18 @@ export function modelToPersistence(model) {
 export function userModelToPersistence(model) { 
     let realtimeModel = null;
 
-    realtimeModel = {colorCurrent: model.users[auth.currentUser.uid].colorCurrent};
-    realtimeModel.favorites = model.users[auth.currentUser.uid].favorites;
-    realtimeModel.device = model.users[auth.currentUser.uid].device;
-    realtimeModel.profile = model.users[auth.currentUser.uid].profile;
+    function toObject(arr) {
+        const obj = {};
+        for (const element of arr)
+          obj[element.id] = element;
+        return obj;
+    }
+
+    realtimeModel = {colorCurrent: model.users[model.user.uid].colorCurrent};
+    realtimeModel.favorites = model.users[model.user.uid].favorites;
+    realtimeModel.device = model.users[model.user.uid].device;
+    realtimeModel.profile = model.users[model.user.uid].profile;
+    realtimeModel.drafts = toObject(model.users[model.user.uid].drafts);
 
     return realtimeModel;
 }
@@ -77,8 +84,8 @@ export function persistenceToModel(data, model) {
             model.screens = data.screens;
         }
 
-        if (data.paringCodes){
-            model.paringCodes = data.paringCodes;
+        if (data.pairingCodes){
+            model.pairingCodes = data.pairingCodes;
         }
     }
 }
@@ -93,19 +100,23 @@ export function userPersistenceToModel(data, model) {
 
     if (data){
         if (data.colorCurrent) {
-            model.users[auth.currentUser.uid].colorCurrent = data.colorCurrent;
+            model.users[model.user.uid].colorCurrent = data.colorCurrent;
         }
 
         if (data.favorites){
-            model.users[auth.currentUser.uid].favorites = toArray(data.favorites);
+            model.users[model.user.uid].favorites = toArray(data.favorites);
+        }
+
+        if (data.drafts){
+            model.users[model.user.uid].drafts = toArray(data.drafts);
         }
 
         if (data.device){
-            model.users[auth.currentUser.uid].device = data.device;
+            model.users[model.user.uid].device = data.device;
         }
 
         if (data.profile){
-            model.users[auth.currentUser.uid].profile = data.profile;
+            model.users[model.user.uid].profile = data.profile;
         }
     }
 }
@@ -119,9 +130,9 @@ export function saveToFirebase(model) {
 }
 
 export function saveUserData(model) {
-    const rf = ref(db, (PATH + "/users/" + auth.currentUser.uid));
+    const rf = ref(db, (PATH + "/users/" + model.user.uid));
 
-    if (model.ready) {
+    if (model.userReady) {
         update(rf, userModelToPersistence(model));
     }
 }
@@ -138,29 +149,66 @@ export function readFromFirebase(model) {
 }
 
 export function readUserData(model) {
-    model.ready = false;
-    const rf = ref(db, (PATH + "/users/" + auth.currentUser.uid));
+    model.userReady = false;
+
+    const rf = ref(db, (PATH + "/users/" + model.user.uid));
     return get(rf).then(convertACB);
 
     function convertACB(snapshot) {
         userPersistenceToModel(snapshot.val(), model);
-        model.ready = true;
+        model.userReady = true;
     }
 }
 
 export function connectToFirebase(model) {
     reaction(modelChangedACB, storedStateEffectACB);
-    onAuthStateChanged(auth, onLoginACB);
+    reaction(modelReadyACB, modelIsReadyACB);
 
     function onLoginACB(user) {
-        readUserData(model);
-        reaction(userDataChangedACB, saveUserDataACB);
+        model.user = user;
+
+        if (user) {
+            //setDefaults();
+            readUserData(model);
+            reaction(userDataChangedACB, saveUserDataACB);
+        }
+    }
+
+    function setDefaults() {
+        if (model.users[model.user.uid]) {
+            if (model.users[model.user.uid].colorCurrent === undefined) 
+                model.users[model.user.uid].colorCurrent = "";
+
+            if (model.users[model.user.uid].favorites === undefined){
+                model.users[model.user.uid].favorites = [];
+            }
+
+            if (model.users[model.user.uid].device === undefined)
+                model.users[model.user.uid].device = 0;
+
+            if (model.users[model.user.uid].profile === undefined)
+                model.users[model.user.uid].profile = {bio: "", username: ""};
+
+            else if (model.users[model.user.uid].profile.bio === undefined)
+                model.users[model.user.uid].profile.bio = "";
+
+            else if (model.users[model.user.uid].profile.username === undefined)
+                model.users[model.user.uid].profile.username = "";
+        }
+
+        else {
+            model.users[model.user.uid] = {};
+            model.users[model.user.uid].colorCurrent = "";
+            model.users[model.user.uid].favorites = [];
+            model.users[model.user.uid].device = 0;
+            model.users[model.user.uid].profile = {bio: "", username: ""};
+        }
     }
 
     function userDataChangedACB() {
-        return [model.users[auth.currentUser.uid].colorCurrent, model.users[auth.currentUser.uid].favorites, 
-                model.users[auth.currentUser.uid].device, model.users[auth.currentUser.uid].profile.bio,
-                model.users[auth.currentUser.uid].profile.username]
+        return [model.users[model.user.uid].colorCurrent, model.users[model.user.uid].favorites, 
+                model.users[model.user.uid].device, model.users[model.user.uid].profile.bio,
+                model.users[model.user.uid].profile.username], model.users[model.user.uid].drafts;
     }
 
     function saveUserDataACB() {
@@ -171,8 +219,18 @@ export function connectToFirebase(model) {
         saveToFirebase(model);
     }
 
+    function modelIsReadyACB() {
+        if (model.ready){
+            onAuthStateChanged(auth, onLoginACB);
+        }
+    }
+
     function modelChangedACB() {
-        return [model.users, model.images, model.screens, model.paringCodes];
+        return [model.images, model.screens, model.pairingCodes];
+    }
+
+    function modelReadyACB() {
+        return [model.ready];
     }
 }
 
