@@ -98,3 +98,8 @@
 .box-button:hover {
     background-color: rgb(97, 97, 97);
 }
+
+.selected-image {
+    border: 2px solid blue; /* Adds a blue border around the selected image */
+    box-shadow: 0 0 10px rgba(0, 0, 255, 0.5); /* Optionally add a shadow for more emphasis */
+}
