@@ -1,7 +1,7 @@
 import "./artToolStyles.css";
 import React, { useState, useEffect } from 'react';
 //const testCSS = " top-[15%] left-[12.5%] w-[75%] h-[75%] z-30 "
-const testCSS = "bg-yellow-100 border border-red-600  w-2/4 h-2/4 left-1/4 top-1/4 z-30 "
+const testCSS = "bg-gray-100 border border-black w-2/4 h-2/4 left-1/4 top-1/4 z-30";
 
 function Draft(props) {
     const [selectedImage, setSelectedImage] = useState(false);
@@ -59,20 +59,22 @@ function Draft(props) {
     return(
         <div> {draftExists && 
         <div id="draft-parent" className={testCSS + " absolute text-black flex flex-col items-center"}>
-            <h1 className="text-center text-4xl font-bold m-4">YOUR DRAFTS</h1>
+            <h1 className="text-center text-4xl font-bold m-4 text-gray-700 bg-gray-200 p-3 rounded-lg shadow-lg">
+                YOUR DRAFTS
+            </h1>
             <div id="draft-images" className="grid grid-cols-3 gap-6 draft-images-container">
                 {Object.values(props.model.users[props.userID].drafts).map(renderImages)}
             </div>
             <div className="draft-buttons grid grid-cols-2 gap-4 w-full">
                 <button 
-                className={`px-4 py-2 ${selectedImage ? 'bg-blue-500 hover:bg-blue-700 text-white' : 'bg-gray-400 text-gray-700 cursor-not-allowed'}`}
-                disabled={!selectedImage}
-                onClick={() => openBox('edit')}
+                    className={`px-4 py-2 rounded-lg shadow-md transition-colors duration-200 ease-in-out ${selectedImage ? 'bg-blue-500 hover:bg-blue-700 text-white' : 'bg-gray-400 text-gray-700 cursor-not-allowed'}`}
+                    disabled={!selectedImage}
+                    onClick={() => openBox('edit')}
                 >
                     Edit
                 </button>
                 <button
-                    className={`px-4 py-2 ${selectedImage ? 'bg-red-500 hover:bg-red-700 text-white' : 'bg-gray-400 text-gray-700 cursor-not-allowed'}`}
+                    className={`px-4 py-2 rounded-lg shadow-md transition-colors duration-200 ease-in-out ${selectedImage ? 'bg-red-500 hover:bg-red-700 text-white' : 'bg-gray-400 text-gray-700 cursor-not-allowed'}`}
                     disabled={!selectedImage}
                     onClick={() => openBox('delete')}
                 >
