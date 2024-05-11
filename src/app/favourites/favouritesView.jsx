@@ -134,7 +134,7 @@ export default function FavouritesView(props) {
                     <div className="flex-grow p-4">
                         <h1 className="text-2xl mb-2">My Favourites</h1>
                         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-                            {props.model.users[props.model.user.uid].favourites.map((image) => (
+                            {props.model.users[props.model.user.uid].favorites.map((image) => (
                                 <ImageComponent key={image.id} image={image} />
                             ))}
                         </div>

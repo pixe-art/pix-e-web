@@ -42,7 +42,7 @@ export function addToFavourites(imageUrl, filename, creator, id) {
     // Create a copy of the image in Firebase storage
     const storage = getStorage(app);
     const imageRef = sRef(storage, imagePath);
-    const userImageRef = sRef(storage, 'users/' + userId + '/favourites/' + filename);
+    const userImageRef = sRef(storage, 'users/' + userId + '/favorites/' + filename);
 
     // Fetch the image data
     fetch(imageUrl)
@@ -68,13 +68,13 @@ export function addToFavourites(imageUrl, filename, creator, id) {
 
                             // Store the reference in the Firebase database
                             const db = getDatabase(app);
-                            const imageRef = dbRef(db, 'pixeModel/users/' + userId + '/favourites/' + filename);
+                            const imageRef = dbRef(db, 'pixeModel/users/' + userId + '/favorites/' + filename);
                             update(imageRef, {
                                 id: filename, 
                                 testPicture: url, // use the url here
                                 title: filename,
                                 creator: creator,
-                                storage: "gs://pix-e-b9fab.appspot.com/users/" + userId + '/favourites/' + filename
+                                storage: "gs://pix-e-b9fab.appspot.com/users/" + userId + '/favorites/' + filename
                             });
                         })
                         .catch((error) => {

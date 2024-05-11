@@ -35,5 +35,5 @@ export function ModelProvider({ children })  {
 }
 
 export const useModel = () => useContext(ModelContext);
-console.log(reactiveModel);
+//console.log(reactiveModel);
 connectToFirebase(reactiveModel);

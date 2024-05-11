@@ -46,7 +46,7 @@ export default function Dashboard(props) {
   function setPicturesACB() {
     //props.model.users[props.model.user.uid].colorCurrent = "blue";
     //console.log(props.model.users);
-    if (props.model.users[props.model.user.uid].drafts)
+    /*if (props.model.users[props.model.user.uid].drafts !== undefined)
         props.model.users[props.model.user.uid].drafts = [...props.model.users[props.model.user.uid].drafts, 
           {
             creator:"LfnQG42xtHPrtVncuY8hnqQHuRp1",
@@ -62,9 +62,9 @@ export default function Dashboard(props) {
         storage: "gs://pix-e-b9fab.appspot.com/users/LfnQG42xtHPrtVncuY8hnqQHuRp1/drafts/1715257651329",
         testPicture: "https://firebasestorage.googleapis.com/v0/b/pix-e-b9fab.appspot.com/o/users%2FLfnQG42xtHPrtVncuY8hnqQHuRp1%2Fdrafts%2F1715257651329?alt=media&token=0b60877a-a8c7-4e0f-919b-c31cd362e586",
         title: 1715257651329 }];
-    }
+    }*/
     
-    /*
+    
     if (props.model.users[props.model.user.uid].favorites)
         props.model.users[props.model.user.uid].favorites = [...props.model.users[props.model.user.uid].favorites, 
           {
@@ -84,7 +84,7 @@ export default function Dashboard(props) {
         creator: "Some memester",
         storage: "gs://pix-e-b9fab.appspot.com/images/9.png",
         lastEdited: "3"}];
-    }*/
+    }
     /*
     props.model.images = [...props.model.images, 
       {

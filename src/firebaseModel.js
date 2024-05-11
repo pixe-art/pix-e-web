@@ -53,7 +53,7 @@ export function userModelToPersistence(model) {
     }
 
     realtimeModel = {colorCurrent: model.users[model.user.uid].colorCurrent};
-    realtimeModel.favorites = model.users[model.user.uid].favorites;
+    realtimeModel.favorites = toObject(model.users[model.user.uid].favorites);
     realtimeModel.device = model.users[model.user.uid].device;
     realtimeModel.profile = model.users[model.user.uid].profile;
     realtimeModel.drafts = toObject(model.users[model.user.uid].drafts);
@@ -168,7 +168,7 @@ export function connectToFirebase(model) {
         model.user = user;
 
         if (user) {
-            //setDefaults();
+            setDefaults();
             readUserData(model);
             reaction(userDataChangedACB, saveUserDataACB);
         }
@@ -182,6 +182,9 @@ export function connectToFirebase(model) {
             if (model.users[model.user.uid].favorites === undefined){
                 model.users[model.user.uid].favorites = [];
             }
+
+            if (model.users[model.user.uid].drafts === undefined)
+                model.users[model.user.uid].drafts = [];
 
             if (model.users[model.user.uid].device === undefined)
                 model.users[model.user.uid].device = 0;
@@ -197,8 +200,7 @@ export function connectToFirebase(model) {
         }
 
         else {
-            model.users[model.user.uid] = {};
-            model.users[model.user.uid].colorCurrent = "";
+            model.users[model.user.uid] = {colorCurrent: ""};
             model.users[model.user.uid].favorites = [];
             model.users[model.user.uid].device = 0;
             model.users[model.user.uid].profile = {bio: "", username: ""};
@@ -208,7 +210,7 @@ export function connectToFirebase(model) {
     function userDataChangedACB() {
         return [model.users[model.user.uid].colorCurrent, model.users[model.user.uid].favorites, 
                 model.users[model.user.uid].device, model.users[model.user.uid].profile.bio,
-                model.users[model.user.uid].profile.username], model.users[model.user.uid].drafts;
+                model.users[model.user.uid].profile.username, model.users[model.user.uid].drafts];
     }
 
     function saveUserDataACB() {
@@ -220,7 +222,7 @@ export function connectToFirebase(model) {
     }
 
     function modelIsReadyACB() {
-        if (model.ready){
+        if (model.ready) {
             onAuthStateChanged(auth, onLoginACB);
         }
     }
