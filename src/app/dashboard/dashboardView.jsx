@@ -44,6 +44,48 @@ export default function Dashboard(props) {
   };
 
   function setPicturesACB() {
+    //props.model.users[props.model.user.uid].colorCurrent = "blue";
+    //console.log(props.model.users);
+    if (props.model.users[props.model.user.uid].drafts)
+        props.model.users[props.model.user.uid].drafts = [...props.model.users[props.model.user.uid].drafts, 
+          {
+            creator:"LfnQG42xtHPrtVncuY8hnqQHuRp1",
+            id: 1715257651329,
+            storage: "gs://pix-e-b9fab.appspot.com/users/LfnQG42xtHPrtVncuY8hnqQHuRp1/drafts/1715257651329",
+            testPicture: "https://firebasestorage.googleapis.com/v0/b/pix-e-b9fab.appspot.com/o/users%2FLfnQG42xtHPrtVncuY8hnqQHuRp1%2Fdrafts%2F1715257651329?alt=media&token=0b60877a-a8c7-4e0f-919b-c31cd362e586",
+            title: 1715257651329 }];
+
+    else {
+        props.model.users[props.model.user.uid].drafts = [{
+        creator:"LfnQG42xtHPrtVncuY8hnqQHuRp1",
+        id: 1715257651329,
+        storage: "gs://pix-e-b9fab.appspot.com/users/LfnQG42xtHPrtVncuY8hnqQHuRp1/drafts/1715257651329",
+        testPicture: "https://firebasestorage.googleapis.com/v0/b/pix-e-b9fab.appspot.com/o/users%2FLfnQG42xtHPrtVncuY8hnqQHuRp1%2Fdrafts%2F1715257651329?alt=media&token=0b60877a-a8c7-4e0f-919b-c31cd362e586",
+        title: 1715257651329 }];
+    }
+    
+    /*
+    if (props.model.users[props.model.user.uid].favorites)
+        props.model.users[props.model.user.uid].favorites = [...props.model.users[props.model.user.uid].favorites, 
+          {
+            id: '9',
+            testPicture: "https://firebasestorage.googleapis.com/v0/b/pix-e-b9fab.appspot.com/o/images%2F9.png?alt=media&token=e6a19dff-146a-4210-a9db-75b04f4ebc3a",
+            title: "Wide Putin",
+            creator: "Some memester",
+            storage: "gs://pix-e-b9fab.appspot.com/images/9.png",
+            lastEdited: "3",
+        }];
+
+    else {
+        props.model.users[props.model.user.uid].favorites = [{
+        id: '9',
+        testPicture: "https://firebasestorage.googleapis.com/v0/b/pix-e-b9fab.appspot.com/o/images%2F9.png?alt=media&token=e6a19dff-146a-4210-a9db-75b04f4ebc3a",
+        title: "Wide Putin",
+        creator: "Some memester",
+        storage: "gs://pix-e-b9fab.appspot.com/images/9.png",
+        lastEdited: "3"}];
+    }*/
+    /*
     props.model.images = [...props.model.images, 
       {
         id: '9',
@@ -52,18 +94,18 @@ export default function Dashboard(props) {
         creator: "Some memester",
         storage: "gs://pix-e-b9fab.appspot.com/images/9.png",
         lastEdited: "3",
-    }];
+    }];*/
   }
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-cream">
       <button
         onClick={handleLogout}
         className="absolute top-4 left-4 px-4 py-2 text-white bg-gray-500 rounded hover:bg-gray-600"
       >
         Logout
       </button>
-      <div className="max-w-md w-full px-8 py-6 bg-white shadow-md rounded-lg text-center border-8 border-black rounded-xl">
+      <div className="max-w-md w-full px-8 py-6 bg-white shadow-md text-center border-8 border-brown rounded-lg">
         {user && (
           <p className="text-sm text-gray-600 mb-4">Logged in as: {username || user.uid}</p>
 
@@ -71,7 +113,7 @@ export default function Dashboard(props) {
         <h1 className="text-3xl font-bold text-gray-800 mb-4">
           Welcome to Pix-E Dashboard!
         </h1>
-        <button className="text-3xl font-bold text-gray-800 mb-4" onClick={setPicturesACB}>Click to update data in firebase!</button>
+        <button className="text-3xl font-bold text-red-800 border-4 border-red-400 mb-4" onClick={setPicturesACB}>Click to update data in firebase (debug)</button>
         <p className="text-lg text-gray-600 mb-6">
           Create and share your pixel art creations.
         </p>
@@ -85,19 +127,19 @@ export default function Dashboard(props) {
           />
         </div>
 
-        <div className="flex flex-wrap gap-4 justify-center mb-6">
+        <div className="flex flex-wrap gap-4 justify-center mb-6 *:*:min-w-40 /*<- sets all spans to same width*/">
           <Link href="/art-tool">
-            <span className="inline-block px-6 py-2 text-white bg-blue-500 rounded hover:bg-blue-600 cursor-pointer">
+            <span className="inline-block px-6 py-2 text-white bg-slate-500 rounded hover:bg-slate-600 cursor-pointer">
               Art Tool
             </span>
           </Link>
           <Link href="/profile">
-            <span className="inline-block px-6 py-2 text-white bg-green-500 rounded hover:bg-green-600 cursor-pointer">
+            <span className="inline-block px-6 py-2 text-white bg-emerald-500 rounded hover:bg-emerald-600 cursor-pointer">
               Profile
             </span>
           </Link>
           <Link href="/favourites">
-            <span className="inline-block px-6 py-2 text-white bg-yellow-500 rounded hover:bg-yellow-600 cursor-pointer">
+            <span className="inline-block px-6 py-2 text-white bg-amber-500 rounded hover:bg-amber-600 cursor-pointer">
               Favourites
             </span>
           </Link>

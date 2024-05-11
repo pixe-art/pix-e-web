@@ -3,7 +3,8 @@ const user = auth.currentUser;
 
 export default {
     ready: false,
-    users: [],
+    userReady: false,
+    users: {},
     images:
     [{
         id: '0',
@@ -62,23 +63,23 @@ export default {
         lastEdited: "3",
     },
     {
-        id: '7',
-        testPicture: "https://firebasestorage.googleapis.com/v0/b/pix-e-b9fab.appspot.com/o/images%2F7.png?alt=media&token=11725268-faac-4a83-a5c6-9cf6f7a6f34d",
+        id: 'walking_seal',
+        testPicture: "https://firebasestorage.googleapis.com/v0/b/pix-e-b9fab.appspot.com/o/images%2Fwalking_seal.png?alt=media&token=ea3fd3c6-cbab-460f-909c-43ee9af309d6",
         title: "Walking seal",
         creator: "Some weirdo",
-        storage: "gs://pix-e-b9fab.appspot.com/images/7.png",
+        storage: "gs://pix-e-b9fab.appspot.com/images/walking_seal.png",
         lastEdited: "3",
     },
     {
-        id: '8',
-        testPicture: "https://firebasestorage.googleapis.com/v0/b/pix-e-b9fab.appspot.com/o/images%2F8.png?alt=media&token=1ada47e4-ba8a-47ba-9f2f-1ab673deadd3",
+        id: 'rgb',
+        testPicture: "https://firebasestorage.googleapis.com/v0/b/pix-e-b9fab.appspot.com/o/images%2Frgb.png?alt=media&token=43222a04-f763-4bb6-9f71-0f467714aa6b",
         title: "Some flag idunno",
         creator: "Some weirdo",
-        storage: "gs://pix-e-b9fab.appspot.com/images/8.png",
+        storage: "gs://pix-e-b9fab.appspot.com/images/rgb.png",
         lastEdited: "3",
     }],
     screens: [],
-    paringCodes: [],
+    pairingCodes: [],
 
     // Add more image objects as needed
 };

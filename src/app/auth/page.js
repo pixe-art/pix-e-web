@@ -90,8 +90,8 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-100">
-      <div className="p-8 bg-white shadow-md rounded-lg">
+    <div className="flex min-h-screen items-center justify-center bg-cream">
+      <div className="p-8 bg-white border border-brown border-4 shadow-md rounded-lg">
         <h1 className="text-2xl font-bold text-gray-800 mb-6">
           Login to Pix-E
         </h1>
@@ -99,19 +99,19 @@ export default function LoginPage() {
           <>
             <button
               onClick={() => setShowLoginForm(true)}
-              className="w-full py-2 px-4 bg-green-500 text-white font-semibold rounded-lg shadow-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50 mb-4"
+              className="w-full py-2 px-4 bg-amber-500 text-white font-semibold rounded-lg shadow-md hover:bg-amber-700 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-opacity-50 mb-4"
             >
               Log in with Email and Password
             </button>
             <button
               onClick={handleGoogleLogin}
-              className="w-full py-2 px-4 bg-blue-500 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 mb-4"
+              className="w-full py-2 px-4 bg-sky-500 text-white font-semibold rounded-lg shadow-md hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-opacity-50 mb-4"
             >
               Log in with Google
             </button>
             <button
               onClick={navigateToRegister}
-              className="w-full py-2 px-4 bg-transparent text-blue-500 text-center text-sm"
+              className="w-full py-2 px-4 bg-transparent text-sky-500 text-center text-sm"
             >
               Don't have an account? Register
             </button>
@@ -124,18 +124,18 @@ export default function LoginPage() {
               placeholder="Enter your email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full mb-4 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full mb-4 px-4 py-2 border rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-amber-500"
             />
             <input
               type="password"
               placeholder="Enter your password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full mb-4 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full mb-4 px-4 py-2 border rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-amber-500"
             />
             <button
               type="submit"
-              className="w-full py-2 px-4 bg-blue-500 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+              className="w-full py-2 px-4 bg-amber-500 text-white font-semibold rounded-lg shadow-md hover:bg-amber-700 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-opacity-50"
             >
               Log in
             </button>
