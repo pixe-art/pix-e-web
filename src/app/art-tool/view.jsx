@@ -34,7 +34,6 @@ function ArtTool(props) {
     }, [isMounted]);
 
     useEffect(() => {
-        console.log("useEffect called in view, props.model.users[auth.currentUser.uid].drafts: ", props.model.users[auth.currentUser.uid].drafts);
         if(draftUpdate) {
             setDraftUpdate(false);
         }

@@ -42,8 +42,10 @@
     box-shadow: 0 0 8px #000; /* Adds shadow for depth */
 }
 
-.draft-buttons {
-
+#draft-parent {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
 .edit-draft {
