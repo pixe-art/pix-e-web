@@ -202,6 +202,7 @@ export function connectToFirebase(model) {
         else {
             model.users[model.user.uid] = {colorCurrent: ""};
             model.users[model.user.uid].favorites = [];
+            model.users[model.user.uid].drafts = [];
             model.users[model.user.uid].device = 0;
             model.users[model.user.uid].profile = {bio: "", username: ""};
         }
