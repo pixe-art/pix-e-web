@@ -17,7 +17,7 @@ const toolActiveButtonCSS = " active:text-white active:bg-gray-200 md:active:tex
 function ArtTool(props) {
     const [isMounted, setIsMounted] = useState(false);
     const [draftUpdate, setDraftUpdate] = useState(false);
-    const [isDraft, setDraft] = useState(false);
+    const [isDraft, setIsDraft] = useState(false);
 
 
     useEffect(() => {
@@ -54,12 +54,11 @@ function ArtTool(props) {
         console.log("imgObj: ", imgObj);
 
         const newDraftState = !isDraft;
-        setDraft(newDraftState);
-        if (newDraftState) {
-            props.addToDrafts(imgObj); 
-        }
+        setIsDraft(newDraftState);
+  
+        props.addToDrafts(imgObj); 
 
-        localStorage.setItem(`draftState-${imgObj.id}`, JSON.stringify(newDraftState));
+        localStorage.setItem(`draftState-${imgObj.id}`, JSON.stringify(!isDraft));
         setDraftUpdate(true);
     };
 
@@ -250,7 +249,7 @@ function ArtTool(props) {
                 <div id="draft" className="hidden">
                     <Draft model={props.model} overwriteCanvas={overwriteCanvas} userID={auth.currentUser.uid} deleteDraft={props.deleteDraft} toggleDraft={toggleDraft}></Draft>
                 </div>
-                <div id="content" className="h-screen flex flex-col md:flex-row justify-between items-center mx-4" onMouseDown={closeDraft} onTouchStart={closeDraft}>
+                <div id="content" className="h-screen flex flex-col md:flex-row justify-between items-center mx-4" /* onMouseDown={closeDraft} onTouchStart={closeDraft} */>
                     <div id="color-picker" className="">
                         <div className="flex flex-col items-center justify-center">
                             <div id="sketch-picker" style={{ display: '' }} className="self-center">
@@ -268,7 +267,7 @@ function ArtTool(props) {
                             <label htmlFor="upload" className={toolButtonCSS + toolActiveButtonCSS + "text-center"}>Upload Image</label>
                             <input id="upload" className="hidden" type="file" name="img" accept="image/*" />
                         </form>
-                        <button id="show-draft" className={toolButtonCSS + toolActiveButtonCSS + "w-auto"} onClick={toggleDraft}>Draft Menu</button>
+                        <button id="draft" className={toolButtonCSS + toolActiveButtonCSS + "w-auto"} onClick={toggleDraft}>Draft Menu</button>
                         <button id="save" className={toolButtonCSS + toolActiveButtonCSS} onClick={uploadToFirebase}>Save</button>
                         <button id="download" className={toolButtonCSS + toolActiveButtonCSS} onClick={props.downloadCanvas} type="button">Download</button>
                         <button id="bg" className={toolButtonCSS + toolActiveButtonCSS} onClick={toggleBg}>Background Color</button>
@@ -294,22 +293,13 @@ function ArtTool(props) {
             </div>
         }</div>
     );
-    function mouseUp() {
-        props.checkReset(false)
-    }
-    function closeDraft(event) {
+
+/*     function closeDraft(event) {
         const draft = document.getElementById("draft").classList; 
         if (!draft.contains("hidden") && !(event.target.id === "show-draft"))
             draft.toggle("hidden");
-    }
-    function paletteButtonClick() {
-        let style = document.getElementById("sketch-picker").style
-        if (style.visibility === "hidden") {
-            style.visibility = "visible";
-        }else {
-            style.visibility = "hidden";
-        }
-    }
+    } */
+
     function handleSubmit(event) {
         const img = event.target.files[0]
         if (!img) return;
@@ -320,170 +310,6 @@ function ArtTool(props) {
         });
         //give reader img, triggers onLoad event
         reader.readAsDataURL(img)
-    }
-    function toggleBg(event){
-        const canv = document.getElementById("drawing-area");
-        canv.classList.toggle("bg-white")
-        canv.classList.toggle("bg-black")
-        const element = document.getElementById(event.target.id)
-        element.classList.toggle("bg-gray-300")
-        element.classList.toggle("bg-white")
-        // element.classList.toggle("text-black")
-        element.classList.toggle('md:hover:text-black')
-        element.classList.toggle('md:hover:bg-gray-200')
-    }
-
-    function colorChangeEvent(event) {
-        const colorDisplay = document.getElementById("color-d");
-        const newColor = event?.hex || event.target?.value;
-        const colorVar = props.handleColorChange(newColor);
-        colorDisplay.value = colorVar;  // Update the UI element showing the color
-    }
-    function debugEvent() {
-        //! log outputs for checking canvas size
-        const element = document.getElementById("drawing-area");
-        props.printDebugInfo(element)
-    }
-
-    function toggleDraft(event) {
-        const element = document.getElementById("draft");
-        element.classList.toggle("hidden");
-    }
-    function uploadToFirebase() {
-        console.warn("attempting to upload...");
-        const element = document.getElementById("drawing-area")
-        console.log("element: ", element);
-        if (!props.isCanvasEmpty(element)) {
-            props.uploadToFirebase(element);
-            setDraftUpdate(true);
-        } else {
-            console.log("Cannot save an empty canvas");
-        }
-    }
-    function saveCurrent() {
-        // saves current canvas history to undo history 
-        const element = document.getElementById("drawing-area");
-        props.unshiftUndoHistory(element)     
-    }
-    function clearCanvas() {
-        const element = document.getElementById("drawing-area")
-        props.unshiftUndoHistory(element)
-        props.clearRedoHistory()
-        props.clearCanvas()
-    }
-    function overwriteCanvas(source) {
-        // overwrites canvas with an img url
-        console.log("overwriteCanvas source: ", source);
-        const draftClass = document.getElementById("draft").classList
-        if (!draftClass.contains("hidden")) {
-            draftClass.toggle("hidden")
-        }
-        const element = document.getElementById("drawing-area");
-        const extra = element.getContext("2d")
-        let img = new Image()
-        img.crossOrigin = "anonymous";
-        img.src = source;
-        img.onload = () => {
-            // if (img.width !== element.width || img.height !== element.height) {
-            //     console.error("Preventing Canvas overwrite due to img with incorrect dimensions (" + img.width + "x" + img.height + ")\n"
-            //     + "\tImg should be equal to Canvas (" + element.width + "x" + element.height + ")");
-            //     return;
-            // }
-            props.clearCanvas();
-            extra.drawImage(img, 0, 0, 64, 32);
-            img.remove();
-        }
-    }
-    function undo() {
-        // grabs and replaces canvas with last image in undo history 
-        const last = props.grabLastImage()
-        if (last) {
-            const element = document.getElementById("drawing-area");
-            props.unshiftRedoHistory(element)
-            overwriteCanvas(last)
-        }
-    }
-    function redo() {
-        const last = props.restoreLastImage()
-        if (last) {
-            saveCurrent()
-            overwriteCanvas(last)
-        }
-    }
-    function toggleEraser(event) {
-        const element = document.getElementById(event.target.id);
-        const ebg = element.classList.toggle('bg-gray-300')
-        element.classList.toggle("bg-white")
-        // element.classList.toggle("text-black")
-        element.classList.toggle('md:hover:text-black')
-        element.classList.toggle('md:hover:bg-gray-200')
-        props.eraserToggle(ebg)
-    }
-    function penSizeEvent(event) {
-        document.getElementById("pen-size-d").innerHTML = props.changePenSize(event.target.value);
-    }
-
-    function resetLastCoords(){
-        props.setLastCords([-1, -1]);
-    }
-    function mouseClickEvent(event) {
-        event.preventDefault();
-        // save current canvas state in undoHistory
-        saveCurrent();
-        props.checkReset(true)
-        const element = document.getElementById(event.target.id);
-        //* translate event coordiantes to the canvas 
-        const cords = getCords(element, event.clientX, event.clientY, (props.changePenSize()-1)/2);
-        const con = element.getContext("2d");
-
-        if (event.button === 2 && !props.eraser) {
-            //* right click erase
-            props.eraserToggle(true)
-            props.drawRect(cords[0], cords[1], con)
-            props.eraserToggle(false)
-        } else { 
-            //* regualr draw
-            props.drawRect(cords[0], cords[1], con)
-        }
-        // save cords for fallback in mouseDragEvent, prevents gaps in fast movements
-        props.setLastCords(cords); 
-    }
-
-    function mouseDragEvent(event) {
-        const canvas = document.getElementById("drawing-area");
-        const xy = getCords(canvas, event.clientX, event.clientY, (props.penSize - 1) / 2);
-        if ((event.buttons === 1 || event.buttons === 2) && props.checkReset()) {
-            if (props.lastXY[0] === -1 && props.lastXY[1] === -1) {
-                props.setLastCords(xy);  // Update without drawing if last coordinates were invalid
-            } else if (event.buttons === 2 && !props.eraser) {
-                //* right click erase
-                props.eraserToggle(true)
-                props.drawLine(canvas, xy[0], xy[1]);
-                props.eraserToggle(false)
-            } else {
-                //* regular draw
-                props.drawLine(canvas, xy[0], xy[1]);
-            }
-        }
-    }
-        
-    function touchDrawEvent(event){
-        const element = document.getElementById(event.target.id);
-        const touch = event.targetTouches[0];
-        const xy = getCords(element, touch.clientX, touch.clientY, (props.penSize - 1) / 2);
-        saveCurrent();
-        props.setLastCords(xy); 
-    }
-
-    function touchDragEvent(event) {
-        const element = document.getElementById(event.target.id);
-        const touch = event.targetTouches[0];
-        const xy = getCords(element, touch.clientX, touch.clientY, (props.penSize - 1) / 2);
-        if (props.lastXY[0] === -1 && props.lastXY[1] === -1) {
-            props.setLastCords(xy);  // Update without drawing if last coordinates were invalid
-        } else {
-            props.drawLine(element, xy[0], xy[1]);
-        }
     }
 }
 export default ArtTool;

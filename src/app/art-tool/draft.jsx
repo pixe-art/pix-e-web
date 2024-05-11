@@ -1,7 +1,7 @@
 import "./artToolStyles.css";
 import React, { useState, useEffect } from 'react';
-const testCSS = " top-[15%] left-[12.5%] w-[75%] h-[75%] z-30 "
-//const testCSS = "bg-yellow-100 border border-red-600  w-2/4 h-2/4 left-1/4 top-1/4 z-30 "
+//const testCSS = " top-[15%] left-[12.5%] w-[75%] h-[75%] z-30 "
+const testCSS = "bg-yellow-100 border border-red-600  w-2/4 h-2/4 left-1/4 top-1/4 z-30 "
 
 function Draft(props) {
     const [selectedImage, setSelectedImage] = useState(false);
