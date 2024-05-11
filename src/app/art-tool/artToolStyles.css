@@ -41,3 +41,60 @@
     opacity: 0.8; /* Slightly fades the image to indicate hover */
     box-shadow: 0 0 8px #000; /* Adds shadow for depth */
 }
+
+.draft-buttons {
+
+}
+
+.edit-draft {
+    background-color: rgb(204, 203, 203);
+    border: 1px solid black;
+}
+
+.delete-draft {
+    background-color: rgb(204, 203, 203);
+    border: 1px solid black;
+
+}
+
+.box-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 90;
+}
+
+.box-container {
+    padding: 20px;
+    background: rgb(81, 177, 233);
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    z-index: 100;
+    width: 300px;
+    max-width: 90%;
+    text-align: center;
+}
+
+.button-container {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.box-button {
+    padding: 10px 20px;
+    border: 1px solid black;
+    background-color: rgb(173, 173, 173); 
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.box-button:hover {
+    background-color: rgb(97, 97, 97);
+}

@@ -18,7 +18,6 @@ function ArtTool(props) {
     const [isMounted, setIsMounted] = useState(false);
     const [draftUpdate, setDraftUpdate] = useState(false);
     const [isDraft, setDraft] = useState(false);
-    const [propsBool, setPropsBool] = useState(false);
 
 
     useEffect(() => {
@@ -35,17 +34,15 @@ function ArtTool(props) {
     }, [isMounted]);
 
     useEffect(() => {
+        console.log("useEffect called in view, props.model.users[auth.currentUser.uid].drafts: ", props.model.users[auth.currentUser.uid].drafts);
         if(draftUpdate) {
             setDraftUpdate(false);
         }
     }, [draftUpdate]);
 
     const setToDraft = () => {
-        //console.log("uid: ", auth.currentUser.uid);
         const userID = auth.currentUser.uid;
-        //console.log(" drafts: ", props.model.users[userID].drafts)
         const element = document.getElementById("drawing-area");
-        console.log("element: ", element);
         if (props.isCanvasEmpty(element)) {
             console.log("Cannot save an empty canvas");
             return;
@@ -63,6 +60,7 @@ function ArtTool(props) {
         }
 
         localStorage.setItem(`draftState-${imgObj.id}`, JSON.stringify(newDraftState));
+        setDraftUpdate(true);
     };
 
     const mouseUp = () => {
@@ -98,6 +96,11 @@ function ArtTool(props) {
     };
 
     const toggleDraft = (event) => {
+        if (event === "draft") {
+            const element = document.getElementById(event);
+            element.classList.toggle("hidden");
+            return;
+        }
         const element = document.getElementById(event.target.id);
         element.classList.toggle("hidden");
     };
@@ -245,7 +248,7 @@ function ArtTool(props) {
                     </div>
                 </div>
                 <div id="draft" className="hidden">
-                    <Draft model={props.model} overwriteCanvas={overwriteCanvas}></Draft>
+                    <Draft model={props.model} overwriteCanvas={overwriteCanvas} userID={auth.currentUser.uid} deleteDraft={props.deleteDraft} toggleDraft={toggleDraft}></Draft>
                 </div>
                 <div id="content" className="h-screen flex flex-col md:flex-row justify-between items-center mx-4">
                     <div id="color-picker" className="">

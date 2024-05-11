@@ -1,4 +1,4 @@
-// Alvin
+
 //* 'use client': specifies that code runs on clients browser. (enables use of observer) *//
 'use client'; 
 import ArtTool from "./view";
@@ -10,7 +10,8 @@ import { onAuthStateChanged } from "firebase/auth";
 import { buildModelPicture, canvasToData } from "@/utilities";
 import { app } from "/src/firebaseModel.js";
 import { getStorage, ref as sRef , getDownloadURL, uploadBytesResumable } from "firebase/storage";
-import { getDatabase, ref as dbRef , set, push, update, remove } from "firebase/database";
+import { getDatabase, ref as dbRef , set, push, update, remove, delete as deleteFile  } from "firebase/database";
+import { deleteObject } from "firebase/storage";
 
 
 export default observer(
@@ -43,19 +44,20 @@ export default observer(
         }, [color, model.colorCurrent]);
 
 
-        function addToDrafts(imgObj) {
-            const userId = auth.currentUser.uid;
+        function addToDrafts(img) {
+            const userID = auth.currentUser.uid;
+            console.log("image: ", img);
         
-            const imagePath = new URL(imgObj.testPicture).pathname.split('/').pop();
+            const imagePath = new URL(img.testPicture).pathname.split('/').pop();
             
             // Create a copy of the image in Firebase storage
             const storage = getStorage(app);
             const imageRef = sRef(storage, imagePath);
-            const userImageRef = sRef(storage, 'users/' + userId + '/drafts/' + imgObj.title);
+            const userImageRef = sRef(storage, 'users/' + userID + '/drafts/' + img.title);
 
         
             // Fetch the image data
-            fetch(imgObj.testPicture)
+            fetch(img.testPicture)
                 .then(response => response.blob())
                 .then(blob => {
                     // Upload the image data to the new path
@@ -78,13 +80,13 @@ export default observer(
         
                                     // Store the reference in the Firebase database
                                     const db = getDatabase(app);
-                                    const imageRef = dbRef(db, 'pixeModel/users/' + userId + '/drafts/' + imgObj.title);
+                                    const imageRef = dbRef(db, 'pixeModel/users/' + userID + '/drafts/' + img.title);
                                     update(imageRef, {
-                                        id: imgObj.title, 
+                                        id: img.title, 
                                         testPicture: url, // use the url here
-                                        title: imgObj.title,
-                                        creator: imgObj.creator,
-                                        storage: "gs://pix-e-b9fab.appspot.com/users/" + userId + '/drafts/' + imgObj.title
+                                        title: img.title,
+                                        creator: model.users[userID].profile.username,
+                                        storage: "gs://pix-e-b9fab.appspot.com/users/" + userID + '/drafts/' + img.title
                                     });
                                 })
                                 .catch((error) => {
@@ -98,7 +100,35 @@ export default observer(
                 });
         }
 
-
+        function deleteDraft(img) {
+            const userID = auth.currentUser.uid;
+            const storage = getStorage(app);    
+            console.log("img: ", img);
+        
+            // Reference to the user's draft in storage
+            const userImageRef = sRef(storage, 'users/' + userID + '/drafts/' + img.title);
+        
+            // Delete the image from Firebase Storage
+            deleteObject(userImageRef)
+                .then(() => {
+                    console.log('Draft image deleted from storage');
+        
+                    // After successful storage deletion, delete the database entry
+                    const db = getDatabase(app);
+                    const draftRef = dbRef(db, 'pixeModel/users/' + userID + '/drafts/' + img.title);
+                    
+                    remove(draftRef)
+                        .then(() => {
+                            console.log('Draft data deleted from database');
+                        })
+                        .catch((error) => {
+                            console.error('Error deleting draft data from database:', error);
+                        });
+                })
+                .catch((error) => {
+                    console.error('Error deleting image from storage:', error);
+                });
+        }
 
         function printDebugInfo(canvas) {
             const foo = canvas.getBoundingClientRect();
@@ -345,6 +375,7 @@ export default observer(
                 uploadToFirebase = {uploadCanvasStateToFirebase}
                 isCanvasEmpty = {isCanvasEmpty}
                 addToDrafts = {addToDrafts}
+                deleteDraft = {deleteDraft}
             />
         )
     }
