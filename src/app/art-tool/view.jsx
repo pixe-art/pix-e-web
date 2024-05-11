@@ -17,7 +17,7 @@ const toolActiveButtonCSS = " active:text-white active:bg-gray-200 md:active:tex
 function ArtTool(props) {
     const [isMounted, setIsMounted] = useState(false);
     const [draftUpdate, setDraftUpdate] = useState(false);
-    const [isDraft, setDraft] = useState(false);
+    const [isDraft, setIsDraft] = useState(false);
 
 
     useEffect(() => {
@@ -54,12 +54,11 @@ function ArtTool(props) {
         console.log("imgObj: ", imgObj);
 
         const newDraftState = !isDraft;
-        setDraft(newDraftState);
-        if (newDraftState) {
-            props.addToDrafts(imgObj); 
-        }
+        setIsDraft(newDraftState);
+  
+        props.addToDrafts(imgObj); 
 
-        localStorage.setItem(`draftState-${imgObj.id}`, JSON.stringify(newDraftState));
+        localStorage.setItem(`draftState-${imgObj.id}`, JSON.stringify(!isDraft));
         setDraftUpdate(true);
     };
 

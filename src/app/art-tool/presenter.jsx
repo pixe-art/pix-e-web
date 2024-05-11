@@ -45,8 +45,8 @@ export default observer(
 
 
         function addToDrafts(img) {
+
             const userID = auth.currentUser.uid;
-            console.log("image: ", img);
         
             const imagePath = new URL(img.testPicture).pathname.split('/').pop();
             
