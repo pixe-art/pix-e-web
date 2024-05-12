@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeart as solidHeart, faDownload, faQuestion } from '@fortawesome/free-solid-svg-icons';
 import { faHeart as outlineHeart } from '@fortawesome/free-regular-svg-icons';
 import { set, goOffline } from 'firebase/database';
-import { addToFavourites, downloadImage, displayImage } from './galleryPresenter';
+import { downloadImage, displayImage } from './galleryPresenter';
 import { connectToFirebase } from '../../firebaseModel';
 
 function ImageComponent({ image, addToFavourites }) {
@@ -20,7 +20,7 @@ function ImageComponent({ image, addToFavourites }) {
         if (!isFavourite) {
             setAnimate(true);
             setTimeout(() => setAnimate(false), 500);
-            addToFavourites(image.testPicture, image.title, image.creator, image.id); 
+            addToFavourites(image); 
         }
     };
 
@@ -121,7 +121,7 @@ export default function GalleryView(props) {
                 <h1 className="text-2xl mb-2">Gallery</h1>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
                     {props.model.images.map((image) => (
-                        <ImageComponent key={image.id} image={image} addToFavourites={addToFavourites} downloadImage={downloadImage} />
+                        <ImageComponent key={image.id} image={image} addToFavourites={props.addToFavourites} downloadImage={downloadImage} />
                     ))}
                 </div>
             </div>

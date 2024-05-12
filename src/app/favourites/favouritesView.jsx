@@ -60,7 +60,6 @@ export default function FavouritesView(props) {
         const [isMenuOpen, setMenuOpen] = useState(false);
         const [userID, setUserID] = useState(null);
         const [isMounted, setIsMounted] = useState(false);
-        const [isLoading, setIsLoading] = useState(true);
         const auth = getAuth();
         const genericHamburgerLine = `h-1 w-6 my-1 rounded-full bg-cream transition ease transform duration-300`;
 
@@ -76,18 +75,7 @@ export default function FavouritesView(props) {
     
         useEffect(() => {
             setIsMounted(true);
-            setTimeout(() => {
-                setIsLoading(false);
-            }, 1000);
         }, []); //quick solution, may need to revise depending on data scaling
-    
-        if (isLoading) {
-            return (
-                <div className="flex items-center justify-center min-h-screen text-2xl text-white animate-pulse">
-                    Loading...
-                </div>
-            );
-        }
     
         return (
             <div> {isMounted &&
