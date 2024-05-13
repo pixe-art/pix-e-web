@@ -45,7 +45,7 @@ export default function Dashboard(props) {
 
   function setPicturesACB() {
     //props.model.users[props.model.user.uid].colorCurrent = "blue";
-    //console.log(props.model.users);
+    
     /*if (props.model.users[props.model.user.uid].drafts !== undefined)
         props.model.users[props.model.user.uid].drafts = [...props.model.users[props.model.user.uid].drafts, 
           {

@@ -4,6 +4,7 @@ const user = auth.currentUser;
 export default {
     ready: false,
     userReady: false,
+    users: {},
     images:
     [{
         id: '0',

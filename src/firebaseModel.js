@@ -33,8 +33,7 @@ export function modelToPersistence(model) {
     }
 
     //Model properties to be saved to the realtime database.
-    realtimeModel = {users: model.users};
-    realtimeModel.images = toObject(model.images);
+    realtimeModel = {images: toObject(model.images)};
     realtimeModel.screens = model.screens;
     realtimeModel.pairingCodes = model.pairingCodes;
     //Add more properties here like: realtimeModel.color = model.color;
@@ -54,10 +53,12 @@ export function userModelToPersistence(model) {
 
     realtimeModel = {colorCurrent: model.users[model.user.uid].colorCurrent};
     realtimeModel.canvasCurrent = model.users[model.user.uid].canvasCurrent;
-    realtimeModel.favorites = toObject(model.users[model.user.uid].favorites);
+    if (model.users[model.user.uid].favorites?.length)
+        realtimeModel.favorites = toObject(model.users[model.user.uid].favorites);
     realtimeModel.device = model.users[model.user.uid].device;
     realtimeModel.profile = model.users[model.user.uid].profile;
-    realtimeModel.drafts = toObject(model.users[model.user.uid].drafts);
+    if (model.users[model.user.uid].drafts?.length)
+        realtimeModel.drafts = toObject(model.users[model.user.uid].drafts);
 
     return realtimeModel;
 }
@@ -75,10 +76,6 @@ export function persistenceToModel(data, model) {
     if (data){
         if (data.images) {
             model.images = toArray(data.images);
-        }
-
-        if (data.users){
-            model.users = data.users;
         }
 
         if (data.screens){
