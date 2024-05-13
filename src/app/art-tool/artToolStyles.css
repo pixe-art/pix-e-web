@@ -1,17 +1,17 @@
 
 .canvas {
-    scale: 12;
+    scale: 12 !important;
     image-rendering: pixelated;
 }
 @media (max-width: 1250px) {
     .canvas {
-    scale: 8;
+    scale: 8 !important;
     }
 }
 @media (max-width: 1000px) {
     .canvas {
     /* margin-top: 4em; */
-    scale: 6;
+    scale: 6 !important;
     }
 }
 
