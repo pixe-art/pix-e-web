@@ -2,61 +2,38 @@
 
 import { observer } from "mobx-react-lite";
 import { useState, useEffect } from 'react';
-import { getAuth } from "firebase/auth";
 import { app } from "/src/firebaseModel.js";
 import { useModel } from "../model-provider.js";
-import FavouritesView from "./favouritesView.jsx";
+import DraftsView from "./draftsView.jsx";
 import { auth } from "@/firebaseModel";
-import { getDatabase, ref, get, update, onValue, off, remove } from "firebase/database";
+import { getDatabase, ref, get, update, onValue, off } from "firebase/database";
 import { ref as storageRef, uploadBytes, getDownloadURL, getStorage } from "firebase/storage";
 
-
-export function removeFavourite(filename) {
-  const auth = getAuth();
-  const userId = auth.currentUser.uid;
-  const db = getDatabase(app);
-  const favRef = ref(db, 'pixeModel/users/' + userId + '/favourites/' + filename); 
-
-  return remove(favRef)
-      .then(() => {
-          console.log(`Removed favourite with name: ${filename}`);
-      })
-      .catch((error) => {
-          console.error(`Error removing favourite: ${error}`);
-      });
-}
-
 export function downloadImage(url, filename) {
-  const storage = getStorage(app);
-  const imageRef = storageRef(storage, url);
-
-  getDownloadURL(imageRef)
-      .then((downloadURL) => {
-          console.log('File available at', downloadURL);
-          fetch(downloadURL)
-              .then(response => response.blob())
-              .then(blob => {
-                  const blobUrl = URL.createObjectURL(blob);
-                  const a = document.createElement('a');
-                  a.href = blobUrl;
-                  a.download = filename;
-                  a.click();
-                  URL.revokeObjectURL(blobUrl); // clean up
-              });
-      })
-      .catch((error) => {
-          console.error(error);
-      });
-}
-
-export function displayImage(id){
-  const db = getDatabase(app);
-  const dbRef = ref(db, 'pixeModel/screens/pixedemodevice/');
-  update(dbRef, {activeImage: id});
-}
+    const storage = getStorage(app);
+    const imageRef = storageRef(storage, url);
+  
+    getDownloadURL(imageRef)
+        .then((downloadURL) => {
+            console.log('File available at', downloadURL);
+            fetch(downloadURL)
+                .then(response => response.blob())
+                .then(blob => {
+                    const blobUrl = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = blobUrl;
+                    a.download = filename;
+                    a.click();
+                    URL.revokeObjectURL(blobUrl); // clean up
+                });
+        })
+        .catch((error) => {
+            console.error(error);
+        });
+  }
 
 export default observer(
-  function Favourites() {
+    function Drafts() {
     const model = useModel();
     const storage = getStorage(app);
     const [pictures, setPictures] = useState([]);
@@ -173,7 +150,7 @@ export default observer(
     }, []); // Empty dependency array ensures this effect runs only once when the component mounts
 
     return (
-      <FavouritesView
+      <DraftsView
         model={model}
         pictures={pictures}
         profile={profile}
@@ -182,6 +159,5 @@ export default observer(
       />
     );
   }
+    
 );
-
-  //export default MyGallery;

@@ -1,13 +1,18 @@
-// Alvin
+
 //* 'use client': specifies that code runs on clients browser. (enables use of observer) *//
 'use client'; 
 import ArtTool from "./view";
 import { observer } from "mobx-react-lite"; //? observer
 import React, { useState, useRef, useEffect } from "react";
 import { useModel } from "../model-provider.js";
-import { auth } from "@/firebaseModel";
+import { auth, getAuth } from "@/firebaseModel";
 import { onAuthStateChanged } from "firebase/auth";
 import { buildModelPicture, canvasToData } from "@/utilities";
+import { app } from "/src/firebaseModel.js";
+import { getStorage, ref as sRef , getDownloadURL, uploadBytesResumable } from "firebase/storage";
+import { getDatabase, ref as dbRef , set, push, update, remove, delete as deleteFile  } from "firebase/database";
+import { deleteObject } from "firebase/storage";
+
 
 export default observer(
     function Tool() {
@@ -37,6 +42,93 @@ export default observer(
             setColor(model.users[model.user.uid].colorCurrent);   // update color if color changes in model
             updateCanvasColor();    // change draw color for canvas
         }, [color, model.users[model.user.uid].colorCurrent]);
+
+
+        function addToDrafts(img) {
+
+            const userID = auth.currentUser.uid;
+        
+            const imagePath = new URL(img.testPicture).pathname.split('/').pop();
+            
+            // Create a copy of the image in Firebase storage
+            const storage = getStorage(app);
+            const imageRef = sRef(storage, imagePath);
+            const userImageRef = sRef(storage, 'users/' + userID + '/drafts/' + img.title);
+
+        
+            // Fetch the image data
+            fetch(img.testPicture)
+                .then(response => response.blob())
+                .then(blob => {
+                    // Upload the image data to the new path
+                    const uploadTask = uploadBytesResumable(userImageRef, blob);
+        
+                    uploadTask.on('state_changed', 
+                        (snapshot) => {
+                            // Handle the upload progress
+                        }, 
+                        (error) => {
+                            console.error(error);
+                        }, 
+                        () => {
+                            console.log('Copied image to user storage');
+        
+                            // Generate Firebase HTTPS link for the image
+                            getDownloadURL(userImageRef)
+                                .then((url) => {
+                                    console.log('Firebase HTTPS link:', url);
+        
+                                    // Store the reference in the Firebase database
+                                    const db = getDatabase(app);
+                                    const imageRef = dbRef(db, 'pixeModel/users/' + userID + '/drafts/' + img.title);
+                                    update(imageRef, {
+                                        id: img.title, 
+                                        testPicture: url, // use the url here
+                                        title: img.title,
+                                        creator: model.users[userID].profile.username,
+                                        storage: "gs://pix-e-b9fab.appspot.com/users/" + userID + '/drafts/' + img.title
+                                    });
+                                })
+                                .catch((error) => {
+                                    console.error(error);
+                                });
+                        }
+                    );
+                })
+                .catch((error) => {
+                    console.error(error);
+                });
+        }
+
+        function deleteDraft(img) {
+            const userID = auth.currentUser.uid;
+            const storage = getStorage(app);    
+            console.log("img: ", img);
+        
+            // Reference to the user's draft in storage
+            const userImageRef = sRef(storage, 'users/' + userID + '/drafts/' + img.title);
+        
+            // Delete the image from Firebase Storage
+            deleteObject(userImageRef)
+                .then(() => {
+                    console.log('Draft image deleted from storage');
+        
+                    // After successful storage deletion, delete the database entry
+                    const db = getDatabase(app);
+                    const draftRef = dbRef(db, 'pixeModel/users/' + userID + '/drafts/' + img.title);
+                    
+                    remove(draftRef)
+                        .then(() => {
+                            console.log('Draft data deleted from database');
+                        })
+                        .catch((error) => {
+                            console.error('Error deleting draft data from database:', error);
+                        });
+                })
+                .catch((error) => {
+                    console.error('Error deleting image from storage:', error);
+                });
+        }
 
         function printDebugInfo(canvas) {
             const foo = canvas.getBoundingClientRect();
@@ -281,6 +373,8 @@ export default observer(
                 clearCanvas = {clearCanvas}
                 uploadToFirebase = {uploadCanvasStateToFirebase}
                 isCanvasEmpty = {isCanvasEmpty}
+                addToDrafts = {addToDrafts}
+                deleteDraft = {deleteDraft}
             />
         )
     }

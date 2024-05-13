@@ -2,7 +2,7 @@
 
 import { observer } from "mobx-react-lite";
 import { getAuth } from "firebase/auth";
-import { getDatabase, ref as dbRef , set, push, update } from "firebase/database";
+import { getDatabase, ref as dbRef , set, push, update, remove } from "firebase/database";
 import { useModel } from "/src/app/model-provider.js";
 import { app } from "/src/firebaseModel.js";
 import { getStorage, ref as sRef , getDownloadURL, uploadBytesResumable, uploadBytes } from "firebase/storage";

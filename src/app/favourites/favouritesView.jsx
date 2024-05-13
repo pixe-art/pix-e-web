@@ -14,6 +14,7 @@ import { faHeart as outlineHeart } from "@fortawesome/free-regular-svg-icons";
 import { saveToFirebase } from "@/firebaseModel";
 import { downloadImage } from "./favouritesPresenter";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { set } from 'firebase/database';
 
 function ImageComponent({ image }) {
   const [isDropdownOpen, setDropdownOpen] = useState(false);
