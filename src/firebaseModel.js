@@ -169,6 +169,7 @@ export function readUserData(model) {
 }
 
 export function connectToFirebase(model) {
+    readFromFirebase(model);
     reaction(modelChangedACB, storedStateEffectACB);
     reaction(modelReadyACB, modelIsReadyACB);
     

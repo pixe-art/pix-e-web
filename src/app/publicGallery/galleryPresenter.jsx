@@ -42,6 +42,12 @@ export function displayImage(id){
 export default observer(
     function Gallery(){
         const model = useModel();
+        if (!model.userReady || !model.ready) {
+            return <div>
+                     <img src="https://brfenergi.se/iprog/loading.gif" alt="Loading gif"></img>
+                   </div>
+        }
+
         return <GalleryView model={model} addToFavourites={addToFavourites} removeFavourite={removeFavourite} downloadImage={downloadImage} />
 
         function addToFavourites(image) {
@@ -65,49 +71,7 @@ export default observer(
 
             else
                 model.users[userId].favorites = [imageCopy];
-        
-            // Fetch the image data
-            /*fetch(imageUrl)
-                .then(response => response.blob())
-                .then(blob => {
-                    // Upload the image data to the new path
-                    const uploadTask = uploadBytesResumable(userImageRef, blob);
-        
-                    uploadTask.on('state_changed', 
-                        (snapshot) => {
-                            // Handle the upload progress
-                        }, 
-                        (error) => {
-                            console.error(error);
-                        }, 
-                        () => {
-                            console.log('Copied image to user storage');
-        
-                            // Generate Firebase HTTPS link for the image
-                            getDownloadURL(userImageRef)
-                                .then((url) => {
-                                    console.log('Firebase HTTPS link:', url);
-        
-                                    // Store the reference in the Firebase database
-                                    const db = getDatabase(app);
-                                    const imageRef = dbRef(db, 'pixeModel/users/' + userId + '/favorites/' + filename);
-                                    update(imageRef, {
-                                        id: filename, 
-                                        testPicture: url, // use the url here
-                                        title: filename,
-                                        creator: creator,
-                                        storage: "gs://pix-e-b9fab.appspot.com/users/" + userId + '/favorites/' + filename
-                                    });
-                                })
-                                .catch((error) => {
-                                    console.error(error);
-                                });
-                        }
-                    );
-                })
-                .catch((error) => {
-                    console.error(error);
-                });*/
+    
         }
 
         function removeFavourite(id) {
@@ -122,7 +86,6 @@ export default observer(
                 })
                 .catch((error) => {
                     console.error(`Error removing favourite: ${error}`);
-                });
+            });
         }
-    }
-);
+});

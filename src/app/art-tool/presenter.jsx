@@ -44,8 +44,10 @@ export default observer(
             updateCanvasColor();    // change draw color for canvas
         }, [color, model.users[model.user.uid].colorCurrent]);
 
-        if (!model.userReady) {
-            return <div>Loading...</div>
+        if (!model.userReady || !model.ready) {
+            return <div>
+                     <img src="https://brfenergi.se/iprog/loading.gif" alt="Loading gif"></img>
+                   </div>
         }
 
         function addToDrafts(img) {

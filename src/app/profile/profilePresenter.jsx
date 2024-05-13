@@ -8,8 +8,12 @@ import {
   uploadBytes,
   getDownloadURL,
 } from "firebase/storage";
+import { observer } from "mobx-react-lite";
+import { useModel } from "../model-provider.js";
 
+export default observer(
 function Profile() {
+  const model = useModel();
   const [pictures, setPictures] = useState([]);
   const [profile, setProfile] = useState({
     username: "Anonymous",
@@ -128,6 +132,11 @@ function Profile() {
     }
   };
 
+  if (!model.userReady || !model.ready) {
+    return <div>
+             <img src="https://brfenergi.se/iprog/loading.gif" alt="Loading gif"></img>
+           </div>
+  }
   return (
     <ProfileView
       pictures={pictures}
@@ -137,6 +146,4 @@ function Profile() {
       isOwnProfile={true}
     />
   );
-}
-
-export default Profile;
+})

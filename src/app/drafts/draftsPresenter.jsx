@@ -149,6 +149,12 @@ export default observer(
       };
     }, []); // Empty dependency array ensures this effect runs only once when the component mounts
 
+    if (!model.userReady || !model.ready) {
+      return <div>
+               <img src="https://brfenergi.se/iprog/loading.gif" alt="Loading gif"></img>
+             </div>
+    }
+
     return (
       <DraftsView
         model={model}
