@@ -18,7 +18,7 @@ function ArtTool(props) {
 
     useEffect(() => {
         if (isMounted) {    
-            overwriteCanvas(props.model.canvasCurrent);
+            overwriteCanvas(props.model.users[props.model.user.uid].canvasCurrent);
         }
     }, [isMounted]);
 
@@ -97,7 +97,7 @@ function ArtTool(props) {
     );
     function mouseUp() {
         if (props.checkReset() === true) {
-            props.model.canvasCurrent = document.getElementById("drawing-area").toDataURL("image/png")
+            props.model.users[props.model.user.uid].canvasCurrent = document.getElementById("drawing-area").toDataURL("image/png")
         }
         props.checkReset(false)
     }
@@ -157,7 +157,7 @@ function ArtTool(props) {
         if (event.target.value === "save") {
             element.firstChild.firstChild.childNodes.forEach((node) => {
                 if(node.nodeName === "IMG")
-                    node.src = (props.model.canvasCurrent || "https://placehold.co/64x32?text=No+Image+Found");
+                    node.src = (props.model.users[props.model.user.uid].canvasCurrent || "https://placehold.co/64x32?text=No+Image+Found");
             });
         }
         element.classList.toggle("hidden");

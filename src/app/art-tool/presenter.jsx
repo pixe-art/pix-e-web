@@ -34,9 +34,9 @@ export default observer(
         }, []);
 
         useEffect(() => {
-            setColor(model.colorCurrent);   // update color if color changes in model
+            setColor(model.users[model.user.uid].colorCurrent);   // update color if color changes in model
             updateCanvasColor();    // change draw color for canvas
-        }, [color, model.colorCurrent]);
+        }, [color, model.users[model.user.uid].colorCurrent]);
 
         function printDebugInfo(canvas) {
             const foo = canvas.getBoundingClientRect();
@@ -75,7 +75,7 @@ export default observer(
             if (undoHistory.current.at(historyLength)) {
                 undoHistory.current.pop()
             }    
-            model.canvasCurrent = canvas.toDataURL(); // persistance bby letsgo
+            model.users[model.user.uid].canvasCurrent = canvas.toDataURL(); // persistance bby letsgo
             undoHistory.current.unshift(canvas.toDataURL())
         }
         function clearRedoHistory(){
@@ -99,8 +99,8 @@ export default observer(
         }
 
         function uploadCanvasStateToFirebase(element, title) {
-            const userID = auth.currentUser.uid;
-            console.log("auth: ", auth.currentUser.uid);
+            const userID = model.user.uid;
+            console.log("auth: ", model.user.uid);
             const data = canvasToData(element);
             console.log("got data from canvas:", data);
             console.log()
@@ -171,8 +171,8 @@ export default observer(
         }
         const handleColorChange = (newColor) => {
             setColor(newColor);  // Update the color state, useEffect runs to updateCanvasColor once color is set
-            if (model.colorCurrent !== newColor) {
-                model.colorCurrent = newColor; // update color in model
+            if (model.users[model.user.uid].colorCurrent !== newColor) {
+                model.users[model.user.uid].colorCurrent = newColor; // update color in model
             }
             return newColor;
         }
@@ -247,7 +247,7 @@ export default observer(
                 const temp = con.fillStyle;
                 con.reset();
                 con.fillStyle = temp;
-                model.canvasCurrent = "";
+                model.users[model.user.uid].canvasCurrent = "";
             } catch (error) {
                 console.error(error);
             }
