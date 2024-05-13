@@ -92,7 +92,7 @@ export default function LoginPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-cream">
       <div className="p-8 bg-white border border-brown border-4 shadow-md rounded-lg">
-        <h1 className="text-2xl font-bold text-gray-800 mb-6">
+        <h1 className="text-2xl font-bold text-center text-gray-800 mb-6">
           Login to Pix-E
         </h1>
         {!showLoginForm && (
