@@ -44,7 +44,6 @@ export default observer(
             const multH = foo.height/canvas.height;
             const multW = foo.width/canvas.width;
             console.log("\n[ DEBUG INFO ]\n");
-            console.log(window);
             console.log("canvas scaling = " + style.scale);
             console.log("size difference (mult):\nwidth = " + multW + "x\nheight = " + multH + "x");
             console.log("canvas size:\nwidth = " + foo.width + "\nheight = " + foo.height);
@@ -99,13 +98,13 @@ export default observer(
             return last;
         }
 
-        function uploadCanvasStateToFirebase(element) {
+        function uploadCanvasStateToFirebase(element, title) {
             const userID = auth.currentUser.uid;
             console.log("auth: ", auth.currentUser.uid);
             const data = canvasToData(element);
             console.log("got data from canvas:", data);
             console.log()
-            const out = buildModelPicture(userID, model.images.length, Date.now(), data, "Your mom");
+            const out = buildModelPicture(userID, model.images.length, Date.now(), data, (title || "Untitled"));
             let duplicateFound = false;
 
             //checks for duplicates in firebase
@@ -186,9 +185,9 @@ export default observer(
             }
         }
 
-        function drawRect(x, y, ctx) {
+        function drawRect(x, y, canvas) {
+            const ctx = canvas.getContext("2d");
             clearRedoHistory();
-            // draw rectangles on canvas ('con') at position [x, y]
             if (eraser.current) {
                 ctx.clearRect(x, y, penSize.current, penSize.current)            
             } else {
@@ -197,7 +196,6 @@ export default observer(
         }
 
         function drawLine(canvas, x2, y2) {
-            const ctx = canvas.getContext("2d");
             let [x1, y1] = lastXY;
             // when mouse leaves canvas while drawing, reset XY
             if (x1 === -1 && y1 === -1) {  
@@ -214,7 +212,7 @@ export default observer(
             let err = (dx > dy ? dx : -dy) / 2;
     
             while (true) {
-                drawRect(x1, y1, ctx)
+                drawRect(x1, y1, canvas)
                 if (x1 === x2 && y1 === y2) {
                     break;
                 }
@@ -249,6 +247,7 @@ export default observer(
                 const temp = con.fillStyle;
                 con.reset();
                 con.fillStyle = temp;
+                model.canvasCurrent = "";
             } catch (error) {
                 console.error(error);
             }

@@ -1,15 +1,12 @@
 // Alvin
 import "../globals.css"
 import "./artToolStyles.css"
-import { fetchFileUpload, getCords } from "@/utilities";
+import { getCords } from "@/utilities";
 import { React, useEffect, useState } from "react";
 import { SketchPicker } from 'react-color';
-import Draggable from './draggable';
 import Draft from "./draft";
-
-let init = true
-const toolButtonCSS = "transition-color bg-white border border-brown text-black select-none my-0 w-96 md:rounded-lg md:hover:bg-gray-200 md:w-auto md:my-2 hmd:md:my-0.5 md:hover:text-black "
-const toolActiveButtonCSS = " active:text-white active:bg-gray-200 md:active:text-white md:active:bg-gray-400  "
+import SaveMenu from "./save";
+import { TW_button, TW_button_plain, TW_button_plainA } from "./tailwindClasses";
 
 function ArtTool(props) {
     const [isMounted, setIsMounted] = useState(false);
@@ -21,12 +18,8 @@ function ArtTool(props) {
 
     useEffect(() => {
         if (isMounted) {    
-            if (init){
-                //overwriteCanvas(props.model.canvasCurrent.testPicture);
-                init = false
-            }
+            overwriteCanvas(props.model.canvasCurrent);
         }
-    
     }, [isMounted]);
 
 
@@ -56,11 +49,14 @@ function ArtTool(props) {
                     <Draft  model = {props.model} overwriteCanvas = {overwriteCanvas}>
                     </Draft>
                 </div>
-                <div id="content" className="h-screen flex flex-col md:flex-row justify-between items-center mx-4" onMouseDown={closeDraft} onTouchStart={closeDraft}>
+                <div id="save" className="hidden">
+                    <SaveMenu user={props.model.user.uid} isCanvasEmpty={props.isCanvasEmpty} uploadToFirebase={props.uploadToFirebase} setDraftUpdate={setDraftUpdate} closeMenu={closeMenus}></SaveMenu>
+                </div>
+                <div id="content" className="h-screen flex flex-col md:flex-row justify-between items-center mx-4" onMouseDown={closeMenus} onTouchStart={closeMenus}>
                     <div id="color-picker" className="">
                             <div className="flex flex-col items-center justify-center">
                                     <div id="sketch-picker" style={{ display: '' }} className="self-center">
-                                        <SketchPicker color={props.color} onChangeComplete={colorChangeEvent} className="self-center hidden md:flex md:flex-col"/>
+                                        <SketchPicker color={props.color} onChange={colorChangeEvent} className="self-center hidden md:flex md:flex-col"/>
                                     </div>
                             </div>
                         </div>
@@ -70,18 +66,18 @@ function ArtTool(props) {
                     </div>
                     <div id="tools" className="mt-0 hmd:mt-20 grid hmd:md:mt-0 hmd:md:ml-4 md:flex md:flex-col items-stretch">
                         <form action="" className="flex flex-col *:m-0 *:p-0 *:y-0" onChange={handleSubmit}>
-                            <label htmlFor="upload" className={toolButtonCSS + toolActiveButtonCSS + "text-center"}>Upload Image</label>
+                            <label htmlFor="upload" className={TW_button + TW_button_plain + TW_button_plainA + "text-center"}>Upload Image</label>
                             <input id="upload" className="hidden" type="file" name="img" accept="image/*" />
                         </form>
-                        <button id="show-draft" className={toolButtonCSS + toolActiveButtonCSS + "w-auto"} onClick={toggleDraft}>Draft Menu</button>
-                        <button id="save" className={toolButtonCSS + toolActiveButtonCSS} onClick={uploadToFirebase}>Save</button>
-                        <button id="download" className={toolButtonCSS + toolActiveButtonCSS} onClick={props.downloadCanvas} type="button">Download</button>
-                        <button id="bg" className={toolButtonCSS + toolActiveButtonCSS} onClick={toggleBg}>Background Color</button>
+                        <button id="show-draft" className={TW_button + TW_button_plain + TW_button_plainA + "w-auto"} value={"draft"} onClick={toggleMenu}>Draft Menu</button>
+                        <button id="show-save" className={TW_button + TW_button_plain + TW_button_plainA + "w-auto"} value={"save"} onClick={toggleMenu}>Save</button>
+                        <button id="download" className={TW_button + TW_button_plain + TW_button_plainA} onClick={props.downloadCanvas} type="button">Download</button>
+                        <button id="bg" className={TW_button + TW_button_plain + TW_button_plainA} onClick={toggleBg}>Background Color</button>
                         <div className="select-none cursor-default hmd:hidden">&nbsp;</div>
-                        <button id="erase" className={toolButtonCSS + toolActiveButtonCSS} onClick={toggleEraser}>Eraser</button>
-                        <button id="undo" className={toolButtonCSS + toolActiveButtonCSS} onClick={undo}>Undo</button>
-                        <button id="redo" className={toolButtonCSS + toolActiveButtonCSS} onClick={redo}>Redo</button>
-                        <button id="clear" className={toolButtonCSS + toolActiveButtonCSS} onClick={clearCanvas} type="button">Clear</button>
+                        <button id="erase" className={TW_button + TW_button_plain + TW_button_plainA} onClick={toggleEraser}>Eraser</button>
+                        <button id="undo" className={TW_button + TW_button_plain + TW_button_plainA} onClick={undo}>Undo</button>
+                        <button id="redo" className={TW_button + TW_button_plain + TW_button_plainA} onClick={redo}>Redo</button>
+                        <button id="clear" className={TW_button + TW_button_plain + TW_button_plainA} onClick={clearCanvas} type="button">Clear</button>
                         <p className="text-black text-center font-extrabold md:hidden">Select Color</p>
                         <input id="color-d" className="min-w-full bg-white cursor-default rounded-lg md:pointer-events-none" type="color" title="Selected Color" name="" value={props.color} onChange={colorChangeEvent}/>
                         <div className="text-black my-2 ">
@@ -100,12 +96,18 @@ function ArtTool(props) {
         }</div>
     );
     function mouseUp() {
+        if (props.checkReset() === true) {
+            props.model.canvasCurrent = document.getElementById("drawing-area").toDataURL("image/png")
+        }
         props.checkReset(false)
     }
-    function closeDraft(event) {
+    function closeMenus(event) {
         const draft = document.getElementById("draft").classList; 
-        if (!draft.contains("hidden") && !(event.target.id === "show-draft"))
+        const save = document.getElementById("save").classList; 
+        if (!draft.contains("hidden") && (event?.target.id !== "show-draft"))
             draft.toggle("hidden");
+        if (!save.contains("hidden") && (event?.target.id !== "show-save"))
+            save.toggle("hidden");
     }
     function paletteButtonClick() {
         let style = document.getElementById("sketch-picker").style
@@ -150,8 +152,14 @@ function ArtTool(props) {
         props.printDebugInfo(element)
     }
 
-    function toggleDraft(event) {
-        const element = document.getElementById("draft");
+    function toggleMenu(event) {
+        const element = document.getElementById(event.target.value);
+        if (event.target.value === "save") {
+            element.firstChild.firstChild.childNodes.forEach((node) => {
+                if(node.nodeName === "IMG")
+                    node.src = (props.model.canvasCurrent || "https://placehold.co/64x32?text=No+Image+Found");
+            });
+        }
         element.classList.toggle("hidden");
     }
     function uploadToFirebase() {
@@ -239,16 +247,15 @@ function ArtTool(props) {
         const element = document.getElementById(event.target.id);
         //* translate event coordiantes to the canvas 
         const cords = getCords(element, event.clientX, event.clientY, (props.changePenSize()-1)/2);
-        const con = element.getContext("2d");
 
         if (event.button === 2 && !props.eraser) {
             //* right click erase
             props.eraserToggle(true)
-            props.drawRect(cords[0], cords[1], con)
+            props.drawRect(cords[0], cords[1], element)
             props.eraserToggle(false)
         } else { 
             //* regualr draw
-            props.drawRect(cords[0], cords[1], con)
+            props.drawRect(cords[0], cords[1], element)
         }
         // save cords for fallback in mouseDragEvent, prevents gaps in fast movements
         props.setLastCords(cords); 

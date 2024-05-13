@@ -27,7 +27,7 @@ export default function RegisterPage() {
     };
 
     return (
-        <div className="flex min-h-screen items-center justify-center bg-gray-100">
+        <div className="flex min-h-screen items-center justify-center bg-cream">
             <div className="p-8 bg-white shadow-md rounded-lg">
                 <h1 className="text-2xl font-bold text-gray-800 mb-6">Register for Pix-E</h1>
                 <form onSubmit={handleRegister} className="space-y-6">
@@ -52,7 +52,7 @@ export default function RegisterPage() {
                     )}
                     <button
                         type="submit"
-                        className="w-full py-2 px-4 bg-blue-500 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+                        className="w-full py-2 px-4 bg-amber-500 text-white font-semibold rounded-lg shadow-md hover:bg-amber-700 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-opacity-50"
                     >
                         Register
                     </button>

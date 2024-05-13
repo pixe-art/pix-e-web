@@ -34,6 +34,7 @@ export function modelToPersistence(model) {
 
     //Model properties to be saved to the realtime database.
     realtimeModel = {users: model.users};
+    realtimeModel.users[model.user.uid].canvasCurrent = model.canvasCurrent;
     realtimeModel.images = toObject(model.images);
     realtimeModel.screens = model.screens;
     realtimeModel.pairingCodes = model.pairingCodes;
@@ -53,6 +54,7 @@ export function userModelToPersistence(model) {
     }
 
     realtimeModel = {colorCurrent: model.users[model.user.uid].colorCurrent};
+    realtimeModel.users[model.user.uid].canvasCurrent = model.canvasCurrent;
     realtimeModel.favorites = toObject(model.users[model.user.uid].favorites);
     realtimeModel.device = model.users[model.user.uid].device;
     realtimeModel.profile = model.users[model.user.uid].profile;
@@ -101,6 +103,10 @@ export function userPersistenceToModel(data, model) {
     if (data){
         if (data.colorCurrent) {
             model.users[model.user.uid].colorCurrent = data.colorCurrent;
+        }
+
+        if (data.canvasCurrent){
+            model.canvasCurrent = data.canvasCurrent;
         }
 
         if (data.favorites){
@@ -163,7 +169,7 @@ export function readUserData(model) {
 export function connectToFirebase(model) {
     reaction(modelChangedACB, storedStateEffectACB);
     reaction(modelReadyACB, modelIsReadyACB);
-
+    
     function onLoginACB(user) {
         model.user = user;
 
@@ -178,6 +184,9 @@ export function connectToFirebase(model) {
         if (model.users[model.user.uid]) {
             if (model.users[model.user.uid].colorCurrent === undefined) 
                 model.users[model.user.uid].colorCurrent = "";
+
+            if (model.users[model.user.uid].canvasCurrent === undefined) 
+                model.canvasCurrent = "";
 
             if (model.users[model.user.uid].favorites === undefined){
                 model.users[model.user.uid].favorites = [];
@@ -201,6 +210,7 @@ export function connectToFirebase(model) {
 
         else {
             model.users[model.user.uid] = {colorCurrent: ""};
+            model.canvasCurrent = "";
             model.users[model.user.uid].favorites = [];
             model.users[model.user.uid].drafts = [];
             model.users[model.user.uid].device = 0;
@@ -209,7 +219,8 @@ export function connectToFirebase(model) {
     }
 
     function userDataChangedACB() {
-        return [model.users[model.user.uid].colorCurrent, model.users[model.user.uid].favorites, 
+        return [model.users[model.user.uid].colorCurrent, model.canvasCurrent, 
+                model.users[model.user.uid].favorites, 
                 model.users[model.user.uid].device, model.users[model.user.uid].profile.bio,
                 model.users[model.user.uid].profile.username, model.users[model.user.uid].drafts];
     }
