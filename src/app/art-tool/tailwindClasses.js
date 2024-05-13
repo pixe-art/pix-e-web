@@ -1,6 +1,7 @@
 export const TW_window = " bg-white border rounded-md border-brown shadow-md absolute text-black " 
 export const TW_button = " transition-color  border select-none my-0 w-96 md:rounded-lg  md:w-auto md:my-2 hmd:md:my-0.5 "
 export const TW_button_red = " bg-red-500 md:hover:bg-red-600 md:hover:text-black text-black " 
+export const TW_button_yellow = " bg-amber-500 md:hover:bg-amber-600 md:hover:text-black text-black " 
 export const TW_button_green = " bg-emerald-500 md:hover:bg-emerald-600 md:hover:text-black text-black " 
 export const TW_button_plain = " bg-white border-brown md:hover:bg-gray-200 md:hover:text-black text-black " 
 export const TW_button_plainA = " active:text-white active:bg-gray-200 md:active:text-white md:active:bg-gray-400 "
