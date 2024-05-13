@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { TW_button, TW_button_green, TW_button_red, TW_centered, TW_titleText, TW_window } from "./tailwindClasses";
+import { TW_button, TW_button_green, TW_button_red, TW_button_yellow, TW_centered, TW_titleText, TW_window } from "./tailwindClasses";
 
 export default function SaveMenu(props) {
     const [title, setTitle] = useState("")
@@ -15,7 +15,8 @@ export default function SaveMenu(props) {
                 <p>Enter the title of your art:</p>
                 <input type="text" className="w-full px-1 bg-white border rounded border-brown text-black" onChange={handleTitleInput}/>
                 <p>{"by: " + props.user}</p>
-                <button className={TW_button + TW_button_green + "min-w-[20%]"} onClick={uploadToFirebase}>Save Image</button>
+                <button className={TW_button + TW_button_green + "min-w-[20%] min-h-8 !text-white"} value="private" onClick={uploadToFirebase}>Save Image</button>
+                <button className={TW_button + TW_button_yellow + "min-w-[20%] min-h-8 !text-white"} value="public" onClick={uploadToFirebase}>Publish Image</button>
             </div>
     </div>
     );
@@ -27,12 +28,13 @@ export default function SaveMenu(props) {
         setTitle(event.target.value)
     }
 
-    function uploadToFirebase() {
+    function uploadToFirebase(event) {
         console.warn("attempting to upload...");
         const element = document.getElementById("drawing-area")
         console.log("element: ", element);
         if (!props.isCanvasEmpty(element)) {
-            props.uploadToFirebase(element, title);
+            const bool = event.target.value ;
+            props.uploadToFirebase(element, title, bool);
             props.setDraftUpdate(true);
             props.closeMenu();
             setTitle("");

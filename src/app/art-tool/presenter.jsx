@@ -190,7 +190,7 @@ export default observer(
             return last;
         }
 
-        function uploadCanvasStateToFirebase(element, title) {
+        function uploadCanvasStateToFirebase(element, title, makePublic) {
             const userID = model.user.uid;
             console.log("auth: ", model.user.uid);
             const data = canvasToData(element);
@@ -198,22 +198,25 @@ export default observer(
             console.log()
             const out = buildModelPicture(userID, model.images.length, Date.now(), data, (title || "Untitled"));
             let duplicateFound = false;
-
             //checks for duplicates in firebase
-             for (const idx in model.images) {
+            for (const idx in model.images) {
                 if (data === model.images[idx].testPicture) {
                     duplicateFound = true;
                     console.log("You already have a duplicate saved at model.pictures.testPicture[", idx, "]");
                     return; 
                 }
-            
-            if (duplicateFound) {
-                return;
-            }
-        } 
-
+                if (duplicateFound) {
+                    return;
+                }
+            } 
             console.log("data: ", data);
-            model.images = [...model.images, out];
+            if(makePublic)
+                model.images = [...model.images, out];
+
+            let privateImg = model.users[userID].images
+            Array(privateImg).push(out);
+            
+            model.users[userID].images = privateImg;
             console.log("saved");
         }
 
