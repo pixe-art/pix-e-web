@@ -1,13 +1,11 @@
 import "../globals.css"
 import "./artToolStyles.css"
-import { fetchFileUpload, getCords } from "@/utilities";
+import { getCords } from "@/utilities";
 import { React, useEffect, useState } from "react";
 import { SketchPicker } from 'react-color';
 import Draft from "./draft";
-import { addToDrafts } from "./presenter";
 import { buildModelPicture, canvasToData } from "@/utilities";
 import { auth } from "@/firebaseModel";
-import { onAuthStateChanged } from "firebase/auth";
 import SaveMenu from "./save";
 import { TW_button, TW_button_plain, TW_button_plainA } from "./tailwindClasses";
 
@@ -23,6 +21,7 @@ function ArtTool(props) {
 
     useEffect(() => {
         if (isMounted) {    
+            console.log("overwriting canvas with data from db:", props.model.users[props.model.user.uid].canvasCurrent);
             overwriteCanvas(props.model.users[props.model.user.uid].canvasCurrent);
         }
     }, [isMounted]);
@@ -60,21 +59,16 @@ function ArtTool(props) {
     };
 
     const mouseUp = () => {
-        if (props.checkReset() === true) {
+        if (props.checkReset() === true && isMounted) {
+            console.log("giving model canvas data:", document.getElementById("drawing-area").toDataURL("image/png"));
             props.model.users[props.model.user.uid].canvasCurrent = document.getElementById("drawing-area").toDataURL("image/png")
         }
         props.checkReset(false)    
     };
 
-    const paletteButtonClick = () => {
-        let style = document.getElementById("sketch-picker").style;
-        style.visibility = style.visibility === "hidden" ? "visible" : "hidden";
-    };
-
     const toggleBg = (event) => {
         const canv = document.getElementById("drawing-area");
-        canv.classList.toggle("bg-white");
-        canv.classList.toggle("bg-black");
+        canv.classList.toggle("!bg-white");
         const element = document.getElementById(event.target.id);
         element.classList.toggle("bg-gray-300");
         element.classList.toggle("bg-white");
@@ -95,8 +89,9 @@ function ArtTool(props) {
     };
 
     const toggleMenu = (event) => {
-        const element = document.getElementById(event.target.value);
-        if (event.target.value === "save") {
+        const element = document.getElementById(event.target?.value || event);
+        console.log(event.target?.value || event);
+        if ((event.target?.value || event) === "save") {
             element.firstChild.firstChild.childNodes.forEach((node) => {
                 if(node.nodeName === "IMG")
                     node.src = (props.model.users[props.model.user.uid].canvasCurrent || "https://placehold.co/64x32?text=No+Image+Found");
@@ -125,6 +120,7 @@ function ArtTool(props) {
     const clearCanvas = () => {
         const element = document.getElementById("drawing-area");
         props.unshiftUndoHistory(element);
+        props.model.users[props.model.user.uid].canvasCurrent = ""
         props.clearCanvas();
     };
 
@@ -173,7 +169,7 @@ function ArtTool(props) {
     };
 
     const penSizeEvent = (event) => {
-        document.getElementById("pen-size-d").innerHTML = props.changePenSize(event.target.value);
+        document.getElementById("pen-size-d").innerHTML = props.changePenSize("draft");
     };
 
     const resetLastCoords = () => {
@@ -269,7 +265,7 @@ function ArtTool(props) {
                     </div>
                 </div>
                 <div id="draft" className="hidden">
-                    <Draft model={props.model} overwriteCanvas={overwriteCanvas} userID={auth.currentUser.uid} deleteDraft={props.deleteDraft} value={"draft"} toggleDraft={toggleMenu}></Draft>
+                    <Draft model={props.model} overwriteCanvas={overwriteCanvas} deleteDraft={props.deleteDraft} value={"draft"} toggleDraft={toggleMenu}></Draft>
                 </div>
                 <div id="save" className="hidden">
                     <SaveMenu user={props.model.users[props.model.user.uid]?.profile?.username} isCanvasEmpty={props.isCanvasEmpty} uploadToFirebase={props.uploadToFirebase} setDraftUpdate={setDraftUpdate} closeMenu={closeMenus}></SaveMenu>
@@ -283,7 +279,7 @@ function ArtTool(props) {
                         </div>
                     </div>
                     <div>
-                        <canvas className="canvas transition-colors cursor-crosshair select-none touch-none bg-white border border-brown shadow-md" id="drawing-area" width="64" height="32" onContextMenu={(event)=>{event.preventDefault()}}
+                        <canvas className="canvas transition-colors cursor-crosshair select-none touch-none bg-black border border-brown shadow-md" id="drawing-area" width="64" height="32" onContextMenu={(event)=>{event.preventDefault()}}
                             onTouchStart={touchDrawEvent} onMouseDown={mouseClickEvent}  onMouseMove={mouseDragEvent} onMouseLeave={resetLastCoords} onTouchMove={touchDragEvent}/>
                     </div>
                     <div id="tools" className="mt-0 hmd:mt-20 grid hmd:md:mt-0 hmd:md:ml-4 md:flex md:flex-col items-stretch">

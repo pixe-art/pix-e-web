@@ -19,6 +19,7 @@ export default observer(
         const historyLength = 10;
 
         const model = useModel();
+
         const [mouseCheck, setMouseCheck] = useState(false);
         const [lastXY, setLastXY] = useState([-1, -1]);
         const [color, setColor] = useState("black");
@@ -43,6 +44,9 @@ export default observer(
             updateCanvasColor();    // change draw color for canvas
         }, [color, model.users[model.user.uid].colorCurrent]);
 
+        if (!model.userReady) {
+            return <div>Loading...</div>
+        }
 
         function addToDrafts(img) {
 
@@ -101,7 +105,7 @@ export default observer(
         }
 
         function deleteDraft(img) {
-            const userID = auth.currentUser.uid;
+            const userID = model.user.uid;
             const storage = getStorage(app);    
             console.log("img: ", img);
         
@@ -167,6 +171,7 @@ export default observer(
             if (undoHistory.current.at(historyLength)) {
                 undoHistory.current.pop()
             }    
+            console.log("placing undo history to model (?):", document.getElementById("drawing-area").toDataURL("image/png"));
             model.users[model.user.uid].canvasCurrent = canvas.toDataURL(); // persistance bby letsgo
             undoHistory.current.unshift(canvas.toDataURL())
         }
@@ -342,7 +347,6 @@ export default observer(
                 const temp = con.fillStyle;
                 con.reset();
                 con.fillStyle = temp;
-                model.users[model.user.uid].canvasCurrent = "";
             } catch (error) {
                 console.error(error);
             }

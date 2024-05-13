@@ -80,7 +80,7 @@ export default {
     }],
     screens: [],
     pairingCodes: [],
-    canvasCurrent: "",
+    // canvasCurrent: "",
 
     // Add more image objects as needed
 };

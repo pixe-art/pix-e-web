@@ -10,17 +10,12 @@ function Draft(props) {
     const [boxOpen, setBoxOpen] = useState(false);
     const [boxAction, setBoxAction] = useState(null);
     const [draftExists, setDraftExists] = useState(false);
-    const [isMounted, setIsMounted] = useState(false);
 
     useEffect(() => {
-        if (props.model.users[props.userID].drafts || false) {
+        if (props.model.users[props.model.user.uid]?.drafts || false) {
             setDraftExists(true);
         }
-    }, []);
-    useEffect(() => {
-        setIsMounted(true);
-    }, []);
-
+    }, [props.model.users[props.model.user.uid]?.drafts]);
 
     function closeBox() {
         setBoxOpen(false);
@@ -63,7 +58,8 @@ function Draft(props) {
         setSelectedImage(false);
     }
 
-    if (!isMounted) {
+    if (!draftExists) {
+        console.warn("draftExists = ", draftExists);
         return <div></div>
     }
     return(
@@ -71,7 +67,7 @@ function Draft(props) {
             <div id="draft-parent" className={TW_centered + TW_window + "flex flex-col items-center"}>
                 <h1 className="text-center text-4xl font-bold m-4">YOUR DRAFTS</h1>
                 <div id="draft-images" className="grid grid-cols-3 gap-6 draft-images-container">
-                    {props.model.users[props.userID].drafts?.map(renderImages)}
+                    {props.model.users[props.model.user.uid].drafts.map(renderImages)}
                 </div>
                 <div className="draft-buttons grid grid-cols-2 gap-4 w-full">
                     <button 
