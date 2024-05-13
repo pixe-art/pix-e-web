@@ -1,7 +1,7 @@
 import "../globals.css"
 import "./artToolStyles.css"
-import { getCords } from "@/utilities";
-import React, { useEffect, useState } from "react";
+import { fetchFileUpload, getCords } from "@/utilities";
+import { React, useEffect, useState } from "react";
 import { SketchPicker } from 'react-color';
 import Draft from "./draft";
 import { addToDrafts } from "./presenter";
@@ -28,7 +28,6 @@ function ArtTool(props) {
     }, [isMounted]);
 
     useEffect(() => {
-        console.log("useEffect called in view, props.model.users[auth.currentUser.uid].drafts: ", props.model.users[auth.currentUser.uid].drafts);
         if(draftUpdate) {
             setDraftUpdate(false);
         }
@@ -51,7 +50,11 @@ function ArtTool(props) {
         setIsDraft(newDraftState);
   
         props.addToDrafts(imgObj); 
+        setIsDraft(newDraftState);
+  
+        props.addToDrafts(imgObj); 
 
+        localStorage.setItem(`draftState-${imgObj.id}`, JSON.stringify(!isDraft));
         localStorage.setItem(`draftState-${imgObj.id}`, JSON.stringify(!isDraft));
         setDraftUpdate(true);
     };
@@ -253,7 +256,7 @@ function ArtTool(props) {
 
     return (
         <div>{isMounted &&
-            <div id="parent" className="inset-0 bg-cover bg-cream touch-none max-h-screen overflow-hidden" onMouseUp={mouseUp} onMouseDown={closeMenus}>
+            <div id="parent" className="inset-0 bg-cover bg-cream touch-none max-h-screen overflow-hidden" onMouseUp={mouseUp}>
                 <div id="topbar" className="hidden align-middle bg-brown text-pretty justify-center py-2 md:flex hmd:hidden">
                     <div>
                     <a href="/dashboard/" className="mx-2">Home</a>
@@ -273,17 +276,18 @@ function ArtTool(props) {
                 </div>
                 <div id="content" className="h-screen flex flex-col md:flex-row justify-between items-center mx-4" onMouseDown={closeMenus} onTouchStart={closeMenus}>
                     <div id="color-picker" className="">
-                            <div className="flex flex-col items-center justify-center">
-                                    <div id="sketch-picker" style={{ display: '' }} className="self-center">
-                                        <SketchPicker color={props.color} onChange={colorChangeEvent} className="self-center hidden md:flex md:flex-col"/>
-                                    </div>
-                            </div>
+                        <div className="flex flex-col items-center justify-center">
+                                <div id="sketch-picker" style={{ display: '' }} className="self-center">
+                                    <SketchPicker color={props.color} onChange={colorChangeEvent} className="self-center hidden md:flex md:flex-col"/>
+                                </div>
                         </div>
+                    </div>
                     <div>
                         <canvas className="canvas transition-colors cursor-crosshair select-none touch-none bg-white border border-brown shadow-md" id="drawing-area" width="64" height="32" onContextMenu={(event)=>{event.preventDefault()}}
                             onTouchStart={touchDrawEvent} onMouseDown={mouseClickEvent}  onMouseMove={mouseDragEvent} onMouseLeave={resetLastCoords} onTouchMove={touchDragEvent}/>
                     </div>
                     <div id="tools" className="mt-0 hmd:mt-20 grid hmd:md:mt-0 hmd:md:ml-4 md:flex md:flex-col items-stretch">
+                        <button id="save-to-draft" className={TW_button + TW_button_plain + TW_button_plainA} onClick={() => setToDraft(props.model.images)}>Save to Draft</button>
                         <form action="" className="flex flex-col *:m-0 *:p-0 *:y-0" onChange={handleSubmit}>
                             <label htmlFor="upload" className={TW_button + TW_button_plain + TW_button_plainA + "text-center"}>Upload Image</label>
                             <input id="upload" className="hidden" type="file" name="img" accept="image/*" />
@@ -308,9 +312,8 @@ function ArtTool(props) {
                             <input type="range" name="pen-size" id="pen-size" className="cursor-w-resize w-96 md:w-auto" defaultValue={props.changePenSize()} min={"1"} max={"12"} onChange={penSizeEvent}/>
                         </div>
                     </div>
-                    <div id="bottom-spacing" className="min-h-10 md:hidden"></div>
                 </div>
-                
+                <div id="bottom-spacing" className="min-h-10 md:hidden"></div>
             </div>
         }</div>
     );
