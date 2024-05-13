@@ -3,7 +3,7 @@ import { getDatabase, push, ref, get, set, onValue, update } from "firebase/data
 import { getAuth, signOut, onAuthStateChanged } from "firebase/auth";
 import { reaction } from "mobx"
 import { getStorage } from "firebase/storage";
-import firebaseConfig from "./firebaseConfig.js"
+import firebaseConfig from "/src/firebaseConfig.js"
 
 /* How to save and read model properties to and from firebase. Also how to change the model from views.
 First create a new property in the pixeModel.js like:" color: "black" ".
