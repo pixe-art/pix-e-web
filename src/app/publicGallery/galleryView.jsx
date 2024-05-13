@@ -10,24 +10,17 @@ import { downloadImage, displayImage } from './galleryPresenter';
 import { app } from '../../firebaseModel';
 import { getAuth } from 'firebase/auth';
 
-function ImageComponent({ image, addToFavourites, removeFavourite }) {
+function ImageComponent({ model, image, addToFavourites, removeFavourite }) {
     const [isDropdownOpen, setDropdownOpen] = useState(false);
     const [isFavourite, setIsFavourite] = useState(false);
     const [onDisplay, setOnDisplay] = useState(false);
     const [animate, setAnimate] = useState(false);
 
     useEffect(() => {
-        const db = getDatabase(app);
-        const auth = getAuth();
-        const userId = auth.currentUser.uid;
-        const dbRef = ref(db, 'pixeModel/users/' + userId + '/favourites/' + image.id);
-        get(dbRef).then((snapshot) => {
-            if (snapshot.exists()) {
+        for (const element of model.users[model.user.uid].favorites) {
+            if (image.id === element.id)
                 setIsFavourite(true);
-            }
-        }).catch((error) => {
-            console.error(error);
-        });
+        }
     }, []);
 
     const toggleFavourite = () => {
@@ -66,7 +59,7 @@ function ImageComponent({ image, addToFavourites, removeFavourite }) {
                         className={`hover:bg-gray-400 hover:text-white hover:rounded-md flex items-center p-1 ${isFavourite || animate ? 'text-red-500' : 'text-black'}`} 
 
                     >
-                        <FontAwesomeIcon icon={animate ? solidHeart : outlineHeart} className={`mr-2 ${animate ? 'animate-pulse' : ''}`} />
+                        <FontAwesomeIcon icon={isFavourite || animate ? solidHeart : outlineHeart} className={`mr-2 ${animate ? 'animate-pulse' : ''}`} />
                         Favourite
                     </Dropdown.Item>
                     <Dropdown.Item className="hover:bg-gray-400 hover:text-white hover:rounded-md flex items-center p-1" onClick={() => downloadImage(image.storage, image.title)}>
@@ -150,7 +143,7 @@ export default function GalleryView(props) {
                 <h1 className="text-2xl mb-2">Gallery</h1>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
                     {props.model.images.map((image) => (
-                        <ImageComponent key={image.id} image={image} addToFavourites={props.addToFavourites} removeFavourite={props.removeFavourite} downloadImage={downloadImage} />
+                        <ImageComponent key={image.id} model={props.model} image={image} addToFavourites={props.addToFavourites} removeFavourite={props.removeFavourite} downloadImage={downloadImage} />
                     ))}
                 </div>
             </div>
