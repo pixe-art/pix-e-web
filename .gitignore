@@ -16,7 +16,11 @@
 # production
 /build
 /.firebase/
+
+# ignore all Config.js files
 **/*Config.js*
+# but do not ignore firebaseConfig.js
+!firebaseConfig.js
 
 # misc
 .DS_Store
@@ -39,4 +43,3 @@ next-env.d.ts
 
 # environment variables
 .env
-**/*Config.js*
