@@ -42,7 +42,7 @@ export function displayImage(id){
 export default observer(
     function Gallery(){
         const model = useModel();
-        return <GalleryView model={model} addToFavourites={addToFavourites} downloadImage={downloadImage} />
+        return <GalleryView model={model} addToFavourites={addToFavourites} removeFavourite={removeFavourite} downloadImage={downloadImage} />
 
         function addToFavourites(image) {
             const userId = model.user.uid;
@@ -108,6 +108,21 @@ export default observer(
                 .catch((error) => {
                     console.error(error);
                 });*/
+        }
+
+        function removeFavourite(id) {
+            const auth = getAuth();
+            const userId = auth.currentUser.uid;
+            const db = getDatabase(app);
+            const favRef = dbRef(db, 'pixeModel/users/' + userId + '/favorites/' + id); 
+          
+            return remove(favRef)
+                .then(() => {
+                    console.log(`Removed favourite with name: ${id}`);
+                })
+                .catch((error) => {
+                    console.error(`Error removing favourite: ${error}`);
+                });
         }
     }
 );

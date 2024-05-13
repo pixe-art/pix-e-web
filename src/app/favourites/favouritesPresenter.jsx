@@ -11,15 +11,15 @@ import { getDatabase, ref, get, update, onValue, off, remove } from "firebase/da
 import { ref as storageRef, uploadBytes, getDownloadURL, getStorage } from "firebase/storage";
 
 
-export function removeFavourite(filename) {
+export function removeFavourite(id) {
   const auth = getAuth();
   const userId = auth.currentUser.uid;
   const db = getDatabase(app);
-  const favRef = ref(db, 'pixeModel/users/' + userId + '/favourites/' + filename); 
+  const favRef = ref(db, 'pixeModel/users/' + userId + '/favorites/' + id); 
 
   return remove(favRef)
       .then(() => {
-          console.log(`Removed favourite with name: ${filename}`);
+          console.log(`Removed favourite with name: ${id}`);
       })
       .catch((error) => {
           console.error(`Error removing favourite: ${error}`);

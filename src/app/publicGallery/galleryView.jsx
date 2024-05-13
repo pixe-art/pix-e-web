@@ -10,7 +10,7 @@ import { downloadImage, displayImage } from './galleryPresenter';
 import { app } from '../../firebaseModel';
 import { getAuth } from 'firebase/auth';
 
-function ImageComponent({ image, addToFavourites }) {
+function ImageComponent({ image, addToFavourites, removeFavourite }) {
     const [isDropdownOpen, setDropdownOpen] = useState(false);
     const [isFavourite, setIsFavourite] = useState(false);
     const [onDisplay, setOnDisplay] = useState(false);
@@ -31,11 +31,13 @@ function ImageComponent({ image, addToFavourites }) {
     }, []);
 
     const toggleFavourite = () => {
-        setFavourite(!isFavourite);
+        setIsFavourite(!isFavourite);
         if (!isFavourite) {
             setAnimate(true);
             setTimeout(() => setAnimate(false), 500);
             addToFavourites(image); 
+        } else {
+            removeFavourite(image.id);
         }
     };
 
@@ -148,7 +150,7 @@ export default function GalleryView(props) {
                 <h1 className="text-2xl mb-2">Gallery</h1>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
                     {props.model.images.map((image) => (
-                        <ImageComponent key={image.id} image={image} addToFavourites={props.addToFavourites} downloadImage={downloadImage} />
+                        <ImageComponent key={image.id} image={image} addToFavourites={props.addToFavourites} removeFavourite={props.removeFavourite} downloadImage={downloadImage} />
                     ))}
                 </div>
             </div>

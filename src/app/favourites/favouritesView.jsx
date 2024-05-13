@@ -6,19 +6,19 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faHeart as solidHeart,
   faDownload,
-  faQuestion,
-  faPen,
-  faCamera,
+  faImage,
+  faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 import { faHeart as outlineHeart } from "@fortawesome/free-regular-svg-icons";
 import { saveToFirebase } from "@/firebaseModel";
-import { downloadImage } from "./favouritesPresenter";
+import { downloadImage, displayImage, removeFavourite } from "./favouritesPresenter";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { set } from 'firebase/database';
 
 function ImageComponent({ image }) {
   const [isDropdownOpen, setDropdownOpen] = useState(false);
   const [isFavourite, setFavourite] = useState(false);
+  const [onDisplay, setOnDisplay] = useState(false);
   const [animate, setAnimate] = useState(false);
 
   const toggleFavourite = () => {
@@ -28,6 +28,13 @@ function ImageComponent({ image }) {
       setTimeout(() => setAnimate(false), 500);
     }
   };
+
+  const toggleOnDisplay = () => {
+    setOnDisplay(!onDisplay);
+    if (!onDisplay) {
+        displayImage(image.id);
+    }
+}
 
   return (
     <div className="relative rounded shadow-lg p-4 bg-cream transform transition duration-500 hover:scale-110 hover:z-10">
@@ -50,13 +57,13 @@ function ImageComponent({ image }) {
               className={`hover:bg-gray-400 hover:text-white hover:rounded-md flex items-center p-1 ${
                 isFavourite ? "text-red-500" : ""
               }`}
-              onClick={toggleFavourite}
+              onClick={() => removeFavourite(image.id)}
             >
               <FontAwesomeIcon
-                icon={isFavourite ? solidHeart : outlineHeart}
-                className={`mr-2 ${isFavourite ? "animate-pulse" : ""}`}
+                icon={faTrash}
+                className={"mr-2"}
               />
-              Favourite
+              Remove
             </Dropdown.Item>
             <Dropdown.Item
               className="hover:bg-gray-400 hover:text-white hover:rounded-md flex items-center p-1"
@@ -66,11 +73,11 @@ function ImageComponent({ image }) {
               Download
             </Dropdown.Item>
             <Dropdown.Item
-              className="hover:bg-gray-400 hover:text-white hover:rounded-md p-1"
+              className="hover:bg-gray-400 hover:text-white hover:rounded-md p-1" onClick={() => toggleOnDisplay(image.id)}
               href="#/"
             >
-              <FontAwesomeIcon icon={faQuestion} className="mr-2" />
-              Something
+              <FontAwesomeIcon icon={faImage} className="mr-2" />
+              Display
             </Dropdown.Item>
           </Dropdown.Menu>
         )}
@@ -177,6 +184,12 @@ export default function FavouritesView(props) {
                   className="text-white no-underline hover:underline"
                 >
                   Create a picture
+                </Link>
+                <Link 
+                  href="/drafts" 
+                  className="text-white no-underline hover:underline"
+                >
+                  My Drafts
                 </Link>
               </>
             )}
