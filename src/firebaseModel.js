@@ -53,6 +53,8 @@ export function userModelToPersistence(model) {
 
     realtimeModel = {colorCurrent: model.users[model.user.uid].colorCurrent};
     realtimeModel.canvasCurrent = model.users[model.user.uid].canvasCurrent;
+    if (model.users[model.user.uid].images?.length)
+        realtimeModel.images = toObject(model.users[model.user.uid].images);
     if (model.users[model.user.uid].favorites?.length)
         realtimeModel.favorites = toObject(model.users[model.user.uid].favorites);
     realtimeModel.device = model.users[model.user.uid].device;
@@ -111,6 +113,10 @@ export function userPersistenceToModel(data, model) {
 
         if (data.drafts){
             model.users[model.user.uid].drafts = toArray(data.drafts);
+        }
+
+        if (data.images){
+            model.users[model.user.uid].images = toArray(data.images);
         }
 
         if (data.device){
@@ -191,6 +197,9 @@ export function connectToFirebase(model) {
             if (model.users[model.user.uid].drafts === undefined)
                 model.users[model.user.uid].drafts = [];
 
+            if (model.users[model.user.uid].images === undefined)
+                model.users[model.user.uid].images = [];
+
             if (model.users[model.user.uid].device === undefined)
                 model.users[model.user.uid].device = 0;
 
@@ -209,6 +218,7 @@ export function connectToFirebase(model) {
             model.users[model.user.uid].canvasCurrent = "";
             model.users[model.user.uid].favorites = [];
             model.users[model.user.uid].drafts = [];
+            model.users[model.user.uid].images = [];
             model.users[model.user.uid].device = 0;
             model.users[model.user.uid].profile = {bio: "", username: ""};
         }
@@ -216,7 +226,7 @@ export function connectToFirebase(model) {
 
     function userDataChangedACB() {
         return [model.users[model.user.uid].colorCurrent, model.users[model.user.uid].canvasCurrent, 
-                model.users[model.user.uid].favorites, 
+                model.users[model.user.uid].favorites, model.users[model.user.uid].images,
                 model.users[model.user.uid].device, model.users[model.user.uid].profile.bio,
                 model.users[model.user.uid].profile.username, model.users[model.user.uid].drafts];
     }

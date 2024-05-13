@@ -44,27 +44,17 @@ export default function Dashboard(props) {
   };
 
   function setPicturesACB() {
-    //props.model.users[props.model.user.uid].colorCurrent = "blue";
-    
-    /*if (props.model.users[props.model.user.uid].drafts !== undefined)
-        props.model.users[props.model.user.uid].drafts = [...props.model.users[props.model.user.uid].drafts, 
-          {
-            creator:"LfnQG42xtHPrtVncuY8hnqQHuRp1",
-            id: 1715257651329,
-            storage: "gs://pix-e-b9fab.appspot.com/users/LfnQG42xtHPrtVncuY8hnqQHuRp1/drafts/1715257651329",
-            testPicture: "https://firebasestorage.googleapis.com/v0/b/pix-e-b9fab.appspot.com/o/users%2FLfnQG42xtHPrtVncuY8hnqQHuRp1%2Fdrafts%2F1715257651329?alt=media&token=0b60877a-a8c7-4e0f-919b-c31cd362e586",
-            title: 1715257651329 }];
+      props.model.users[props.model.user.uid].images = [...props.model.users[props.model.user.uid].images, 
+        {
+          id: '9',
+          testPicture: "https://firebasestorage.googleapis.com/v0/b/pix-e-b9fab.appspot.com/o/images%2F9.png?alt=media&token=e6a19dff-146a-4210-a9db-75b04f4ebc3a",
+          title: "Wide Putin",
+          creator: "Some memester",
+          storage: "gs://pix-e-b9fab.appspot.com/images/9.png",
+          lastEdited: "3",
+      }];
 
-    else {
-        props.model.users[props.model.user.uid].drafts = [{
-        creator:"LfnQG42xtHPrtVncuY8hnqQHuRp1",
-        id: 1715257651329,
-        storage: "gs://pix-e-b9fab.appspot.com/users/LfnQG42xtHPrtVncuY8hnqQHuRp1/drafts/1715257651329",
-        testPicture: "https://firebasestorage.googleapis.com/v0/b/pix-e-b9fab.appspot.com/o/users%2FLfnQG42xtHPrtVncuY8hnqQHuRp1%2Fdrafts%2F1715257651329?alt=media&token=0b60877a-a8c7-4e0f-919b-c31cd362e586",
-        title: 1715257651329 }];
-    }*/
-    
-    
+   /*
     if (props.model.users[props.model.user.uid].favorites)
         props.model.users[props.model.user.uid].favorites = [...props.model.users[props.model.user.uid].favorites, 
           {
@@ -84,17 +74,8 @@ export default function Dashboard(props) {
         creator: "Some memester",
         storage: "gs://pix-e-b9fab.appspot.com/images/9.png",
         lastEdited: "3"}];
-    }
-    /*
-    props.model.images = [...props.model.images, 
-      {
-        id: '9',
-        testPicture: "https://firebasestorage.googleapis.com/v0/b/pix-e-b9fab.appspot.com/o/images%2F9.png?alt=media&token=e6a19dff-146a-4210-a9db-75b04f4ebc3a",
-        title: "Wide Putin",
-        creator: "Some memester",
-        storage: "gs://pix-e-b9fab.appspot.com/images/9.png",
-        lastEdited: "3",
-    }];*/
+    }*/
+
   }
 
   return (
