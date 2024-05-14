@@ -40,9 +40,11 @@ export default observer(
         }, []);
 
         useEffect(() => {
-            setColor(model.users[model.user.uid].colorCurrent);   // update color if color changes in model
-            updateCanvasColor();    // change draw color for canvas
-        }, [color, model.users[model.user.uid].colorCurrent]);
+            if (model.user) {
+                setColor(model.users[model.user.uid].colorCurrent);   // update color if color changes in model
+                updateCanvasColor();    // change draw color for canvas
+            }
+        }, [color, model.user && model.users[model.user.uid].colorCurrent]);
 
         if (!model.userReady || !model.ready) {
             return <div>
