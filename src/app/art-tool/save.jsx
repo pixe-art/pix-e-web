@@ -21,7 +21,9 @@ export default function SaveMenu(props) {
                     <label htmlFor="public" className="text-black mx-2 self-center disabled:cursor-not-allowed">Make public</label>
                     <input type="checkbox" name="Public" id="public" className="min-w-4 min-h-4 disabled:bg-slate-700 disabled:cursor-not-allowed" onChange={toggleCheck} />
                 </div>
-                <button id="save-image" className={TW_button + TW_button_green + "min-w-[20%] min-h-8 !text-white disabled:bg-slate-700 disabled:hover:bg-slate-700 disabled:!text-gray-300 disabled:cursor-not-allowed"} value="private" disabled={false} onClick={test}>Save Image</button>
+                <button id="save-image" value="private" disabled={false} onClick={uploadToFirebase}
+                className={TW_button + TW_button_green + "min-w-[20%] min-h-8 !text-white disabled:bg-slate-700 " + 
+                " disabled:hover:bg-slate-700 disabled:!text-gray-300 disabled:cursor-not-allowed"}>Save Image</button>
             </div>
     </div>
     );
@@ -57,14 +59,17 @@ export default function SaveMenu(props) {
         const element = document.getElementById("drawing-area")
         console.log("element: ", element);
         if (!props.isCanvasEmpty(element)) {
-            if (publicCheck) {
+            const success = props.uploadToFirebase(element, title, publicCheck);
+
+            if (!success) {
+                window.alert("Artwork couldn't be saved.\nPlease check if it's already been saved or if the Canvas is empty.")
+            } else if (publicCheck) {
                 // functions to publish artwork:
                 window.alert("Artwork published and saved to your profile!")
             } else {
                 // functions for only non-published artworks: 
                 window.alert("Artwork saved to your profile!")
             }
-            props.uploadToFirebase(element, title, publicCheck);
             props.setDraftUpdate(true);
             props.closeMenu();
             setTitle("");

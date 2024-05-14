@@ -47,14 +47,9 @@ function ArtTool(props) {
         console.log("imgObj: ", imgObj);
 
         const newDraftState = !isDraft;
-        setIsDraft(newDraftState);
-  
         props.addToDrafts(imgObj); 
         setIsDraft(newDraftState);
-  
-        props.addToDrafts(imgObj); 
 
-        localStorage.setItem(`draftState-${imgObj.id}`, JSON.stringify(!isDraft));
         localStorage.setItem(`draftState-${imgObj.id}`, JSON.stringify(!isDraft));
         setDraftUpdate(true);
         window.alert("Canvas saved to your Draft!")
@@ -111,18 +106,6 @@ function ArtTool(props) {
             + "\n\tsave button disabled = " + saveButton.disabled);
         }
         element.classList.toggle("hidden");
-    };
-
-    const uploadToFirebase = () => {
-        console.warn("attempting to upload...");
-        const element = document.getElementById("drawing-area");
-        console.log("element: ", element);
-        if (!props.isCanvasEmpty(element)) {
-            props.uploadToFirebase(element);
-            setDraftUpdate(true);
-        } else {
-            console.log("Cannot save an empty canvas");
-        }
     };
 
     const saveCurrent = () => {

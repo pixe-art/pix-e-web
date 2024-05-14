@@ -44,7 +44,7 @@ export default observer(
                      <img src="https://brfenergi.se/iprog/loading.gif" alt="Loading gif"></img>
                    </div>
         }
-        
+
         useEffect(() => {
             if (model.user) {
                 setColor(model.users[model.user.uid].colorCurrent);   // update color if color changes in model
@@ -200,36 +200,35 @@ export default observer(
             return last;
         }
 
-        function uploadCanvasStateToFirebase(element, title, makePublic) {
+        function uploadCanvasStateToFirebase(canvas, title, makePublic) {
             const username = model.users[model.user.uid].profile.username;
             console.log("auth: ", model.user.uid);
-            const data = canvasToData(element);
+            const data = canvasToData(canvas);
             const imageId = generateUniqueId();
             console.log("got data from canvas:", data);
             console.log(imageId);
             const out = buildModelPicture(username, imageId, Date.now(), data, (title || "Untitled"));
             //checks for duplicates in firebase
             for (const element of model.images) {
-                if (data === element.testPicture) {
+                if (data === element.imageURL) {
                     console.log("You already have a duplicate saved at model.images[", element, "]");
-                    return; 
+                    return false; 
                 }
             } 
-
             for (const element of model.users[model.user.uid].images) {
-                if (data === element.testPicture) {
+                if (data === element.imageURL) {
                     console.log("You already have a duplicate saved at model.users[model.user.uid].images[", element, "]");
-                    return; 
-                }
-
-                else {
+                    return false; 
+                } else {
                     console.log("data: ", data);
-                    if (makePublic)
+                    if (makePublic){
                         model.images = [...model.images, out];
-
+                    }
                     model.users[userID].images = [...model.users[userID].images, out];
                 }
             }
+
+            return true
 
             function generateUniqueId(){
                 return Date.now().toString(36) + Math.random().toString(36).substring(2, 12).padStart(12, "");
