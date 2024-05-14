@@ -14,15 +14,14 @@ export default function SaveMenu(props) {
             </div>
             <div className="my-4 flex flex-col">
                 <p>Enter the title of your art:</p>
-                <input type="text" className="w-full px-1 bg-white border rounded border-brown text-black" onChange={handleTitleInput}/>
+                <input id="give-title" type="text" className="w-full px-1 bg-white border rounded border-brown text-black disabled:bg-gray-300 disabled:cursor-not-allowed disabled:border-black" onChange={handleTitleInput}/>
                 <p>{"by: " + props.user}</p>
                 <div className="min-h-8"></div>
-                <div className="flex self-center min-h-8 align-baseline">
-                    <label htmlFor="public" className="text-black mx-2 self-center">Make public</label>
-                    <input type="checkbox" name="Public" id="public" className="min-w-4 min-h-4" onChange={toggleCheck} />
+                <div id="make-public-parent" className="flex self-center min-h-8 align-baseline">
+                    <label htmlFor="public" className="text-black mx-2 self-center disabled:cursor-not-allowed">Make public</label>
+                    <input type="checkbox" name="Public" id="public" className="min-w-4 min-h-4 disabled:bg-slate-700 disabled:cursor-not-allowed" onChange={toggleCheck} />
                 </div>
-                <button id="save-image" className={TW_button + TW_button_green + "min-w-[20%] min-h-8 !text-white"} value="private" onClick={uploadToFirebase}>Save Image</button>
-                {/* <button className={TW_button + TW_button_yellow + "min-w-[20%] min-h-8 !text-white"} value="public" onClick={test}>test</button> */}
+                <button id="save-image" className={TW_button + TW_button_green + "min-w-[20%] min-h-8 !text-white disabled:bg-slate-700 disabled:hover:bg-slate-700 disabled:!text-gray-300 disabled:cursor-not-allowed"} value="private" disabled={false} onClick={test}>Save Image</button>
             </div>
     </div>
     );
@@ -39,6 +38,7 @@ export default function SaveMenu(props) {
     }
     function test(event) {
         console.log(event);
+        console.log(event.target);
         console.log(document.getElementById("public"));
         console.log(publicCheck);
     }
