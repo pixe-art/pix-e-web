@@ -5,10 +5,7 @@ import { BsThreeDots } from 'react-icons/bs';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeart as solidHeart, faDownload, faImage } from '@fortawesome/free-solid-svg-icons';
 import { faHeart as outlineHeart } from '@fortawesome/free-regular-svg-icons';
-import { getDatabase, ref, get } from 'firebase/database';
 import { downloadImage, displayImage } from './galleryPresenter';
-import { app } from '../../firebaseModel';
-import { getAuth } from 'firebase/auth';
 
 function ImageComponent({ model, image, addToFavourites, removeFavourite }) {
     const [isDropdownOpen, setDropdownOpen] = useState(false);

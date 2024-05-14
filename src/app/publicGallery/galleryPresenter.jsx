@@ -2,11 +2,10 @@
 
 import { observer } from "mobx-react-lite";
 import { getAuth } from "firebase/auth";
-import { getDatabase, ref as dbRef , set, push, update, remove } from "firebase/database";
+import { getDatabase, ref as dbRef , update, remove } from "firebase/database";
 import { useModel } from "/src/app/model-provider.js";
 import { app } from "/src/firebaseModel.js";
-import { getStorage, ref as sRef , getDownloadURL, uploadBytesResumable, uploadBytes } from "firebase/storage";
-import { v4 as uuidv4 } from 'uuid';
+import { getStorage, ref as sRef , getDownloadURL, uploadBytes } from "firebase/storage";
 
 import GalleryView from "./galleryView.jsx";
 
@@ -81,12 +80,7 @@ export default observer(
         
             const imageCopy = image;
             imageCopy.storage = "gs://pix-e-b9fab.appspot.com/users/" + userId + '/favorites/' + image.id;
-
-            if (model.users[userId].favorites !== undefined)
-                model.users[userId].favorites = [...model.users[userId].favorites, imageCopy];
-
-            else
-                model.users[userId].favorites = [imageCopy];
+            model.users[userId].favorites = [...model.users[userId].favorites, imageCopy];
     
         }
 
