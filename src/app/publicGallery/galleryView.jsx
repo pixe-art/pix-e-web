@@ -62,7 +62,7 @@ function ImageComponent({ model, image, addToFavourites, removeFavourite }) {
                         <FontAwesomeIcon icon={isFavourite || animate ? solidHeart : outlineHeart} className={`mr-2 ${animate ? 'animate-pulse' : ''}`} />
                         Favourite
                     </Dropdown.Item>
-                    <Dropdown.Item className="hover:bg-gray-400 hover:text-white hover:rounded-md flex items-center p-1" onClick={() => downloadImage(image.storage, image.title)}>
+                    <Dropdown.Item className="hover:bg-gray-400 hover:text-white hover:rounded-md flex items-center p-1" onClick={() => downloadImage(image.imageURL, image.title)}>
                         <FontAwesomeIcon icon={faDownload} className="mr-2" />
                         Download
                     </Dropdown.Item>

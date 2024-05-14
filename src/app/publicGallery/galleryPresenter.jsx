@@ -13,24 +13,40 @@ import GalleryView from "./galleryView.jsx";
 export function downloadImage(url, filename) {
     const storage = getStorage(app);
     const imageRef = sRef(storage, url);
-
-    getDownloadURL(imageRef)
-        .then((downloadURL) => {
-            console.log('File available at', downloadURL);
-            fetch(downloadURL)
-                .then(response => response.blob())
-                .then(blob => {
-                    const blobUrl = URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = blobUrl;
-                    a.download = filename;
-                    a.click();
-                    URL.revokeObjectURL(blobUrl); // clean up
-                });
-        })
-        .catch((error) => {
-            console.error(error);
-        });
+    console.log(url);
+    if(url.startsWith('data:image/')){
+        const byteCharacters = atob(url.split(',')[1]);
+        const byteNumbers = new Array(byteCharacters.length);
+        for (let i = 0; i < byteCharacters.length; i++) {
+            byteNumbers[i] = byteCharacters.charCodeAt(i);
+        }
+        const byteArray = new Uint8Array(byteNumbers);
+        const blob = new Blob([byteArray], {type: 'image/png'});
+        const blobUrl = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = blobUrl;
+        a.download = filename;
+        a.click();
+        URL.revokeObjectURL(blobUrl); 
+    }else{
+        getDownloadURL(imageRef)
+            .then((downloadURL) => {
+                console.log('File available at', downloadURL);
+                fetch(downloadURL)
+                    .then(response => response.blob())
+                    .then(blob => {
+                        const blobUrl = URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = blobUrl;
+                        a.download = filename;
+                        a.click();
+                        URL.revokeObjectURL(blobUrl); 
+                    });
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+    }
 }
 
 export function displayImage(id){

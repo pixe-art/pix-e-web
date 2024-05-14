@@ -9,11 +9,8 @@ import {
   faImage,
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
-import { faHeart as outlineHeart } from "@fortawesome/free-regular-svg-icons";
-import { saveToFirebase } from "@/firebaseModel";
 import { downloadImage, displayImage, removeFavourite } from "./favouritesPresenter";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { set } from 'firebase/database';
 
 function ImageComponent({ image }) {
   const [isDropdownOpen, setDropdownOpen] = useState(false);
@@ -38,10 +35,10 @@ function ImageComponent({ image }) {
 
   return (
     <div className="relative rounded shadow-lg p-4 bg-cream transform transition duration-500 hover:scale-110 hover:z-10">
-      <img
-        src={image.imageURL}
-        alt=""
-        className="w-full h-auto object-cover image-pixelated"
+      <img 
+        src={image.imageURL} 
+        alt="" 
+        className="w-full h-auto object-cover image-pixelated bg-black border-4 border-brown" 
       />
       <Dropdown
         className="absolute bottom-0 right-0 mb-2 mr-2"
@@ -67,7 +64,7 @@ function ImageComponent({ image }) {
             </Dropdown.Item>
             <Dropdown.Item
               className="hover:bg-gray-400 hover:text-white hover:rounded-md flex items-center p-1"
-              onClick={() => downloadImage(image.storage, image.title)}
+              onClick={() => downloadImage(image.imageURL, image.title)}
             >
               <FontAwesomeIcon icon={faDownload} className="mr-2" />
               Download
