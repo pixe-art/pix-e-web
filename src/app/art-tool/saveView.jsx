@@ -1,7 +1,9 @@
+import { observer } from "mobx-react-lite";
 import "./artToolStyles.css";
 import React, { useState, useEffect } from 'react';
 const testCSS = "bg-yellow-100 border border-red-600  w-2/4 h-2/4 left-1/4 top-1/4 z-30 "
 
+export default observer(
 function Save(props) {
     const [image, setImage] = useState();
 
@@ -9,7 +11,7 @@ function Save(props) {
         <div id="draft-parent" className={testCSS + " absolute text-black flex flex-col items-center"}>
             <h1 className="text-center text-4xl font-bold m-4">YOUR DRAFTS</h1>
             <div id="draft-images" className="grid grid-cols-3 gap-6 draft-images-container">
-                {Object.values(props.model.users[props.userID].drafts).map(renderImages)}
+                {props.model.users[props.userID].drafts.map(renderImages)}
             </div>
         </div>
     )
@@ -31,5 +33,4 @@ function Save(props) {
             
         }
     }
-}
-export default Draft
+});

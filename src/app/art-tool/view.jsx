@@ -9,6 +9,7 @@ import { auth } from "@/firebaseModel";
 import SaveMenu from "./save";
 import { TW_button, TW_button_plain, TW_button_plainA } from "./tailwindClasses";
 
+export default
 function ArtTool(props) {
     const [isMounted, setIsMounted] = useState(false);
     const [draftUpdate, setDraftUpdate] = useState(false);
@@ -43,7 +44,7 @@ function ArtTool(props) {
 
         const data = canvasToData(element);
         console.log("got data from canvas:", data);
-        const imgObj = buildModelPicture(userID, Date.now(), Date.now(), data, Date.now());
+        const imgObj = buildModelPicture(userID, generateUniqueId(), Date.now(), data, Date.now());
         console.log("imgObj: ", imgObj);
 
         const newDraftState = !isDraft;
@@ -53,6 +54,10 @@ function ArtTool(props) {
         localStorage.setItem(`draftState-${imgObj.id}`, JSON.stringify(!isDraft));
         setDraftUpdate(true);
         window.alert("Canvas saved to your Draft!")
+
+        function generateUniqueId(){
+            return Date.now().toString(36) + Math.random().toString(36).substring(2, 12).padStart(12, "");
+        }
     };
 
     const mouseUp = () => {
@@ -312,4 +317,3 @@ function ArtTool(props) {
         }</div>
     );
 }
-export default ArtTool;

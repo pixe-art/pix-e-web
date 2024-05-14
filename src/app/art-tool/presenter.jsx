@@ -77,6 +77,14 @@ export default observer(
                                     console.log('Firebase HTTPS link:', url);
         
                                     // Store the reference in the Firebase database
+                                    model.users[model.user.uid].drafts = [...model.users[model.user.uid].drafts, {
+                                        id: img.title, 
+                                        imageURL: url, // use the url here
+                                        title: img.title,
+                                        creator: model.users[userID].profile.username,
+                                        storage: "gs://pix-e-b9fab.appspot.com/users/" + userID + '/drafts/' + img.title
+                                    }];
+                                    /*
                                     const db = getDatabase(app);
                                     const imageRef = dbRef(db, 'pixeModel/users/' + userID + '/drafts/' + img.title);
                                     update(imageRef, {
@@ -85,7 +93,7 @@ export default observer(
                                         title: img.title,
                                         creator: model.users[userID].profile.username,
                                         storage: "gs://pix-e-b9fab.appspot.com/users/" + userID + '/drafts/' + img.title
-                                    });
+                                    });*/
                                 })
                                 .catch((error) => {
                                     console.error(error);
@@ -102,6 +110,15 @@ export default observer(
             const userID = model.user.uid;
             const storage = getStorage(app);    
             console.log("img: ", img);
+
+            const draftArray = [];
+            for (const element of model.users[model.user.uid].drafts) {
+                if (img.id === element.id){
+                    continue;
+            }
+                draftArray.push(element);
+            }
+            model.users[model.user.uid].drafts = draftArray;
         
             // Reference to the user's draft in storage
             const userImageRef = sRef(storage, 'users/' + userID + '/drafts/' + img.title);
@@ -110,19 +127,21 @@ export default observer(
             deleteObject(userImageRef)
                 .then(() => {
                     console.log('Draft image deleted from storage');
-        
-                    // After successful storage deletion, delete the database entry
-                    const db = getDatabase(app);
-                    const draftRef = dbRef(db, 'pixeModel/users/' + userID + '/drafts/' + img.title);
-                    
-                    remove(draftRef)
-                        .then(() => {
-                            console.log('Draft data deleted from database');
-                        })
-                        .catch((error) => {
-                            console.error('Error deleting draft data from database:', error);
-                        });
-                })
+
+                    if (draftArray.length === 0) {
+                        // After successful storage deletion, delete the database entry
+                        const db = getDatabase(app);
+                        const draftRef = dbRef(db, 'pixeModel/users/' + userID + '/drafts/' + img.title);
+                        
+                        remove(draftRef)
+                            .then(() => {
+                                console.log('Draft data deleted from database');
+                            })
+                            .catch((error) => {
+                                console.error('Error deleting draft data from database:', error);
+                            });
+                        }
+                    })
                 .catch((error) => {
                     console.error('Error deleting image from storage:', error);
                 });

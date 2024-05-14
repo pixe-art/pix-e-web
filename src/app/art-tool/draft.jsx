@@ -4,7 +4,9 @@ import React, { useState, useEffect } from 'react';
 const testCSS = "bg-gray-100 border border-black w-2/4 h-2/4 left-1/4 top-1/4 z-30";
 
 import { TW_centered, TW_titleText, TW_window } from "./tailwindClasses";
+import { observer } from "mobx-react-lite";
 
+export default observer(
 function Draft(props) {
     const [selectedImage, setSelectedImage] = useState(false);
     const [boxOpen, setBoxOpen] = useState(false);
@@ -118,7 +120,7 @@ function Draft(props) {
         }
 
     }
-}
+});
 
 function ConfirmationBox({ closeBox, confirmBoxAction, action }) {
     return (
@@ -133,4 +135,3 @@ function ConfirmationBox({ closeBox, confirmBoxAction, action }) {
         </div>
     );
 }
-export default Draft
