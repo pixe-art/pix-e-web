@@ -91,13 +91,13 @@ function ArtTool(props) {
         if ((event.target?.value || event) === "save") {
             const preview = document.getElementById("preview");
             const saveButton = document.getElementById("save-image");
-            const publicCheckParnet = document.getElementById("make-public-parent");
+            const publicCheckParent = document.getElementById("make-public-parent");
             const giveTitle = document.getElementById("give-title");
             preview.src = (props.model.users[props.model.user.uid].canvasCurrent || "https://placehold.co/64x32?text=Canvas+Is+Empty")
             const hasPlaceholder = (preview.src === "https://placehold.co/64x32?text=Canvas+Is+Empty")
             saveButton.disabled = hasPlaceholder
             giveTitle.disabled = hasPlaceholder
-            publicCheckParnet.childNodes.forEach(node => {
+            publicCheckParent.childNodes.forEach(node => {
                 node.disabled = hasPlaceholder
             });
             
