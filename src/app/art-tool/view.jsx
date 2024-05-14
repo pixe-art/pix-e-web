@@ -60,8 +60,9 @@ function ArtTool(props) {
 
     const mouseUp = () => {
         if (props.checkReset() === true && isMounted) {
-            console.log("giving model canvas data:", document.getElementById("drawing-area").toDataURL("image/png"));
-            props.model.users[props.model.user.uid].canvasCurrent = document.getElementById("drawing-area").toDataURL("image/png")
+            const canvas = document.getElementById("drawing-area");
+            console.log("giving model canvas data:", canvas.toDataURL("image/png"));
+            props.persistCanvas(canvas.toDataURL("image/png"))
         }
         props.checkReset(false)    
     };
@@ -90,12 +91,14 @@ function ArtTool(props) {
 
     const toggleMenu = (event) => {
         const element = document.getElementById(event.target?.value || event);
-        console.log(event.target?.value || event);
         if ((event.target?.value || event) === "save") {
-            element.firstChild.firstChild.childNodes.forEach((node) => {
-                if(node.nodeName === "IMG")
-                    node.src = (props.model.users[props.model.user.uid].canvasCurrent || "https://placehold.co/64x32?text=No+Image+Found");
-            });
+            const preview = document.getElementById("preview");
+            const saveButton = document.getElementById("save-image");
+            preview.src = (props.model.users[props.model.user.uid].canvasCurrent || "https://placehold.co/64x32?text=Canvas+Is+Empty")
+            saveButton.disalbed = (preview.src === "https://placehold.co/64x32?text=Canvas+Is+Empty")
+            console.log("save menu toggle:"
+            + "\n\tpreview imageURL = " + preview.src
+            + "\n\tsave button disabled = " + saveButton.disalbed);
         }
         element.classList.toggle("hidden");
     };
@@ -145,9 +148,10 @@ function ArtTool(props) {
     const undo = () => {
         const last = props.grabLastImage();
         if (last) {
-            const element = document.getElementById("drawing-area");
-            props.unshiftRedoHistory(element);
+            const canvas = document.getElementById("drawing-area");
+            props.unshiftRedoHistory(canvas);
             overwriteCanvas(last);
+            props.persistCanvas(last)
         }
     };
 
@@ -156,6 +160,7 @@ function ArtTool(props) {
         if (last) {
             saveCurrent();
             overwriteCanvas(last);
+            props.persistCanvas(last)
         }
     };
 
