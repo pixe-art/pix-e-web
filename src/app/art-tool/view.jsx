@@ -7,6 +7,7 @@ import Draft from "./draft";
 import { buildModelPicture, canvasToData } from "@/utilities";
 import { auth } from "@/firebaseModel";
 import SaveMenu from "./save";
+import SaveDraft from "./saveDraft";
 import { TW_button, TW_button_plain, TW_button_plainA } from "./tailwindClasses";
 
 export default
@@ -27,38 +28,29 @@ function ArtTool(props) {
         }
     }, [isMounted]);
 
-    useEffect(() => {
+/*     useEffect(() => {
         if(draftUpdate) {
             setDraftUpdate(false);
         }
-    }, [draftUpdate]);
+    }, [draftUpdate]); */
 
-    const setToDraft = () => {
-        const userID = auth.currentUser.uid;
-        const element = document.getElementById("drawing-area");
-        if (props.isCanvasEmpty(element)) {
+    /* const setToDraft = (element, title) => {
+        if (!props.isCanvasEmpty(element)) {
+            const success = props.uploadToFirebase(element, title);
+
+            if (!success) {
+                window.alert("Artwork couldn't be saved.\nPlease check if it's already been saved or if the Canvas is empty.")
+            } else {
+                // functions for only non-published artworks: 
+                window.alert("Artwork saved to your drafts!")
+            }
+            //props.setDraftUpdate(true);
+            closeMenus();
+            setTitle("");
+        } else {
             console.log("Cannot save an empty canvas");
-            window.alert("Warning\nCannot save an empty Canvas")
-            return;
         }
-
-        const data = canvasToData(element);
-        console.log("got data from canvas:", data);
-        const imgObj = buildModelPicture(userID, generateUniqueId(), Date.now(), data, Date.now());
-        console.log("imgObj: ", imgObj);
-
-        const newDraftState = !isDraft;
-        props.addToDrafts(imgObj); 
-        setIsDraft(newDraftState);
-
-        localStorage.setItem(`draftState-${imgObj.id}`, JSON.stringify(!isDraft));
-        setDraftUpdate(true);
-        window.alert("Canvas saved to your Draft!")
-
-        function generateUniqueId(){
-            return Date.now().toString(36) + Math.random().toString(36).substring(2, 12).padStart(12, "");
-        }
-    };
+    }; */
 
     const mouseUp = () => {
         if (props.checkReset() === true && isMounted) {
@@ -105,10 +97,26 @@ function ArtTool(props) {
             publicCheckParent.childNodes.forEach(node => {
                 node.disabled = hasPlaceholder
             });
-            
+    
             console.log("save menu toggle:"
             + "\n\tpreview imageURL = " + preview.src
             + "\n\tsave button disabled = " + saveButton.disabled);
+        }
+        console.log("event.target.value: ", event.target?.value, " event: ", event);
+        if ((event.target?.value || event) === "save-draft") {
+            const preview = document.getElementById("draft-preview");
+            const saveButton = document.getElementById("save-draft");
+            const giveTitle = document.getElementById("give-title");
+            preview.src = (props.model.users[props.model.user.uid].canvasCurrent || "https://placehold.co/64x32?text=Canvas+Is+Empty");
+            const hasPlaceholder = (preview.src === "https://placehold.co/64x32?text=Canvas+Is+Empty")
+            saveButton.disabled = hasPlaceholder
+            giveTitle.disabled = hasPlaceholder
+
+        
+            
+            console.log("save draft menu toggle:"
+            + "\n\tpreview imageURL = " + "\n\t", preview.src
+            + "\n\tsave button disabled = " + "\n\t", saveButton.disabled);
         }
         element.classList.toggle("hidden");
     };
@@ -235,10 +243,13 @@ function ArtTool(props) {
     const closeMenus = (event) => {
         const draft = document.getElementById("draft").classList; 
         const save = document.getElementById("save").classList; 
+        const draftSave = document.getElementById("save-draft").classList;
         if (!draft.contains("hidden") && (event?.target.id !== "show-draft"))
             draft.toggle("hidden");
         if (!save.contains("hidden") && (event?.target.id !== "show-save"))
             save.toggle("hidden");
+        if (!draftSave.contains("hidden") && (event?.target.id !== "show-draft-save"))
+            draftSave.toggle("hidden");
     }
 
     const handleSubmit = (event) => {
@@ -273,7 +284,11 @@ function ArtTool(props) {
                 <div id="save" className="hidden">
                     <SaveMenu user={props.model.users[props.model.user.uid]?.profile?.username} isCanvasEmpty={props.isCanvasEmpty} uploadToFirebase={props.uploadToFirebase} setDraftUpdate={setDraftUpdate} closeMenu={closeMenus}></SaveMenu>
                 </div>
+                <div id="save-draft" className="hidden">
+                    <SaveDraft user={props.model.users[props.model.user.uid]?.profile?.username} isCanvasEmpty={props.isCanvasEmpty} addToDrafts={props.addToDrafts} setDraftUpdate={setDraftUpdate} closeMenus={closeMenus}></SaveDraft>
+                </div>
                 <div id="content" className="h-screen flex flex-col md:flex-row justify-between items-center mx-4" onMouseDown={closeMenus} onTouchStart={closeMenus}>
+                    
                     <div id="color-picker" className="">
                         <div className="flex flex-col items-center justify-center">
                                 <div id="sketch-picker" style={{ display: '' }} className="self-center">
@@ -286,7 +301,7 @@ function ArtTool(props) {
                             onTouchStart={touchDrawEvent} onMouseDown={mouseClickEvent}  onMouseMove={mouseDragEvent} onMouseLeave={resetLastCoords} onTouchMove={touchDragEvent}/>
                     </div>
                     <div id="tools" className="mt-0 hmd:mt-20 grid hmd:md:mt-0 hmd:md:ml-4 md:flex md:flex-col items-stretch">
-                        <button id="save-to-draft" className={TW_button + TW_button_plain + TW_button_plainA} onClick={() => setToDraft(props.model.images)}>Save to Draft</button>
+                        <button id="show-draft-save" className={TW_button + TW_button_plain + TW_button_plainA} value={"save-draft"} onClick={toggleMenu} /* onClick={() => setToDraft(props.model.images)} */>Save to Draft</button>
                         <form action="" className="flex flex-col *:m-0 *:p-0 *:y-0" onChange={handleSubmit}>
                             <label htmlFor="upload" className={TW_button + TW_button_plain + TW_button_plainA + "text-center"}>Upload Image</label>
                             <input id="upload" className="hidden" type="file" name="img" accept="image/*" />

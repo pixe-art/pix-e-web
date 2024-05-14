@@ -42,68 +42,81 @@ export default observer(
                    </div>
         }
 
-        function addToDrafts(img) {
+        function generateUniqueId(){
+            return Date.now().toString(36) + Math.random().toString(36).substring(2, 12).padStart(12, "");
+        }
 
-            const userID = auth.currentUser.uid;
-        
-            const imagePath = new URL(img.imageURL).pathname.split('/').pop();
-            
-            // Create a copy of the image in Firebase storage
+        function uploadCanvasStateToFirebase(canvas, title, makePublic) {
             const storage = getStorage(app);
-            const imageRef = sRef(storage, imagePath);
-            const userImageRef = sRef(storage, 'users/' + userID + '/drafts/' + img.title);
+            const username = model.users[model.user.uid].profile.username;
+            console.log("auth: ", model.user.uid);
+            const data = canvasToData(canvas);
+            const imageId = generateUniqueId();
+            console.log("got data from canvas:", data);
+            console.log(imageId);
+            const out = buildModelPicture(username, imageId, Date.now(), data, (title || "Untitled"));
+            //checks for duplicates in firebase
+            for (const element of model.images) {
+                if (data === element.imageURL) {
+                    console.log("You already have a duplicate saved at model.images[", element, "]");
+                    return false; 
+                }
+            } 
+            for (const element of model.users[model.user.uid].images) {
+                if (data === element.imageURL) {
+                    console.log("You already have a duplicate saved at model.users[model.user.uid].images[", element, "]");
+                    return false; 
+                } 
+            }
 
-        
-            // Fetch the image data
-            fetch(img.imageURL)
-                .then(response => response.blob())
-                .then(blob => {
-                    // Upload the image data to the new path
-                    const uploadTask = uploadBytesResumable(userImageRef, blob);
-        
-                    uploadTask.on('state_changed', 
-                        (snapshot) => {
-                            // Handle the upload progress
-                        }, 
-                        (error) => {
-                            console.error(error);
-                        }, 
-                        () => {
-                            console.log('Copied image to user storage');
-        
-                            // Generate Firebase HTTPS link for the image
-                            getDownloadURL(userImageRef)
-                                .then((url) => {
-                                    console.log('Firebase HTTPS link:', url);
-        
-                                    // Store the reference in the Firebase database
-                                    model.users[model.user.uid].drafts = [...model.users[model.user.uid].drafts, {
-                                        id: img.title, 
-                                        imageURL: url, // use the url here
-                                        title: img.title,
-                                        creator: model.users[userID].profile.username,
-                                        storage: "gs://pix-e-b9fab.appspot.com/users/" + userID + '/drafts/' + img.title
-                                    }];
-                                    /*
-                                    const db = getDatabase(app);
-                                    const imageRef = dbRef(db, 'pixeModel/users/' + userID + '/drafts/' + img.title);
-                                    update(imageRef, {
-                                        id: img.title, 
-                                        imageURL: url, // use the url here
-                                        title: img.title,
-                                        creator: model.users[userID].profile.username,
-                                        storage: "gs://pix-e-b9fab.appspot.com/users/" + userID + '/drafts/' + img.title
-                                    });*/
-                                })
-                                .catch((error) => {
-                                    console.error(error);
-                                });
-                        }
-                    );
-                })
-                .catch((error) => {
-                    console.error(error);
-                });
+            const userImageRef = sRef(storage, 'images/' + out.id);
+            fetch(out.imageURL).then(response => response.blob()).then(blob => {
+            uploadBytes(userImageRef, blob);
+            });
+
+            console.log("data: ", data);
+            if (makePublic){
+                model.images = [...model.images, out];
+            }
+            
+            model.users[model.user.uid].images = [...model.users[model.user.uid].images, out];
+            return true;
+        }
+
+
+        function addToDrafts(canvas, title) {
+            const storage = getStorage(app);
+            const username = model.users[model.user.uid].profile.username;
+            console.log("auth: ", model.user.uid);
+            const data = canvasToData(canvas);
+            const imageId = generateUniqueId();
+            console.log("got data from canvas:", data);
+            console.log(imageId);
+            console.log("title: ", title);
+            const out = buildModelPicture(username, imageId, Date.now(), data, (title || "Untitled"));
+            //checks for duplicates in firebase
+            for (const element of model.images) {
+                if (data === element.imageURL) {
+                    console.log("You already have a duplicate saved at model.images[", element, "]");
+                    return false; 
+                }
+            } 
+            for (const element of model.users[model.user.uid].drafts) {
+                if (data === element.imageURL) {
+                    console.log("You already have a duplicate saved at model.users[model.user.uid].drafts[", element, "]");
+                    return false; 
+                } 
+            }
+
+            const userImageRef = sRef(storage, 'drafts/' + out.id);
+            fetch(out.imageURL).then(response => response.blob()).then(blob => {
+            uploadBytes(userImageRef, blob);
+            });
+
+            console.log("data: ", data);
+            
+            model.users[model.user.uid].drafts = [...model.users[model.user.uid].drafts, out];
+            return true;
         }
 
         function deleteDraft(img) {
@@ -207,47 +220,6 @@ export default observer(
             const last = redoHistory.current[0];
             redoHistory.current = redoHistory.current.slice(1)
             return last;
-        }
-
-        function uploadCanvasStateToFirebase(canvas, title, makePublic) {
-            const storage = getStorage(app);
-            const username = model.users[model.user.uid].profile.username;
-            console.log("auth: ", model.user.uid);
-            const data = canvasToData(canvas);
-            const imageId = generateUniqueId();
-            console.log("got data from canvas:", data);
-            console.log(imageId);
-            const out = buildModelPicture(username, imageId, Date.now(), data, (title || "Untitled"));
-            //checks for duplicates in firebase
-            for (const element of model.images) {
-                if (data === element.imageURL) {
-                    console.log("You already have a duplicate saved at model.images[", element, "]");
-                    return false; 
-                }
-            } 
-            for (const element of model.users[model.user.uid].images) {
-                if (data === element.imageURL) {
-                    console.log("You already have a duplicate saved at model.users[model.user.uid].images[", element, "]");
-                    return false; 
-                } 
-            }
-
-            const userImageRef = sRef(storage, 'images/' + out.id);
-            fetch(out.imageURL).then(response => response.blob()).then(blob => {
-            uploadBytes(userImageRef, blob);
-            });
-
-            console.log("data: ", data);
-            if (makePublic){
-                model.images = [...model.images, out];
-            }
-            
-            model.users[model.user.uid].images = [...model.users[model.user.uid].images, out];
-            return true
-
-            function generateUniqueId(){
-                return Date.now().toString(36) + Math.random().toString(36).substring(2, 12).padStart(12, "");
-            }
         }
 
         function onlyOneZero(a, b, c) {
