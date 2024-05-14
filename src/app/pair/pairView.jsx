@@ -20,18 +20,19 @@ function handlePair(props, code) {
     if (String(code).length == 4) {
         const currentUser = props.model.user.uid;
         const db = getDatabase(app);
-        const PATH = "pixeModel";
-        const rf = ref(db, PATH);
+        const modelrf = ref(db, "pixeModel");
         console.log(code);
         console.log(props.model)
-        get(child(rf, `pairingCodes/${code}`)).then((snapshot) => {
+        get(child(modelrf, `pairingCodes/${code}`)).then((snapshot) => {
             if (snapshot.exists()) {
                 const deviceID = snapshot.val();
                 console.log("deviceID:")
                 console.log(deviceID);
                 console.log("####")
                 props.model.users[currentUser].device = deviceID;
-                props.model.screens[deviceID].owner = currentUser;
+                const ownerrf = ref(db, `pixeModel/screens/${deviceID}/`);
+                update(ownerrf, {owner: currentUser})
+                // update(rf)
                 console.log(props.model)
             } else {
                 console.log("No data available");
