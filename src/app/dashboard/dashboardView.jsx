@@ -44,7 +44,9 @@ export default function Dashboard(props) {
   };
 
   function setPicturesACB() {
-      props.model.users[props.model.user.uid].images = [...props.model.users[props.model.user.uid].images, 
+      props.model.screens = [...props.model.screens, {id: "coolio"}];
+
+     /* props.model.users[props.model.user.uid].images = [...props.model.users[props.model.user.uid].images, 
         {
           id: '9',
           imageURL: "https://firebasestorage.googleapis.com/v0/b/pix-e-b9fab.appspot.com/o/images%2F9.png?alt=media&token=e6a19dff-146a-4210-a9db-75b04f4ebc3a",
@@ -52,7 +54,7 @@ export default function Dashboard(props) {
           creator: "Some memester",
           storage: "gs://pix-e-b9fab.appspot.com/images/9.png",
           lastEdited: "3",
-      }];
+      }];*/
 
    /*
     if (props.model.users[props.model.user.uid].favorites)
