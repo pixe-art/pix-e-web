@@ -166,18 +166,18 @@ export default observer(
             undoHistory.current = new Array(historyLength)
         }
         function unshiftUndoHistory(canvas) {
+            const canvasURL = canvas.toDataURL("image/png");
             if (!Array.isArray(undoHistory.current)) {
                 clearUndoHistory();
             }
-            if (canvas.toDataURL() === undoHistory.current[0]) {
+            if (canvasURL === undoHistory.current[0]) {
                 return
             }
             if (undoHistory.current.at(historyLength)) {
                 undoHistory.current.pop()
             }    
             console.log("placing undo history to model (?):", document.getElementById("drawing-area").toDataURL("image/png"));
-            model.users[model.user.uid].canvasCurrent = canvas.toDataURL(); // persistance bby letsgo
-            undoHistory.current.unshift(canvas.toDataURL())
+            undoHistory.current.unshift(canvasURL)
         }
         function clearRedoHistory(){
             redoHistory.current = new Array(historyLength)
@@ -188,10 +188,11 @@ export default observer(
             return last;
         }
         function unshiftRedoHistory(canvas) {
+            const canvasURL = canvas.toDataURL("image/png")
             if (!Array.isArray(redoHistory.current)) {
                 clearRedoHistory();
             }
-            redoHistory.current.unshift(canvas.toDataURL())        
+            redoHistory.current.unshift(canvasURL)        
         }
         function restoreLastImage() {
             const last = redoHistory.current[0];
@@ -289,6 +290,10 @@ export default observer(
             }
         }
 
+        function persistCanvas(canvasURL) {
+            model.users[model.user.uid].canvasCurrent = canvasURL
+        }
+        
         function drawRect(x, y, canvas) {
             const ctx = canvas.getContext("2d");
             clearRedoHistory();
@@ -371,6 +376,7 @@ export default observer(
                 checkReset = {mouseChecker}
                 grabLastImage = {grabLastImage}
                 restoreLastImage = {restoreLastImage}
+                persistCanvas = {persistCanvas}
                 unshiftUndoHistory = {unshiftUndoHistory}
                 unshiftRedoHistory = {unshiftRedoHistory}
                 changePenSize = {setPenSize}
