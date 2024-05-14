@@ -169,7 +169,7 @@ function ArtTool(props) {
     };
 
     const penSizeEvent = (event) => {
-        document.getElementById("pen-size-d").innerHTML = props.changePenSize("draft");
+        document.getElementById("pen-size-d").innerHTML = props.changePenSize(event.target.value);
     };
 
     const resetLastCoords = () => {

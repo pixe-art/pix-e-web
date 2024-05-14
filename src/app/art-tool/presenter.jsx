@@ -229,13 +229,16 @@ export default observer(
             console.log("saved");
         }
 
+        function onlyOneZero(a, b, c) {
+            return (a === 0 && b !== 0 && c !== 0) || (a !== 0 && b === 0 && c !== 0) || (a !== 0 && b !== 0 && c === 0);
+        }
+
         function isCanvasEmpty(canvas) {
             const ctx = canvas.getContext('2d');
             const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
             const data = imageData.data;
-
             for (let i = 3; i < data.length; i += 4) {
-                if ((data[i-3] !== 0 && data[i-2] !== 0 && data[i-1] !== 0 && (data[i] !== 255 || data[i] !== 0))) {
+                if ((data[i-3] !== 0 && data[i-2] !== 0 && data[i-1] !== 0 && (data[i] !== 255 || data[i] !== 0)) || (onlyOneZero(data[i-3], data[i-2], data[i-1]) && data[i] == 255)) {
                     console.log("data[i-3]: ", data[i-3]);
                     console.log("data[i-2]: ", data[i-2]);
                     console.log("data[i-1]: ", data[i-1]);
