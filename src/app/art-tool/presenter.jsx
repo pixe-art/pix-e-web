@@ -39,18 +39,18 @@ export default observer(
             return () => {unsubscribe()};
         }, []);
 
-        if (!model.userReady || !model.ready) {
-            return <div>
-                     <img src="https://brfenergi.se/iprog/loading.gif" alt="Loading gif"></img>
-                   </div>
-        }
-
         useEffect(() => {
             if (model.user) {
                 setColor(model.users[model.user.uid].colorCurrent);   // update color if color changes in model
                 updateCanvasColor();    // change draw color for canvas
             }
         }, [color, model.user && model.users[model.user.uid].colorCurrent]);
+
+        if (!model.userReady || !model.ready) {
+            return <div>
+                     <img src="https://brfenergi.se/iprog/loading.gif" alt="Loading gif"></img>
+                   </div>
+        }
 
         function addToDrafts(img) {
 
@@ -219,15 +219,13 @@ export default observer(
                 if (data === element.imageURL) {
                     console.log("You already have a duplicate saved at model.users[model.user.uid].images[", element, "]");
                     return false; 
-                } else {
-                    console.log("data: ", data);
-                    if (makePublic){
-                        model.images = [...model.images, out];
-                    }
-                    model.users[userID].images = [...model.users[userID].images, out];
-                }
+                } 
             }
-
+            console.log("data: ", data);
+            if (makePublic){
+                model.images = [...model.images, out];
+            }
+            model.users[model.user.uid].images = [...model.users[model.user.uid].images, out];
             return true
 
             function generateUniqueId(){
