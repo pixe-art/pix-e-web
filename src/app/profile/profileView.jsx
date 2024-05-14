@@ -75,7 +75,7 @@ export default function ProfileView({
     return (
       <div className="relative rounded shadow-lg p-4 bg-cream transform transition duration-500 hover:scale-110 hover:z-10">
         <img
-          src={picture.testPicture}
+          src={picture.imageURL}
           alt={`Picture ${index + 1}`}
           className="w-full h-auto object-cover"
         />

@@ -47,7 +47,7 @@ export default function Dashboard(props) {
       props.model.users[props.model.user.uid].images = [...props.model.users[props.model.user.uid].images, 
         {
           id: '9',
-          testPicture: "https://firebasestorage.googleapis.com/v0/b/pix-e-b9fab.appspot.com/o/images%2F9.png?alt=media&token=e6a19dff-146a-4210-a9db-75b04f4ebc3a",
+          imageURL: "https://firebasestorage.googleapis.com/v0/b/pix-e-b9fab.appspot.com/o/images%2F9.png?alt=media&token=e6a19dff-146a-4210-a9db-75b04f4ebc3a",
           title: "Wide Putin",
           creator: "Some memester",
           storage: "gs://pix-e-b9fab.appspot.com/images/9.png",
@@ -59,7 +59,7 @@ export default function Dashboard(props) {
         props.model.users[props.model.user.uid].favorites = [...props.model.users[props.model.user.uid].favorites, 
           {
             id: '9',
-            testPicture: "https://firebasestorage.googleapis.com/v0/b/pix-e-b9fab.appspot.com/o/images%2F9.png?alt=media&token=e6a19dff-146a-4210-a9db-75b04f4ebc3a",
+            imageURL: "https://firebasestorage.googleapis.com/v0/b/pix-e-b9fab.appspot.com/o/images%2F9.png?alt=media&token=e6a19dff-146a-4210-a9db-75b04f4ebc3a",
             title: "Wide Putin",
             creator: "Some memester",
             storage: "gs://pix-e-b9fab.appspot.com/images/9.png",
@@ -69,7 +69,7 @@ export default function Dashboard(props) {
     else {
         props.model.users[props.model.user.uid].favorites = [{
         id: '9',
-        testPicture: "https://firebasestorage.googleapis.com/v0/b/pix-e-b9fab.appspot.com/o/images%2F9.png?alt=media&token=e6a19dff-146a-4210-a9db-75b04f4ebc3a",
+        imageURL: "https://firebasestorage.googleapis.com/v0/b/pix-e-b9fab.appspot.com/o/images%2F9.png?alt=media&token=e6a19dff-146a-4210-a9db-75b04f4ebc3a",
         title: "Wide Putin",
         creator: "Some memester",
         storage: "gs://pix-e-b9fab.appspot.com/images/9.png",

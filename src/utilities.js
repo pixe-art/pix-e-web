@@ -17,18 +17,18 @@ export function canvasToData(canvas) {
     return dataImage;
 }
 
-export function buildModelPicture(userID, imageID, lastEdited, URL, imageTitle) {
-    console.log("userID util: ", userID);
+export function buildModelPicture(username, imageID, lastEdited, URL, imageTitle) {
+    console.log("username util: ", username);
     console.log("imageTitle: ", imageTitle);
-    if(!(imageID && URL && imageTitle && userID)){
+    if(!(imageID && URL && imageTitle && username)){
         console.error("function requires all arguments to be filled");
         return
     }
     let out = {
-        creator: userID,
+        creator: username,
         id: imageID,
         lastEdited: lastEdited,
-        testPicture: URL,
+        imageURL: URL,
         title: imageTitle,
         
     }
@@ -43,7 +43,7 @@ export function buildModelPicture(userID, imageID, lastEdited, URL, imageTitle) 
     let out = {
         creator: creator,
         id: imageID,
-        testPicture: URL,
+        imageURL: URL,
         title: imageTitle,
         
     }

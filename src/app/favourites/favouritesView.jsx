@@ -39,7 +39,7 @@ function ImageComponent({ image }) {
   return (
     <div className="relative rounded shadow-lg p-4 bg-cream transform transition duration-500 hover:scale-110 hover:z-10">
       <img
-        src={image.testPicture}
+        src={image.imageURL}
         alt=""
         className="w-full h-auto object-cover image-pixelated"
       />

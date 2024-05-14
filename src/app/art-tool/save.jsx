@@ -37,18 +37,34 @@ export default function SaveMenu(props) {
         setTitle(event.target.value)
     }
     function test(event) {
-        console.log(event);
-        console.log(event.target);
-        console.log(document.getElementById("public"));
-        console.log(publicCheck);
+        console.log("Button is using the 'test' function: ",
+        "\n\tevent = ", event,
+        "\n\tevent.target = ", event.target,
+        "\n\tpublic element: ", document.getElementById("public"),
+        "\n\tpublic check = ", publicCheck);
+
+        if (publicCheck) {
+            // functions to publish artwork:
+            window.alert("[TEST WINDOW]\nArtwork published and saved to your profile!")
+        } else {
+            // functions for only non-published artworks: 
+            window.alert("[TEST WINDOW]\nArtwork saved to your profile!")
+        }
+        props.closeMenu();
     }
     function uploadToFirebase(event) {
         console.warn("attempting to upload...");
         const element = document.getElementById("drawing-area")
         console.log("element: ", element);
         if (!props.isCanvasEmpty(element)) {
-            const bool = event.target.value ;
-            props.uploadToFirebase(element, title, bool);
+            if (publicCheck) {
+                // functions to publish artwork:
+                window.alert("Artwork published and saved to your profile!")
+            } else {
+                // functions for only non-published artworks: 
+                window.alert("Artwork saved to your profile!")
+            }
+            props.uploadToFirebase(element, title, publicCheck);
             props.setDraftUpdate(true);
             props.closeMenu();
             setTitle("");

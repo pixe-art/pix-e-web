@@ -44,8 +44,8 @@ function Draft(props) {
             console.log("Choose an image to edit");
         return;
         }
-        props.overwriteCanvas(selectedImage.testPicture);
-        props.persistCanvas(selectedImage.testPicture)
+        props.overwriteCanvas(selectedImage.imageURL);
+        props.persistCanvas(selectedImage.imageURL) // ugly, but works
         setSelectedImage(false);
     }
 
@@ -97,7 +97,7 @@ function Draft(props) {
         const isSelected = selectedImage && img.id === selectedImage.id;
         return (
             <div key={img.id} className={`flex flex-col items-center w-full h-auto mb-4 img-hover-effect ${isSelected ? 'selected-image' : ''}`} onClick={() => imgClick(img)}>
-                <img src={img.testPicture} alt="" className="w-full mb-2 image-pixelated" />
+                <img src={img.imageURL} alt="" className="w-full mb-2 image-pixelated" />
                 <div className="text-center w-full">
                 <p className="break-words" title={`${img.title} Created by: ${img.creator}`}>
                     {img.title}<br /> Created by: {img.creator}
@@ -107,12 +107,12 @@ function Draft(props) {
         ) 
 
         function imgClick(img) {
-            if (selectedImage.testPicture !== img.testPicture) {
+            if (selectedImage.imageURL !== img.imageURL) {
                 setSelectedImage(img);
             } else {
                 setSelectedImage(false);
             }
-            //props.overwriteCanvas(img.testPicture);
+            //props.overwriteCanvas(img.imageURL);
             console.log(selectedImage);
             
         }

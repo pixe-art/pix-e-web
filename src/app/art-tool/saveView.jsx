@@ -16,7 +16,7 @@ function Save(props) {
     function renderImages(img) {
         return (
             <div className="flex flex-col items-center w-40 h-auto mb-4 img-hover-effect" onClick={() => handleImgClick(img)}>
-                <img key={img.id} src={img.testPicture} alt="" className="w-full h-auto mb-2" />
+                <img key={img.id} src={img.imageURL} alt="" className="w-full h-auto mb-2" />
                 <div className="text-center w-full">
                 <p className="break-words" title={`${img.title} Created by: ${img.creator}`}>
                     {img.title}<br />Created by: {img.creator}
@@ -27,7 +27,7 @@ function Save(props) {
 
         function handleImgClick(img) {
             setImage(img);
-            //props.overwriteCanvas(img.testPicture);
+            //props.overwriteCanvas(img.imageURL);
             
         }
     }

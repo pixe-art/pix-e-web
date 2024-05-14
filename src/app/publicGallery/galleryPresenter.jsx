@@ -59,7 +59,7 @@ export default observer(
             const storage = getStorage(app);
             //const imageRef = sRef(storage, imagePath);
             const userImageRef = sRef(storage, 'users/' + userId + '/favorites/' + image.id);
-            fetch(image.testPicture).then(response => response.blob()).then(blob => {
+            fetch(image.imageURL).then(response => response.blob()).then(blob => {
                 uploadBytes(userImageRef, blob);
             });
         

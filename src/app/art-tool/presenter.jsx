@@ -56,7 +56,7 @@ export default observer(
 
             const userID = auth.currentUser.uid;
         
-            const imagePath = new URL(img.testPicture).pathname.split('/').pop();
+            const imagePath = new URL(img.imageURL).pathname.split('/').pop();
             
             // Create a copy of the image in Firebase storage
             const storage = getStorage(app);
@@ -65,7 +65,7 @@ export default observer(
 
         
             // Fetch the image data
-            fetch(img.testPicture)
+            fetch(img.imageURL)
                 .then(response => response.blob())
                 .then(blob => {
                     // Upload the image data to the new path
@@ -91,7 +91,7 @@ export default observer(
                                     const imageRef = dbRef(db, 'pixeModel/users/' + userID + '/drafts/' + img.title);
                                     update(imageRef, {
                                         id: img.title, 
-                                        testPicture: url, // use the url here
+                                        imageURL: url, // use the url here
                                         title: img.title,
                                         creator: model.users[userID].profile.username,
                                         storage: "gs://pix-e-b9fab.appspot.com/users/" + userID + '/drafts/' + img.title
@@ -201,18 +201,18 @@ export default observer(
         }
 
         function uploadCanvasStateToFirebase(element, title, makePublic) {
-            const userID = model.user.uid;
+            const username = model.users[model.user.uid].profile.username;
             console.log("auth: ", model.user.uid);
             const data = canvasToData(element);
             console.log("got data from canvas:", data);
             console.log()
-            const out = buildModelPicture(userID, model.images.length, Date.now(), data, (title || "Untitled"));
+            const out = buildModelPicture(username, model.images.length, Date.now(), data, (title || "Untitled"));
             let duplicateFound = false;
             //checks for duplicates in firebase
             for (const idx in model.images) {
-                if (data === model.images[idx].testPicture) {
+                if (data === model.images[idx].imageURL) {
                     duplicateFound = true;
-                    console.log("You already have a duplicate saved at model.pictures.testPicture[", idx, "]");
+                    console.log("You already have a duplicate saved at model.pictures.imageURL[", idx, "]");
                     return; 
                 }
                 if (duplicateFound) {
@@ -223,10 +223,10 @@ export default observer(
             if(makePublic)
                 model.images = [...model.images, out];
 
-            let privateImg = model.users[userID].images
+            let privateImg = model.users[model.user.uid].images
             Array(privateImg).push(out);
             
-            model.users[userID].images = privateImg;
+            model.users[model.user.uid].images = privateImg;
             console.log("saved");
         }
 
