@@ -46,12 +46,6 @@ export default observer(
             }
         }, [color, model.user && model.users[model.user.uid].colorCurrent]);
 
-        if (!model.userReady || !model.ready) {
-            return <div>
-                     <img src="https://brfenergi.se/iprog/loading.gif" alt="Loading gif"></img>
-                   </div>
-        }
-
         function addToDrafts(img) {
 
             const userID = auth.currentUser.uid;
@@ -204,30 +198,36 @@ export default observer(
             const username = model.users[model.user.uid].profile.username;
             console.log("auth: ", model.user.uid);
             const data = canvasToData(element);
+            const imageId = generateUniqueId();
             console.log("got data from canvas:", data);
-            console.log()
-            const out = buildModelPicture(username, model.images.length, Date.now(), data, (title || "Untitled"));
-            let duplicateFound = false;
+            console.log(imageId);
+            const out = buildModelPicture(username, imageId, Date.now(), data, (title || "Untitled"));
             //checks for duplicates in firebase
-            for (const idx in model.images) {
-                if (data === model.images[idx].imageURL) {
-                    duplicateFound = true;
-                    console.log("You already have a duplicate saved at model.pictures.imageURL[", idx, "]");
+            for (const element of model.images) {
+                if (data === element.testPicture) {
+                    console.log("You already have a duplicate saved at model.images[", element, "]");
                     return; 
                 }
-                if (duplicateFound) {
-                    return;
-                }
             } 
-            console.log("data: ", data);
-            if(makePublic)
-                model.images = [...model.images, out];
 
-            let privateImg = model.users[model.user.uid].images
-            Array(privateImg).push(out);
-            
-            model.users[model.user.uid].images = privateImg;
-            console.log("saved");
+            for (const element of model.users[model.user.uid].images) {
+                if (data === element.testPicture) {
+                    console.log("You already have a duplicate saved at model.users[model.user.uid].images[", element, "]");
+                    return; 
+                }
+
+                else {
+                    console.log("data: ", data);
+                    if (makePublic)
+                        model.images = [...model.images, out];
+
+                    model.users[userID].images = [...model.users[userID].images, out];
+                }
+            }
+
+            function generateUniqueId(){
+                return Date.now().toString(36) + Math.random().toString(36).substring(2, 12).padStart(12, "");
+            }
         }
 
         function onlyOneZero(a, b, c) {
@@ -362,6 +362,12 @@ export default observer(
             } catch (error) {
                 console.error(error);
             }
+        }
+
+        if (!model.userReady || !model.ready) {
+            return <div>
+                     <img src="https://brfenergi.se/iprog/loading.gif" alt="Loading gif"></img>
+                   </div>
         }
 
         return(

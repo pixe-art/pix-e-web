@@ -22,7 +22,7 @@ export function buildModelPicture(username, imageID, lastEdited, URL, imageTitle
     console.log("imageTitle: ", imageTitle);
     if(!(imageID && URL && imageTitle && username)){
         console.error("function requires all arguments to be filled");
-        return
+        return;
     }
     let out = {
         creator: username,
@@ -30,7 +30,6 @@ export function buildModelPicture(username, imageID, lastEdited, URL, imageTitle
         lastEdited: lastEdited,
         imageURL: URL,
         title: imageTitle,
-        
     }
     return out;
 }
