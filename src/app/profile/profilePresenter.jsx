@@ -120,7 +120,7 @@ function Profile() {
       get(imagesRef)
         .then((snapshot) => {
           if (snapshot.exists()) {
-            setPictures(snapshot.val() || []);
+            setPictures(Object.values(snapshot.val()));
           } else {
             console.log("No data available for images.");
             setPictures([]);
