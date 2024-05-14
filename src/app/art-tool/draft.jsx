@@ -13,11 +13,11 @@ function Draft(props) {
     const [boxAction, setBoxAction] = useState(null);
     const [draftExists, setDraftExists] = useState(false);
 
-    useEffect(() => {
+    /* useEffect(() => {
         if (props.model.users[props.model.user.uid]?.drafts || false) {
             setDraftExists(true);
         }
-    }, [props.model.users[props.model.user.uid]?.drafts]);
+    }, [props.model.users[props.model.user.uid]?.drafts]); */
 
     function closeBox() {
         setBoxOpen(false);
@@ -61,10 +61,10 @@ function Draft(props) {
         setSelectedImage(false);
     }
 
-    if (!draftExists) {
+    /* if (!draftExists) {
         console.warn("draftExists = ", draftExists);
-        return <div></div>
-    }
+        return <div></div> 
+    }*/
     return(
         <div>
             <div id="draft-parent" className={TW_centered + TW_window + "flex flex-col items-center"}>
