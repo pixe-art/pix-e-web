@@ -34,8 +34,6 @@ export function modelToPersistence(model) {
 
     //Model properties to be saved to the realtime database.
     realtimeModel = {images: toObject(model.images)};
-    realtimeModel.screens = toObject(model.screens);
-    realtimeModel.pairingCodes = model.pairingCodes;
     //Add more properties here like: realtimeModel.color = model.color;
 
     return realtimeModel;
@@ -57,7 +55,6 @@ export function userModelToPersistence(model) {
         realtimeModel.images = toObject(model.users[model.user.uid].images);
     if (model.users[model.user.uid].favorites?.length)
         realtimeModel.favorites = toObject(model.users[model.user.uid].favorites);
-    realtimeModel.device = model.users[model.user.uid].device;
     realtimeModel.profile = model.users[model.user.uid].profile;
     if (model.users[model.user.uid].drafts?.length)
         realtimeModel.drafts = toObject(model.users[model.user.uid].drafts);
@@ -82,10 +79,6 @@ export function persistenceToModel(data, model) {
 
         if (data.screens){
             model.screens = toArray(data.screens);
-        }
-
-        if (data.pairingCodes){
-            model.pairingCodes = data.pairingCodes;
         }
     }
 }
@@ -117,10 +110,6 @@ export function userPersistenceToModel(data, model) {
 
         if (data.images){
             model.users[model.user.uid].images = toArray(data.images);
-        }
-
-        if (data.device){
-            model.users[model.user.uid].device = data.device;
         }
 
         if (data.profile){
@@ -201,9 +190,6 @@ export function connectToFirebase(model) {
             if (model.users[model.user.uid].images === undefined)
                 model.users[model.user.uid].images = [];
 
-            if (model.users[model.user.uid].device === undefined)
-                model.users[model.user.uid].device = 0;
-
             if (model.users[model.user.uid].profile === undefined)
                 model.users[model.user.uid].profile = {bio: "", username: "", 
                 avatar: "https://firebasestorage.googleapis.com/v0/b/pix-e-b9fab.appspot.com/o/avatars%2Fdefault.png?alt=media&token=39e999d9-aed3-4e95-a9dc-5a96ae3d7e28"};
@@ -228,7 +214,6 @@ export function connectToFirebase(model) {
             model.users[model.user.uid].favorites = [];
             model.users[model.user.uid].drafts = [];
             model.users[model.user.uid].images = [];
-            model.users[model.user.uid].device = 0;
             model.users[model.user.uid].profile = {bio: "", username: "", 
             avatar: "https://firebasestorage.googleapis.com/v0/b/pix-e-b9fab.appspot.com/o/avatars%2Fdefault.png?alt=media&token=39e999d9-aed3-4e95-a9dc-5a96ae3d7e28"};
         }
@@ -237,7 +222,7 @@ export function connectToFirebase(model) {
     function userDataChangedACB() {
         return [model.users[model.user.uid].colorCurrent, model.users[model.user.uid].canvasCurrent, 
                 model.users[model.user.uid].favorites, model.users[model.user.uid].images,
-                model.users[model.user.uid].device, model.users[model.user.uid].profile.bio,
+                model.users[model.user.uid].profile.bio,
                 model.users[model.user.uid].profile.username, model.users[model.user.uid].profile.avatar,
                 model.users[model.user.uid].drafts];
     }
@@ -257,7 +242,7 @@ export function connectToFirebase(model) {
     }
 
     function modelChangedACB() {
-        return [model.images, model.screens, model.pairingCodes];
+        return [model.images];
     }
 
     function modelReadyACB() {
