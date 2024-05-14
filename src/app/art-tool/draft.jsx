@@ -45,6 +45,7 @@ function Draft(props) {
         return;
         }
         props.overwriteCanvas(selectedImage.testPicture);
+        props.persistCanvas(selectedImage.testPicture)
         setSelectedImage(false);
     }
 

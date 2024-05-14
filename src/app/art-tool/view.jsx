@@ -37,6 +37,7 @@ function ArtTool(props) {
         const element = document.getElementById("drawing-area");
         if (props.isCanvasEmpty(element)) {
             console.log("Cannot save an empty canvas");
+            window.alert("Warning\nCannot save an empty Canvas")
             return;
         }
 
@@ -56,6 +57,7 @@ function ArtTool(props) {
         localStorage.setItem(`draftState-${imgObj.id}`, JSON.stringify(!isDraft));
         localStorage.setItem(`draftState-${imgObj.id}`, JSON.stringify(!isDraft));
         setDraftUpdate(true);
+        window.alert("Canvas saved to your Draft!")
     };
 
     const mouseUp = () => {
@@ -135,7 +137,7 @@ function ArtTool(props) {
         props.clearCanvas();
     };
 
-    const overwriteCanvas = (source) => {
+    const overwriteCanvas = (source, bypassPersistance) => {
         console.log("overwriteCanvas source: ", source);
         const element = document.getElementById("drawing-area");
         const extra = element.getContext("2d");
@@ -278,7 +280,7 @@ function ArtTool(props) {
                     </div>
                 </div>
                 <div id="draft" className="hidden">
-                    <Draft model={props.model} overwriteCanvas={overwriteCanvas} deleteDraft={props.deleteDraft} value={"draft"} toggleDraft={toggleMenu}></Draft>
+                    <Draft model={props.model} overwriteCanvas={overwriteCanvas} persistCanvas={props.persistCanvas} deleteDraft={props.deleteDraft} value={"draft"} toggleDraft={toggleMenu}></Draft>
                 </div>
                 <div id="save" className="hidden">
                     <SaveMenu user={props.model.users[props.model.user.uid]?.profile?.username} isCanvasEmpty={props.isCanvasEmpty} uploadToFirebase={props.uploadToFirebase} setDraftUpdate={setDraftUpdate} closeMenu={closeMenus}></SaveMenu>
