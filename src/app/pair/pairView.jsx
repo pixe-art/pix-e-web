@@ -14,10 +14,12 @@ import { getDatabase, ref, child, get, update } from "firebase/database";
 import { auth } from '@/firebaseModel';
 
 
-function handlePair(model, code) {
+function handlePair(props, code) {
+    const model = props.model;
+    console.log(props.model);
     console.log(code)
     if (String(code).length == 4) {
-        const currentUser = auth.currentUser.uid;
+        const currentUser = model.user.uid;
         const db = getDatabase(app);
         const PATH = "pixeModel";
         const rf = ref(db, PATH);
@@ -29,8 +31,6 @@ function handlePair(model, code) {
                 console.log("deviceID:")
                 console.log(deviceID);
                 console.log("####")
-                // KLART: läst databasen
-                // TODO: uppdatera databasen
                 let obj = {
                     screens: {
                         [deviceID]: {
@@ -48,6 +48,9 @@ function handlePair(model, code) {
                 obj.users[currentUser].device = deviceID;
                 console.log("obj:")
                 console.log(obj);
+                // update(rf, obj);
+                model.users[currentUser].device = deviceID;
+                model.screens[deviceID].owner = currentUser;
                 // update(rf,)
             } else {
                 console.log("No data available");
