@@ -11,8 +11,7 @@ import { buildModelPicture, canvasToData } from "@/utilities";
 import { app } from "/src/firebaseModel.js";
 import { getStorage, ref as sRef , getDownloadURL, uploadBytesResumable } from "firebase/storage";
 import { getDatabase, ref as dbRef , set, push, update, remove, delete as deleteFile  } from "firebase/database";
-import { deleteObject } from "firebase/storage";
-
+import { deleteObject, uploadBytes  } from "firebase/storage";
 
 export default observer(
     function Tool() {
@@ -29,15 +28,6 @@ export default observer(
         const undoHistory = useRef(new Array(10).fill(null));
         const redoHistory = useRef(new Array(10).fill(null));
         const showPicker = useRef(false);
-
-        useEffect(() => {
-            const unsubscribe = onAuthStateChanged(auth, (user) => {
-                if(!user)
-                    return Loading();
-            })
-
-            return () => {unsubscribe()};
-        }, []);
 
         useEffect(() => {
             if (model.user) {
@@ -201,6 +191,7 @@ export default observer(
         }
 
         function uploadCanvasStateToFirebase(canvas, title, makePublic) {
+            const storage = getStorage(app);
             const username = model.users[model.user.uid].profile.username;
             console.log("auth: ", model.user.uid);
             const data = canvasToData(canvas);
@@ -221,10 +212,17 @@ export default observer(
                     return false; 
                 } 
             }
+
+            const userImageRef = sRef(storage, 'images/' + out.id);
+            fetch(out.imageURL).then(response => response.blob()).then(blob => {
+            uploadBytes(userImageRef, blob);
+            });
+
             console.log("data: ", data);
             if (makePublic){
                 model.images = [...model.images, out];
             }
+            
             model.users[model.user.uid].images = [...model.users[model.user.uid].images, out];
             return true
 
