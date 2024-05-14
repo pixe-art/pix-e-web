@@ -96,7 +96,6 @@ export default function Dashboard(props) {
         <h1 className="text-3xl font-bold text-gray-800 mb-4">
           Welcome to Pix-E Dashboard!!!
         </h1>
-        <button className="text-3xl font-bold text-red-800 border-4 border-red-400 mb-4" onClick={setPicturesACB}>Click to update data in firebase (debug)</button>
         <p className="text-lg text-gray-600 mb-6">
           Create and share your pixel art creations.
         </p>
