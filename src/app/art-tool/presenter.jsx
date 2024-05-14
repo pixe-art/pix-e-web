@@ -39,6 +39,12 @@ export default observer(
             return () => {unsubscribe()};
         }, []);
 
+        if (!model.userReady || !model.ready) {
+            return <div>
+                     <img src="https://brfenergi.se/iprog/loading.gif" alt="Loading gif"></img>
+                   </div>
+        }
+        
         useEffect(() => {
             if (model.user) {
                 setColor(model.users[model.user.uid].colorCurrent);   // update color if color changes in model
@@ -364,11 +370,7 @@ export default observer(
             }
         }
 
-        if (!model.userReady || !model.ready) {
-            return <div>
-                     <img src="https://brfenergi.se/iprog/loading.gif" alt="Loading gif"></img>
-                   </div>
-        }
+        
 
         return(
             <ArtTool
