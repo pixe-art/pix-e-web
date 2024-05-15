@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getDatabase, push, ref, get, set, onValue, update } from "firebase/database";
+import { getDatabase, ref, get, update, on, onDisconnect, onValue, serverTimestamp, push, set, goOffline } from "firebase/database";
 import { getAuth, signOut, onAuthStateChanged } from "firebase/auth";
 import { reaction } from "mobx"
 import { getStorage } from "firebase/storage";
@@ -21,6 +21,20 @@ const PATH = "pixeModel";
 export const auth = getAuth(app);
 export const storage = getStorage(app);
 export {signOut};
+
+// testing - alvin
+const CONNECTIONS = ref(db, "connections")
+const LAST_ON = ref(db, "/last-online/")
+const CONNECTED = ref(db, ".info/connected")
+onValue(CONNECTED, (snap) => {
+    if(snap.val() === true) {
+        const con = push(CONNECTIONS);
+        onDisconnect(con).remove()
+        console.log(auth);
+        set(con, auth.clientVersion)
+        onDisconnect(LAST_ON).set(serverTimestamp())
+    }
+})
 
 export function modelToPersistence(model) {
     let realtimeModel = null;
