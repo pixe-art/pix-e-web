@@ -52,9 +52,9 @@ export function downloadImage(url, filename) {
     }
 }
 
-export function displayImage(id){
+export function displayImage(id, device){
     const db = getDatabase(app);
-    const ref = dbRef(db, 'pixeModel/screens/pixedemodevice/');
+    const ref = dbRef(db, 'pixeModel/screens/' + device + '/');
     update(ref, {activeImage: id});
 }
 

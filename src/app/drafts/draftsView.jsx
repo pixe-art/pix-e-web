@@ -35,13 +35,13 @@ function ImageComponent({ image, model, addToFavourites, removeFavourite }) {
     }
   };
 
-  const toggleOnDisplay = () => {
-    setOnDisplay(!onDisplay);
-    if (!onDisplay) {
-      displayImage(image.id);
-      model.users[model.user.uid].activeImage = image.imageURL;
+    const toggleOnDisplay = () => {
+        setOnDisplay(!onDisplay);
+        if (!onDisplay) {
+            displayImage(image.id, model.users[model.user.uid].device);
+            model.users[model.user.uid].activeImage = image.imageURL;
+        }
     }
-  };
 
   return (
     <div className="relative rounded shadow-lg p-4 bg-cream transform transition duration-500 hover:scale-110 hover:z-10">

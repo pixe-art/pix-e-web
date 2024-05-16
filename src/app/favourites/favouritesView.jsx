@@ -12,7 +12,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { downloadImage, displayImage } from "./favouritesPresenter";
 
-function ImageComponent({ image, removeFavourite }) {
+function ImageComponent({ model, image, removeFavourite }) {
   const [isDropdownOpen, setDropdownOpen] = useState(false);
   //const [isFavourite, setFavourite] = useState(false);
   const [onDisplay, setOnDisplay] = useState(false);
@@ -21,7 +21,7 @@ function ImageComponent({ image, removeFavourite }) {
   const toggleOnDisplay = () => {
     setOnDisplay(!onDisplay);
     if (!onDisplay) {
-        displayImage(image.id);
+        displayImage(image.id, model.users[model.user.uid].device);
         model.users[model.user.uid].activeImage = image.imageURL;
     }
 }
@@ -190,7 +190,7 @@ export default observer(
                 {props.model.users[props.model.user.uid]?.favorites?.length >
                 0 ? (
                   props.model.users[props.model.user.uid].favorites.map(
-                    (image) => <ImageComponent key={image.id} image={image} removeFavourite={props.removeFavourite}/>
+                    (image) => <ImageComponent key={image.id} model={props.model} image={image} removeFavourite={props.removeFavourite}/>
                   )
                 ) : (
                   <p>No favourites found!</p>

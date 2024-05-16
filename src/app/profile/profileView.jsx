@@ -101,7 +101,7 @@ export default observer(function ProfileView({
     const toggleOnDisplay = (image) => {
         setOnDisplay(!onDisplay);
         if (!onDisplay) {
-            displayImage(image.id);
+            displayImage(image.id, model.users[model.user.uid].device);
             model.users[model.user.uid].activeImage = image.imageURL;
         }
     }
