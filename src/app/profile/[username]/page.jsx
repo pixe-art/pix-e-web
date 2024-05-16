@@ -7,7 +7,11 @@ import ProfileView from '../profileView.jsx';
 
 export default function UserProfilePage() {
     const pathname = usePathname();
-    const [profile, setProfile] = useState(null);
+    const [profile, setProfile] = useState({
+        username: "Loading...",
+        bio: "",
+        avatar: "https://firebasestorage.googleapis.com/v0/b/pix-e-b9fab.appspot.com/o/avatars%2Fdefault.png?alt=media&token=39e999d9-aed3-4e95-a9dc-5a96ae3d7e28",
+    });
     const [pictures, setPictures] = useState([]);
     const [loading, setLoading] = useState(true);
     const [isOwnProfile, setIsOwnProfile] = useState(false);
@@ -23,7 +27,7 @@ export default function UserProfilePage() {
         }
 
         const db = getDatabase();
-        const usernameNoSpaces = username.replace(/%20/g, ' '); //Convert space in url (%20) to ' ' to fetch from Firebase
+        const usernameNoSpaces = username.replace(/%20/g, ' '); // Convert space in URL (%20) to ' ' to fetch from Firebase
         const usernameRef = ref(db, `pixeModel/usernames/${usernameNoSpaces}`);
 
         onValue(usernameRef, (snapshot) => {
@@ -40,15 +44,16 @@ export default function UserProfilePage() {
                     if (profileSnapshot.exists()) {
                         console.log('Profile data loaded for UID:', uid);
                         const profileData = profileSnapshot.val();
-                        const avatar = profileData.avatar && profileData.avatar.trim() !== '' ? profileData.avatar 
+                        const avatar = profileData.avatar && profileData.avatar.trim() !== '' 
+                            ? profileData.avatar 
                             : "https://firebasestorage.googleapis.com/v0/b/pix-e-b9fab.appspot.com/o/avatars%2Fdefault.png?alt=media&token=39e999d9-aed3-4e95-a9dc-5a96ae3d7e28";
-                
+
                         setProfile({
-                            username: profileData.username || 'Anonymous',
-                            bio: profileData.bio || '',
+                            username: profileData.username || "",
+                            bio: profileData.bio || "",
                             avatar: avatar
                         });
-                    }else {
+                    } else {
                         console.log('No profile data found for UID:', uid);
                         setProfile({
                             username: 'Not found',
@@ -71,6 +76,11 @@ export default function UserProfilePage() {
 
             } else {
                 console.log('No UID found for username:', username);
+                setProfile({
+                    username: 'Not found',
+                    bio: 'We could not find this user, please try again',
+                    avatar: "https://firebasestorage.googleapis.com/v0/b/pix-e-b9fab.appspot.com/o/avatars%2Fdefault.png?alt=media&token=39e999d9-aed3-4e95-a9dc-5a96ae3d7e28"
+                });
                 setLoading(false);
             }
         });
@@ -81,17 +91,18 @@ export default function UserProfilePage() {
     }, [pathname]);
 
     if (loading) {
-        return <p>Loading profile...</p>;
+        return (
+            <div>
+                <img src="https://brfenergi.se/iprog/loading.gif" alt="Loading gif" />
+            </div>
+        );
     }
 
-    if (!profile) {
-        setProfile({
-            username: 'Not found',
-            bio: 'We could not find this user, please try again',
-            avatar: "https://firebasestorage.googleapis.com/v0/b/pix-e-b9fab.appspot.com/o/avatars%2Fdefault.png?alt=media&token=39e999d9-aed3-4e95-a9dc-5a96ae3d7e28"
-        });
-        return <ProfileView profile={profile}/>;
-    }
-
-    return <ProfileView profile={profile} pictures={pictures} isOwnProfile={isOwnProfile} />;
+    return (
+        <ProfileView
+            profile={profile}
+            pictures={pictures}
+            isOwnProfile={isOwnProfile}
+        />
+    );
 }
