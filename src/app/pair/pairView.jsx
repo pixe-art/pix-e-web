@@ -13,6 +13,7 @@ import { app } from "/src/firebaseModel.js";
 import { getDatabase, ref, child, get, update } from "firebase/database";
 import { auth } from '@/firebaseModel';
 import { observer } from "mobx-react-lite";
+import { TW_button, TW_button_green, TW_window } from '../art-tool/tailwindClasses';
 
 function handlePair(props, code) {
     console.log(props.model);
@@ -46,27 +47,28 @@ function handlePair(props, code) {
 
 function PairForm(model) {
     return (
-        <form onSubmit={handlePair} className="space-y-6">
-            form text
+        <form onSubmit={handlePair} className="flex flex-col items-center">
             <input
-                type="number"
+                type=""
                 placeholder="0000"
                 onChange={(e) => handlePair(model, e.target.value)}
                 // onChange={(e) => console.log(e)}
+                maxLength={4}
                 max={9999}
                 min={1}
                 required
-                className="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                title='Enter your pairing code'
+                className="max-w-fit p-2 border rounded-lg text-center focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
-            {/* <button
-                type='button'
+            <button
+                type='submit'
                 // onClick={(e) => handlePair(model, e.target.value)}
-                onClick={(e) => console.log(e)}
+                // onClick={(e) => console.log(e)}
                 
-                className="w-full py-2 px-4 bg-blue-500 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+                className={TW_button_green + TW_button + "w-[30%] mt-4 md:min-w-32 min-h-8 font-bold active:!bg-emerald-500"}
             >
                 Pair
-            </button> */}
+            </button>
         </form>
     )
 }
@@ -125,8 +127,12 @@ export default observer(
                             </>
                         )}
                     </div>
-
-                    <PairForm model={props.model}></PairForm>
+                    <div className={'md:w-full self-center flex justify-center flex-wrap overflow-hidden'}>
+                        <div className='bg-white border-4 border-brown rounded flex flex-col text-center w-full md:w-fit p-8 '>
+                            <h1 className='text-2xl md:text-4xl mb-8 font-bold text-wrap'>Pair Your Pix-E using your Pairing Code</h1>
+                            <PairForm model={props.model}></PairForm>
+                        </div>
+                    </div>
 
                 </div>
             }</div>

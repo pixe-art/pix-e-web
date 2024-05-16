@@ -101,6 +101,7 @@ export default function Dashboard(props) {
         </p>
         <h2 className="text-lg font-bold text-gray-800 mb-4">Currently on your Pix-E:</h2>
 
+        <a href="/pair" className="text-blue-500 underline underline-offset-2 font-bold cursor-pointer visited:text-indigo-500">Link a Pix-E display</a>
         <div className="mb-6 bg-black w-320 h-640 border-4 border-black rounded-xl">
           <img
             src="https://firebasestorage.googleapis.com/v0/b/pix-e-b9fab.appspot.com/o/art1.png?alt=media&token=afd1e2a8-0da2-4524-a0b4-7f813fffd7d1"
