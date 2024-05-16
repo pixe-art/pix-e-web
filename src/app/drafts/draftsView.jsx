@@ -201,6 +201,7 @@ export default observer(function DraftsView(props) {
               {props.model.users[props.model.user.uid]?.drafts.length > 0 ? (
                 props.model.users[props.model.user.uid].drafts.map((image) => (
                   <ImageComponent
+                    key={image.id}
                     model={props.model}
                     image={image}
                     addToFavourites={props.addToFavourites}
