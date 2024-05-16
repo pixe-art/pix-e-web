@@ -73,6 +73,7 @@ export default function LoginPage() {
       await initializeUserData();
       router.push("/dashboard");
     } catch (error) {
+      window.alert("Something went wrong, please try again.");
       console.error("Error logging in:", error);
     }
   };
