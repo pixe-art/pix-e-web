@@ -83,19 +83,32 @@ function Dashboard(props) {
   }
 
   function showActiveImage() {
-    if (props.model.users[props.model.user.uid].activeImage)
-      return <div className="mb-6 bg-black w-320 h-640 border-4 border-black rounded-xl">
-                <img 
-                   src={props.model.users[props.model.user.uid].activeImage}
-                   alt="Pixel Art"
-                   className="w-full h-full object-contain rounded-xl image-pixelated"
-                />
-              </div>
-
-    else
-      return <p className="text-lg text-gray-600 mb-6">
-                No image.
-             </p>
+    if (!props.model.users[props.model.user.uid].device){
+    //* if user doesnt have a linked display *//
+    return (
+        <p className="text-lg text-gray-600 mb-6">
+          <br/> <a href="/pair" className="text-blue-500 underline underline-offset-2 font-bold cursor-pointer visited:text-indigo-500">
+          Press here to link a Pix-E display
+          </a>
+        </p>)} else if (props.model.users[props.model.user.uid].activeImage){
+      //* if user has a linked display and an active image *//
+      return (
+        <div className="mb-6 bg-black w-320 h-640 border-4 border-black rounded-xl">
+          <img 
+            src={props.model.users[props.model.user.uid].activeImage}
+            alt="Pixel Art"
+            className="w-full h-full object-contain rounded-xl image-pixelated"
+          />
+        </div>
+      )} else {
+      //* if user has a linked display but no active image *//
+      return (
+        <p className="text-lg text-gray-600 mb-6">
+          No active image found on your profile 
+          {/* <br/> <a href="/pair" className="text-blue-500 underline underline-offset-2 font-bold cursor-pointer visited:text-indigo-500">
+            Press here to link a Pix-E display
+          </a> */}
+        </p>)}
     }
 
   return (
