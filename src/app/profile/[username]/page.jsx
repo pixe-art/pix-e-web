@@ -5,8 +5,10 @@ import { auth, storage } from '@/firebaseModel';
 import { getDatabase, ref, onValue, off, update} from "firebase/database";
 import {ref as storageRef, uploadBytes, getDownloadURL} from "firebase/storage";
 import ProfileView from '../profileView.jsx'; 
+import { useModel } from '@/app/model-provider.js';
 
 export default function UserProfilePage() {
+    const model = useModel();
     const pathname = usePathname();
     const [profile, setProfile] = useState({
         username: "Loading...",
@@ -155,13 +157,45 @@ export default function UserProfilePage() {
         }
       };
 
+    function addToFavourites(image) {
+        const userId = model.user.uid;
+        model.users[userId].favorites = [...model.users[userId].favorites, image];
+    }
+
+    function removeFavourite(id) {
+        const favArray = [];
+        for (const element of model.users[model.user.uid].favorites) {
+            if (id === element.id){
+                continue;
+            }
+            favArray.push(element);
+        }
+        model.users[model.user.uid].favorites = favArray;
+
+        if (favArray.length === 0) {
+            const db = getDatabase(app);
+            const favRef = dbRef(db, 'pixeModel/users/' + model.user.uid + '/favorites/' + id); 
+            
+            remove(favRef)
+                .then(() => {
+                    console.log(`Removed favourite with name: ${id}`);
+                })
+                .catch((error) => {
+                    console.error(`Error removing favourite: ${error}`);
+            });
+        }
+    }
+
     return (
         <ProfileView
             profile={profile}
             pictures={pictures}
+            model={model}
             isOwnProfile={isOwnProfile}
             saveBioToFirebase={saveBioToFirebase}
             saveAvatarToFirebase={saveAvatarToFirebase}
+            addToFavourites={addToFavourites}
+            removeFavourite={removeFavourite}
         />
     );
 }

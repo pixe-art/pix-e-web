@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import  Link  from 'next/link';
+import Link  from 'next/link';
 import { Dropdown } from 'react-bootstrap';
 import { BsThreeDots } from 'react-icons/bs';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -31,7 +31,7 @@ function ImageComponent({ model, image, addToFavourites, removeFavourite, editIm
         }
     };
 
-    const toggleOnDisplay = () => {
+    const toggleOnDisplay = (image) => {
         setOnDisplay(!onDisplay);
         if (!onDisplay) {
             displayImage(image.id);
@@ -49,14 +49,8 @@ function ImageComponent({ model, image, addToFavourites, removeFavourite, editIm
                 {isDropdownOpen && (
                 <Dropdown.Menu className="bg-cream text-black rounded-md shadow-lg text-sm flex flex-col p-2 right-0 left-auto" onMouseLeave={() => /*isMounted &&*/ setDropdownOpen(false)}>
                     <Dropdown.Item 
-                        onClick={() => {
-                            toggleFavourite();
-                            //setAnimate(true);
-                            //setTimeout(() => setAnimate(false), 500);
-                    }}
-                        className={`hover:bg-gray-400 hover:text-white hover:rounded-md flex items-center p-1 ${isFavourite || animate ? 'text-red-500' : 'text-black'}`} 
-
-                    >
+                        onClick={() => {toggleFavourite();}}
+                        className={`hover:bg-gray-400 hover:text-white hover:rounded-md flex items-center p-1 ${isFavourite || animate ? 'text-red-500' : 'text-black'}`} >
                         <FontAwesomeIcon icon={isFavourite || animate ? solidHeart : outlineHeart} className={`mr-2 ${animate ? 'animate-pulse' : ''}`} />
                         Favourite
                     </Dropdown.Item>
@@ -68,7 +62,7 @@ function ImageComponent({ model, image, addToFavourites, removeFavourite, editIm
                         <FontAwesomeIcon icon={faDownload} className="mr-2" />
                         Download
                     </Dropdown.Item>
-                    <Dropdown.Item className="hover:bg-gray-400 hover:text-white hover:rounded-md p-1" onClick={() => toggleOnDisplay(image.id)} href="#/">
+                    <Dropdown.Item className="hover:bg-gray-400 hover:text-white hover:rounded-md p-1" onClick={() => toggleOnDisplay(image)} href="#/">
                         <FontAwesomeIcon icon={faImage} className="mr-2" />
                         Display
                     </Dropdown.Item>

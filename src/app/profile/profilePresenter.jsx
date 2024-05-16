@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import ProfileView from "./profileView.jsx";
 import { auth, storage } from "@/firebaseModel";
-import { getDatabase, ref, get, update, onValue, off } from "firebase/database";
+import { getDatabase, ref, get, update, onValue, off, remove} from "firebase/database";
 import { app } from "/src/firebaseModel.js";
 import {
   ref as storageRef,
@@ -131,103 +131,34 @@ export default observer(function Profile() {
       });
   };
 
-  const downloadImage = (url, filename) => {
-    const storage = getStorage(app);
-    const imageRef = storageRef(storage, url);
-    console.log(url);
-    if (url.startsWith('data:image/')) {
-      const byteCharacters = atob(url.split(',')[1]);
-      const byteNumbers = new Array(byteCharacters.length);
-      for (let i = 0; i < byteCharacters.length; i++) {
-        byteNumbers[i] = byteCharacters.charCodeAt(i);
-      }
-      const byteArray = new Uint8Array(byteNumbers);
-      const blob = new Blob([byteArray], { type: 'image/png' });
-      const blobUrl = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = blobUrl;
-      a.download = filename;
-      a.click();
-      URL.revokeObjectURL(blobUrl);
-    } else {
-      getDownloadURL(imageRef)
-        .then((downloadURL) => {
-          console.log('File available at', downloadURL);
-          fetch(downloadURL)
-            .then(response => response.blob())
-            .then(blob => {
-              const blobUrl = URL.createObjectURL(blob);
-              const a = document.createElement('a');
-              a.href = blobUrl;
-              a.download = filename;
-              a.click();
-              URL.revokeObjectURL(blobUrl);
-            });
-        })
-        .catch((error) => {
-          console.error(error);
+  function addToFavourites(image) {
+    const userId = model.user.uid;
+    model.users[userId].favorites = [...model.users[userId].favorites, image];
+}
+
+function removeFavourite(id) {
+    const favArray = [];
+    for (const element of model.users[model.user.uid].favorites) {
+        if (id === element.id){
+            continue;
+        }
+        favArray.push(element);
+    }
+    model.users[model.user.uid].favorites = favArray;
+
+    if (favArray.length === 0) {
+        const db = getDatabase(app);
+        const favRef = dbRef(db, 'pixeModel/users/' + model.user.uid + '/favorites/' + id); 
+        
+        remove(favRef)
+            .then(() => {
+                console.log(`Removed favourite with name: ${id}`);
+            })
+            .catch((error) => {
+                console.error(`Error removing favourite: ${error}`);
         });
     }
-  }
-
-  const displayImage = (id) => {
-    const db = getDatabase(app);
-    const dbRef = ref(db, 'pixeModel/screens/pixedemodevice/');
-    update(dbRef, { activeImage: id });
-  }
-
-  function removeImageFromPrivateFolder(id) {
-    const imgArray = [];
-    for (const element of model.users[model.user.uid].images) {
-      if (id === element.id){
-        continue;
-      }
-      imgArray.push(element);
-    }
-    model.users[model.user.uid].images = imgArray;
-
-    if(imgArray.length === 0){
-    const db = getDatabase(app);
-    const imgRef = ref(db, 'pixeModel/users/' + model.user.uid + '/images/' + id); 
-  
-    return remove(imgRef)
-        .then(() => {
-            console.log(`Removed image with name: ${id}`);
-        })
-        .catch((error) => {
-            console.error(`Error removing image: ${error}`);
-        });
-    }
-  }
-
-  function removeImageFromImagesFolder(id) {
-    const imgArray = [];
-    for (const element of model.images) {
-      if (id === element.id){
-        continue;
-      }
-      imgArray.push(element);
-    }
-    model.images = imgArray;
-
-    if(imgArray.length === 0){
-    const db = getDatabase(app);
-    const imgRef = ref(db, 'pixeModel/images/' + id); 
-  
-    return remove(imgRef)
-        .then(() => {
-            console.log(`Removed image with name: ${id}`);
-        })
-        .catch((error) => {
-            console.error(`Error removing image: ${error}`);
-        });
-    }
-  }
-
-  function removeImage(id){
-    removeImageFromPrivateFolder(id);
-    removeImageFromImagesFolder(id);
-  }
+}
 
   if (!model.userReady || !model.ready) {
     return (
@@ -239,14 +170,14 @@ export default observer(function Profile() {
 
   return (
     <ProfileView
+      model={model}
       pictures={pictures}
       profile={profile}
       saveBioToFirebase={saveBioToFirebase}
       saveAvatarToFirebase={saveAvatarToFirebase}
       isOwnProfile={true}
-      displayImage={displayImage}
-      downloadImage={downloadImage}
-      removeImage={removeImage}
+      removeFavourite={removeFavourite}
+      addToFavourites={addToFavourites}
     />
   );
 });
