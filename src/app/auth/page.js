@@ -118,7 +118,8 @@ export default function LoginPage() {
           </>
         )}
         {showLoginForm && (
-          <form onSubmit={handleEmailPasswordLogin} className="mb-4">
+          <div>
+          <form  className="mb-4">
             <input
               type="email"
               placeholder="Enter your email"
@@ -133,7 +134,9 @@ export default function LoginPage() {
               onChange={(e) => setPassword(e.target.value)}
               className="w-full mb-4 px-4 py-2 border rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-amber-500"
             />
+            </form>
             <button
+              onClick={handleEmailPasswordLogin}
               type="submit"
               className="w-full py-2 px-4 bg-amber-500 text-white font-semibold rounded-lg shadow-md hover:bg-amber-700 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-opacity-50"
             >
@@ -151,7 +154,7 @@ export default function LoginPage() {
             >
               Forgot password?
             </button>
-          </form>
+            </div>
         )}
       </div>
     </div>
