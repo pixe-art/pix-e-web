@@ -37,8 +37,9 @@ function Dashboard(props) {
 
   const handleLogout = async () => {
     try {
-      await signOut(auth);
       router.push('/auth');
+      await new Promise(r => setTimeout(r, 250));
+      await signOut(auth);
       console.log('User logged out');
     } catch (error) {
       console.error('Logout error:', error);
