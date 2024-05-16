@@ -35,6 +35,7 @@ function ImageComponent({ model, image, addToFavourites, removeFavourite }) {
         setOnDisplay(!onDisplay);
         if (!onDisplay) {
             displayImage(image.id);
+            model.users[model.user.uid].activeImage = image.imageURL;
         }
     }
 
@@ -140,7 +141,7 @@ export default function GalleryView(props) {
                 <h1 className="text-2xl mb-2">Gallery</h1>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
                     {props.model.images.map((image) => (
-                        <ImageComponent key={image.id} model={props.model} image={image} addToFavourites={props.addToFavourites} removeFavourite={props.removeFavourite} downloadImage={downloadImage} />
+                        <ImageComponent key={image.id} model={props.model} image={image} addToFavourites={props.addToFavourites} removeFavourite={props.removeFavourite}  />
                     ))}
                 </div>
             </div>

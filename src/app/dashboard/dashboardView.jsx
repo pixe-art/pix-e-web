@@ -4,8 +4,10 @@ import { auth, signOut } from '@/firebaseModel';
 import { useRouter } from 'next/navigation';
 import { onAuthStateChanged } from "firebase/auth";
 import { ref as databaseRef, getDatabase, get } from "firebase/database";
+import { observer } from "mobx-react-lite";
 
-export default function Dashboard(props) {
+export default observer(
+function Dashboard(props) {
   const router = useRouter();
   const [user, setUser] = useState(null);
   const [username, setUsername] = useState("");
@@ -80,6 +82,22 @@ export default function Dashboard(props) {
 
   }
 
+  function showActiveImage() {
+    if (props.model.users[props.model.user.uid].activeImage)
+      return <div className="mb-6 bg-black w-320 h-640 border-4 border-black rounded-xl">
+                <img 
+                   src={props.model.users[props.model.user.uid].activeImage}
+                   alt="Pixel Art"
+                   className="w-full h-full object-contain rounded-xl image-pixelated"
+                />
+              </div>
+
+    else
+      return <p className="text-lg text-gray-600 mb-6">
+                No image.
+             </p>
+    }
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-cream">
       <button
@@ -100,16 +118,7 @@ export default function Dashboard(props) {
           Create and share your pixel art creations.
         </p>
         <h2 className="text-lg font-bold text-gray-800 mb-4">Currently on your Pix-E:</h2>
-
-        <a href="/pair" className="text-blue-500 underline underline-offset-2 font-bold cursor-pointer visited:text-indigo-500">Link a Pix-E display</a>
-        <div className="mb-6 bg-black w-320 h-640 border-4 border-black rounded-xl">
-          <img
-            src="https://firebasestorage.googleapis.com/v0/b/pix-e-b9fab.appspot.com/o/art1.png?alt=media&token=afd1e2a8-0da2-4524-a0b4-7f813fffd7d1"
-            alt="Pixel Art"
-            className="w-full h-full object-contain rounded-xl"
-          />
-        </div>
-
+        {showActiveImage()}
         <div className="flex flex-wrap gap-4 justify-center mb-6 *:*:min-w-40 /*<- sets all spans to same width*/">
           <Link href="/art-tool">
             <span className="inline-block px-6 py-2 text-white bg-slate-500 rounded hover:bg-slate-600 cursor-pointer">
@@ -136,4 +145,4 @@ export default function Dashboard(props) {
       <footer className="mt-8 text-gray-500">Pix-E</footer>
     </div>
   );
-}
+});

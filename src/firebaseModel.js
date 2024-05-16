@@ -64,6 +64,8 @@ export function userModelToPersistence(model) {
     }
 
     realtimeModel = {colorCurrent: model.users[model.user.uid].colorCurrent};
+    realtimeModel.activeImage = model.users[model.user.uid].activeImage;
+    realtimeModel.device = model.users[model.user.uid].device;
     realtimeModel.canvasCurrent = model.users[model.user.uid].canvasCurrent;
     if (model.users[model.user.uid].images?.length)
         realtimeModel.images = toObject(model.users[model.user.uid].images);
@@ -110,6 +112,9 @@ export function userPersistenceToModel(data, model) {
             model.users[model.user.uid].colorCurrent = data.colorCurrent;
         }
 
+        if (data.device)
+            model.users[model.user.uid].device = data.device;
+
         if (data.canvasCurrent){
             model.users[model.user.uid].canvasCurrent = data.canvasCurrent;
         }
@@ -128,6 +133,10 @@ export function userPersistenceToModel(data, model) {
 
         if (data.profile){
             model.users[model.user.uid].profile = data.profile;
+        }
+
+        if (data.activeImage){
+            model.users[model.user.uid].activeImage = data.activeImage;
         }
     }
 }
@@ -191,12 +200,17 @@ export function connectToFirebase(model) {
             if (model.users[model.user.uid].colorCurrent === undefined) 
                 model.users[model.user.uid].colorCurrent = "";
 
+            if (model.users[model.user.uid].device === undefined)
+                model.users[model.user.uid].device = 0;
+
             if (model.users[model.user.uid].canvasCurrent === undefined) 
                 model.users[model.user.uid].canvasCurrent = "";
 
-            if (model.users[model.user.uid].favorites === undefined){
+            if (model.users[model.user.uid].favorites === undefined)
                 model.users[model.user.uid].favorites = [];
-            }
+
+            if (model.users[model.user.uid].activeImage === undefined)
+                model.users[model.user.uid].activeImage = "";
 
             if (model.users[model.user.uid].drafts === undefined)
                 model.users[model.user.uid].drafts = [];
@@ -224,10 +238,12 @@ export function connectToFirebase(model) {
 
         else {
             model.users[model.user.uid] = {colorCurrent: ""};
+            model.users[model.user.uid].device = 0;
             model.users[model.user.uid].canvasCurrent = "";
             model.users[model.user.uid].favorites = [];
             model.users[model.user.uid].drafts = [];
             model.users[model.user.uid].images = [];
+            model.users[model.user.uid].activeImage = "";
             model.users[model.user.uid].profile = {bio: "", username: "", 
             avatar: "https://firebasestorage.googleapis.com/v0/b/pix-e-b9fab.appspot.com/o/avatars%2Fdefault.png?alt=media&token=39e999d9-aed3-4e95-a9dc-5a96ae3d7e28"};
         }
@@ -236,9 +252,9 @@ export function connectToFirebase(model) {
     function userDataChangedACB() {
         return [model.users[model.user.uid].colorCurrent, model.users[model.user.uid].canvasCurrent, 
                 model.users[model.user.uid].favorites, model.users[model.user.uid].images,
-                model.users[model.user.uid].profile.bio,
+                model.users[model.user.uid].profile.bio, model.users[model.user.uid].activeImage,
                 model.users[model.user.uid].profile.username, model.users[model.user.uid].profile.avatar,
-                model.users[model.user.uid].drafts];
+                model.users[model.user.uid].drafts, model.users[model.user.uid].device];
     }
 
     function saveUserDataACB() {
