@@ -276,7 +276,7 @@ function ArtTool(props) {
                         <h1>Left-Click to draw</h1>
                         <h1>Right-Click to erase</h1>
                         <h1>Middle-Click to place a single pixel</h1>
-                        <button id="debug" className="mx-2 border rounded max-w-fit self-center" onClick={debugEvent} type="button">Click here for debug info</button>
+                        {/* <button id="debug" className="mx-2 border rounded max-w-fit self-center" onClick={debugEvent} type="button">Click here for debug info</button> */}
                     </div>
                 </div>
                 <div id="draft" className="hidden">
