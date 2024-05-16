@@ -177,7 +177,7 @@ export default function ProfileView({
             >
               Dashboard
             </Link>
-            <Link href="#" className="text-white no-underline hover:underline">
+            <Link href="/profile" className="text-white no-underline hover:underline">
               My Profile
             </Link>
             <Link
