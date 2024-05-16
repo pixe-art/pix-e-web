@@ -77,7 +77,7 @@ export default function ProfileView({
         <img
           src={picture.imageURL}
           alt={`Picture ${index + 1}`}
-          className="w-full h-auto object-cover"
+          className="w-full h-auto object-cover image-pixelated bg-black border-4 border-brown"
         />
         <Dropdown
           show={isDropdownOpen}
