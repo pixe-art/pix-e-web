@@ -13,17 +13,18 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { faHeart as outlineHeart } from "@fortawesome/free-regular-svg-icons";
 import { getDatabase, ref, get } from "firebase/database";
+import { downloadImage, displayImage } from "../publicGallery/galleryPresenter";
 import { observer } from "mobx-react-lite";
 
 export default observer(function ProfileView({
   pictures,
+  model,
   profile,
   saveBioToFirebase,
   saveAvatarToFirebase,
   isOwnProfile,
-  displayImage,
-  downloadImage,
-  removeImage,
+  addToFavourites,
+  removeFavourite,
 }) {
   const [isEditingBio, setEditingBio] = useState(false);
   const [newBio, setNewBio] = useState(profile.bio);
@@ -73,80 +74,73 @@ export default observer(function ProfileView({
     window.location.href = `/profile/${username}`;
   };
 
-  function ImageComponent({ image, index, isOwnProfile, removeImage }) {
+  function ImageComponent({ model, image, addToFavourites, removeFavourite }) {
     const [isDropdownOpen, setDropdownOpen] = useState(false);
-    const [isFavourite, setFavourite] = useState(false);
+    const [isFavourite, setIsFavourite] = useState(false);
+    const [onDisplay, setOnDisplay] = useState(false);
+    const [animate, setAnimate] = useState(false);
+
+    useEffect(() => {
+        for (const element of model.users[model.user.uid].favorites) {
+            if (image.id === element.id)
+                setIsFavourite(true);
+        }
+    }, []);
 
     const toggleFavourite = () => {
-      setFavourite(!isFavourite);
+        setIsFavourite(!isFavourite);
+        if (!isFavourite) {
+            setAnimate(true);
+            setTimeout(() => setAnimate(false), 500);
+            addToFavourites(image); 
+        } else {
+            removeFavourite(image.id);
+        }
     };
 
+    const toggleOnDisplay = (image) => {
+        setOnDisplay(!onDisplay);
+        if (!onDisplay) {
+            displayImage(image.id);
+            model.users[model.user.uid].activeImage = image.imageURL;
+        }
+    }
+
     return (
-      <div className="relative rounded shadow-lg p-4 bg-cream transform transition duration-500 hover:scale-110 hover:z-10">
-        <img
-          src={image.imageURL}
-          alt={`Picture ${index + 1}`}
-          className="w-full h-auto object-cover image-pixelated bg-black border-4 border-brown"
-        />
-        <Dropdown
-          show={isDropdownOpen}
-          onClick={() => setDropdownOpen(!isDropdownOpen)}
-          onMouseLeave={() => setDropdownOpen(false)}
-          className="absolute bottom-2 right-2"
-        >
-          <Dropdown.Toggle
-            variant="none"
-            className="p-0 border-0 bg-transparent"
-          >
-            <BsThreeDots />
-          </Dropdown.Toggle>
-          <Dropdown.Menu className="bg-cream text-black rounded-md shadow-lg text-sm flex flex-col p-2">
-            {isOwnProfile ? (
-              <Dropdown.Item
-                className={`hover:bg-gray-400 hover:text-white hover:rounded-md flex items-center p-1`}
-                onClick={() => removeImage(image.id)}
-              >
-                <FontAwesomeIcon icon={faTrash} className={"mr-2"} />
-                Remove
-              </Dropdown.Item>
-            ) : (
-              <Dropdown.Item
-                className={`hover:bg-gray-400 hover:text-white hover:rounded-md flex items-center p-1`}
-                onClick={toggleFavourite}
-              >
-                <FontAwesomeIcon
-                  icon={isFavourite ? solidHeart : outlineHeart}
-                  className={"mr-2"}
-                />
-                {isFavourite ? "Unfavorite" : "Favorite"}
-              </Dropdown.Item>
-            )}
-            <Dropdown.Item className="hover:bg-gray-400 hover:text-white hover:rounded-md flex items-center p-1">
-              <FontAwesomeIcon icon={faDownload} className="mr-2" />
-              Download
-            </Dropdown.Item>
-            
-            <Dropdown.Item
-              className="hover:bg-gray-400 hover:text-white hover:rounded-md p-1"
-              onClick={() => displayImage(image.id)}
-              href="#/"
-            >
-              <FontAwesomeIcon icon={faImage} className="mr-2" />
-              Display
-            </Dropdown.Item>
-          </Dropdown.Menu>
-        </Dropdown>
-        <div className="px-6 py-4">
-          <h3 className="font-bold text-lg mb-2">
-            {image.title || `Picture ${index + 1}`}
-          </h3>
-          <p className="text-gray-700 text-base">
-            Created by: {image.creator || "Unknown"}
-          </p>
+        <div className="relative rounded shadow-lg p-4 bg-cream transform transition duration-500 hover:scale-110 hover:z-10">
+            <img src={image.imageURL} alt="" className="w-full h-auto object-cover image-pixelated bg-black border-4 border-brown" />
+            <Dropdown className="absolute bottom-0 right-0 mb-2 mr-2" onClick={() => /*isMounted &&*/ setDropdownOpen(true)} >
+                <Dropdown.Toggle variant="none" id="dropdown-basic">
+                    <BsThreeDots size={24}/>
+                </Dropdown.Toggle>
+                {isDropdownOpen && (
+                <Dropdown.Menu className="bg-cream text-black rounded-md shadow-lg text-sm flex flex-col p-2 right-0 left-auto" onMouseLeave={() => /*isMounted &&*/ setDropdownOpen(false)}>
+                    <Dropdown.Item 
+                        onClick={() => {toggleFavourite();}}
+                        className={`hover:bg-gray-400 hover:text-white hover:rounded-md flex items-center p-1 ${isFavourite || animate ? 'text-red-500' : 'text-black'}`} >
+                        <FontAwesomeIcon icon={isFavourite || animate ? solidHeart : outlineHeart} className={`mr-2 ${animate ? 'animate-pulse' : ''}`} />
+                        Favourite
+                    </Dropdown.Item>
+                    <Dropdown.Item className="hover:bg-gray-400 hover:text-white hover:rounded-md flex items-center p-1" onClick={() => downloadImage(image.imageURL, image.title)}>
+                        <FontAwesomeIcon icon={faDownload} className="mr-2" />
+                        Download
+                    </Dropdown.Item>
+                    <Dropdown.Item className="hover:bg-gray-400 hover:text-white hover:rounded-md p-1" onClick={() => toggleOnDisplay(image)} href="#/">
+                        <FontAwesomeIcon icon={faImage} className="mr-2" />
+                        Display
+                    </Dropdown.Item>
+                </Dropdown.Menu>
+                )} 
+            </Dropdown>
+            <div className="px-6 py-4"> 
+                <div className="font-bold text-lg mb-2">{image.title}</div>
+                <p className="text-gray-700 text-base">
+                    Created by: {image.creator}
+                </p>
+            </div>
         </div>
-      </div>
     );
-  }
+}
 
   // Hamburger line style
   const genericHamburgerLine = `h-1 w-6 my-1 rounded-full bg-cream transition ease transform duration-300`;
@@ -347,13 +341,13 @@ export default observer(function ProfileView({
         <div className="flex-grow">
           {pictures.length ? (
             <div className="grid grid-cols-3 gap-4 w-full">
-              {pictures.map((picture, index) => (
+              {pictures.map((picture) => (
                 <ImageComponent
-                  key={index}
+                  key={picture.id}
+                  model={model}
                   image={picture}
-                  index={index}
-                  isOwnProfile={isOwnProfile}
-                  removeImage={removeImage}
+                  addToFavourites={addToFavourites}
+                  removeFavourite={removeFavourite}
                 />
               ))}
             </div>

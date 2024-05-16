@@ -113,41 +113,34 @@ export default observer(
       }
     };
 
-    // Function to fetch pictures from Realtime Database
-    const fetchPictures = () => {
-      const uid = auth.currentUser?.uid;
-      if (uid) {
-        const db = getDatabase();
-        const imagesRef = ref(db, `pixeModel/users/${uid}/images`);
-        get(imagesRef)
-          .then((snapshot) => {
-            if (snapshot.exists()) {
-              setPictures(snapshot.val() || []);
-            } else {
-              console.log("No data available for images.");
-              setPictures([]);
-            }
+    function removeFavourite(id) {
+      const favArray = [];
+      for (const element of model.users[model.user.uid].favorites) {
+        if (id === element.id){
+          continue;
+        }
+        favArray.push(element);
+      }
+      model.users[model.user.uid].favorites = favArray;
+
+      if(favArray.length === 0){
+      const db = getDatabase(app);
+      const favRef = ref(db, 'pixeModel/users/' + model.user.uid + '/favorites/' + id); 
+    
+      return remove(favRef)
+          .then(() => {
+              console.log(`Removed favourite with name: ${id}`);
           })
           .catch((error) => {
-            console.error("Failed to load gallery:", error);
+              console.error(`Error removing favourite: ${error}`);
           });
       }
-    };
+    }
 
-    useEffect(() => {
-      fetchProfileData(); // Fetch profile data when the component mounts
-      fetchPictures(); // Fetch pictures when the component mounts
-
-      // Cleanup function to remove the listener when the component unmounts
-      return () => {
-        const uid = auth.currentUser?.uid;
-        if (uid) {
-          const db = getDatabase();
-          const profileRef = ref(db, `pixeModel/users/${uid}/profile`);
-          off(profileRef); // Remove the profile listener
-        }
-      };
-    }, []); // Empty dependency array ensures this effect runs only once when the component mounts
+    function addToFavourites(image) {
+      const userId = model.user.uid;
+      model.users[userId].favorites = [...model.users[userId].favorites, image];
+    }
 
     if (!model.userReady || !model.ready) {
       return <div>
@@ -162,6 +155,8 @@ export default observer(
         profile={profile}
         saveBioToFirebase={saveBioToFirebase}
         saveAvatarToFirebase={saveAvatarToFirebase}
+        removeFavourite={removeFavourite}
+        addToFavourites={addToFavourites}
       />
     );
   }

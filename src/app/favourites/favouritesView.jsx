@@ -11,7 +11,6 @@ import {
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 import { downloadImage, displayImage } from "./favouritesPresenter";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
 
 function ImageComponent({ image, removeFavourite }) {
   const [isDropdownOpen, setDropdownOpen] = useState(false);
@@ -19,18 +18,11 @@ function ImageComponent({ image, removeFavourite }) {
   const [onDisplay, setOnDisplay] = useState(false);
   //const [animate, setAnimate] = useState(false);
 
-  /*const toggleFavourite = () => {
-    setFavourite(!isFavourite);
-    if (!isFavourite) {
-      setAnimate(true);
-      setTimeout(() => setAnimate(false), 500);
-    }
-  };*/
-
   const toggleOnDisplay = () => {
     setOnDisplay(!onDisplay);
     if (!onDisplay) {
         displayImage(image.id);
+        model.users[model.user.uid].activeImage = image.imageURL;
     }
 }
 
@@ -89,11 +81,12 @@ function ImageComponent({ image, removeFavourite }) {
 export default observer(
   function FavouritesView(props) {
     const [isMenuOpen, setMenuOpen] = useState(false);
-    const [userID, setUserID] = useState(null);
+    //const [userID, setUserID] = useState(null);
     const [isMounted, setIsMounted] = useState(false);
-    const auth = getAuth();
+    //const auth = getAuth();
     const genericHamburgerLine = `h-1 w-6 my-1 rounded-full bg-cream transition ease transform duration-300`;
 
+    /*
     useEffect(() => {
       const unsubscribe = onAuthStateChanged(auth, (user) => {
         if (user) {
@@ -102,11 +95,11 @@ export default observer(
       });
 
       return () => unsubscribe();
-    }, [auth]);
+    }, [auth]);*/
 
     useEffect(() => {
       setIsMounted(true);
-    }, []); //quick solution, may need to revise depending on data scaling
+    }, []);
 
     return (
       <div>
