@@ -9,6 +9,7 @@ import { auth } from "@/firebaseModel";
 import SaveMenu from "./save";
 import SaveDraft from "./saveDraft";
 import { TW_button, TW_button_plain, TW_button_plainA } from "./tailwindClasses";
+import Link from "next/link";
 
 export default
 function ArtTool(props) {
@@ -270,7 +271,7 @@ function ArtTool(props) {
             <div id="parent" className="inset-0 bg-cover bg-cream touch-none max-h-screen overflow-hidden" onMouseUp={mouseUp}>
                 <div id="topbar" className="hidden align-middle bg-brown text-pretty justify-center py-2 md:flex hmd:hidden">
                     <div>
-                    <a href="/dashboard/" className="mx-2">Home</a>
+                    <Link href="/dashboard" className="text-white no-underline hover:underline">Dashboard</Link>
                 </div>
                 <div id="instrutions" className="flex justify-center w-screen self-center text-center *:mx-1 *:px-1 flex-row">
                         <h1>Left-Click to draw</h1>
