@@ -309,7 +309,7 @@ function ArtTool(props) {
                         <button id="show-draft" className={TW_button + TW_button_plain + TW_button_plainA + "w-auto"} value={"draft"} onClick={toggleMenu}>Draft Menu</button>
                         <button id="show-save" className={TW_button + TW_button_plain + TW_button_plainA + "w-auto"} value={"save"} onClick={toggleMenu}>Save</button>
                         <button id="download" className={TW_button + TW_button_plain + TW_button_plainA} onClick={props.downloadCanvas} type="button">Download</button>
-                        <button id="bg" className={TW_button + TW_button_plain + TW_button_plainA} onClick={toggleBg}>Background Color</button>
+                        {/* <button id="bg" className={TW_button + TW_button_plain + TW_button_plainA} onClick={toggleBg}>Background Color</button> */}
                         <div className="select-none cursor-default hmd:hidden">&nbsp;</div>
                         <button id="erase" className={TW_button + TW_button_plain + TW_button_plainA} onClick={toggleEraser}>Eraser</button>
                         <button id="undo" className={TW_button + TW_button_plain + TW_button_plainA} onClick={undo}>Undo</button>

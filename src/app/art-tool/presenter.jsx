@@ -21,7 +21,7 @@ export default observer(
 
         const [mouseCheck, setMouseCheck] = useState(false);
         const [lastXY, setLastXY] = useState([-1, -1]);
-        const [color, setColor] = useState("white");
+        const [color, setColor] = useState("#ffffff");
 
         const penSize = useRef(1);
         const eraser = useRef(false);
