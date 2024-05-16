@@ -39,7 +39,7 @@ export default function UserProfilePage() {
                 setIsOwnProfile(auth.currentUser && auth.currentUser.uid === uid);
 
                 const profileRef = ref(db, `pixeModel/users/${uid}/profile`);
-                const imagesRef = ref(db, `pixeModel/users/${uid}/images`);
+                const imagesRef = ref(db, `pixeModel/images`);
 
                 onValue(profileRef, (profileSnapshot) => {
                     if (profileSnapshot.exists()) {
@@ -67,8 +67,14 @@ export default function UserProfilePage() {
 
                 onValue(imagesRef, (imagesSnapshot) => {
                     if (imagesSnapshot.exists()) {
+                        const images = Object.values(imagesSnapshot.val());
+                        const publicUserImages = [];
+                        for (const element of images) 
+                            if (element.creator === username)
+                                publicUserImages.push(element);
+
                         console.log('Image data loaded for UID:', uid);
-                        setPictures(Object.values(imagesSnapshot.val()));
+                        setPictures(publicUserImages);
                     } else {
                         console.log('No image data found for UID:', uid);
                         setPictures([]);

@@ -67,35 +67,30 @@ export default observer(
 
         function addToFavourites(image) {
             const userId = model.user.uid;
-        
-            //const imagePath = new URL(imageUrl).pathname.split('/').pop();
-            
-            // Create a copy of the image in Firebase storage
-            const storage = getStorage(app);
-            //const imageRef = sRef(storage, imagePath);
-            const userImageRef = sRef(storage, 'users/' + userId + '/favorites/' + image.id);
-            fetch(image.imageURL).then(response => response.blob()).then(blob => {
-                uploadBytes(userImageRef, blob);
-            });
-        
-            const imageCopy = image;
-            imageCopy.storage = "gs://pix-e-b9fab.appspot.com/users/" + userId + '/favorites/' + image.id;
-            model.users[userId].favorites = [...model.users[userId].favorites, imageCopy];
-    
+            model.users[userId].favorites = [...model.users[userId].favorites, image];
         }
 
         function removeFavourite(id) {
-            const auth = getAuth();
-            const userId = auth.currentUser.uid;
-            const db = getDatabase(app);
-            const favRef = dbRef(db, 'pixeModel/users/' + userId + '/favorites/' + id); 
-          
-            return remove(favRef)
-                .then(() => {
-                    console.log(`Removed favourite with name: ${id}`);
-                })
-                .catch((error) => {
-                    console.error(`Error removing favourite: ${error}`);
-            });
+            const favArray = [];
+            for (const element of model.users[model.user.uid].favorites) {
+                if (id === element.id){
+                    continue;
+                }
+                favArray.push(element);
+            }
+            model.users[model.user.uid].favorites = favArray;
+
+            if (favArray.length === 0) {
+                const db = getDatabase(app);
+                const favRef = dbRef(db, 'pixeModel/users/' + model.user.uid + '/favorites/' + id); 
+                
+                remove(favRef)
+                    .then(() => {
+                        console.log(`Removed favourite with name: ${id}`);
+                    })
+                    .catch((error) => {
+                        console.error(`Error removing favourite: ${error}`);
+                });
+            }
         }
 });

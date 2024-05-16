@@ -76,18 +76,7 @@ export default function DraftsView(props) {
     
         useEffect(() => {
             setIsMounted(true);
-            setTimeout(() => {
-                setIsLoading(false);
-            }, 1000);
         }, []); //quick solution, may need to revise depending on data scaling
-    
-        if (isLoading) {
-            return (
-                <div className="flex items-center justify-center min-h-screen text-2xl text-white animate-pulse">
-                    Loading...
-                </div>
-            );
-        }
     
         return (
             <div> {isMounted &&
