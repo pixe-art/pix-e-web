@@ -23,6 +23,7 @@ export const storage = getStorage(app);
 export {signOut};
 
 // testing - alvin
+/*
 const CONNECTIONS = ref(db, "connections")
 const LAST_ON = ref(db, "/last-online/")
 const CONNECTED = ref(db, ".info/connected")
@@ -34,7 +35,7 @@ onValue(CONNECTED, (snap) => {
         set(con, auth.clientVersion)
         onDisconnect(LAST_ON).set(serverTimestamp())
     }
-})
+})*/
 
 export function modelToPersistence(model) {
     let realtimeModel = null;

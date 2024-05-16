@@ -108,7 +108,7 @@ export default observer(
                 } 
             }
 
-            const userImageRef = sRef(storage, 'drafts/' + out.id);
+            const userImageRef = sRef(storage, 'images/' + out.id);
             fetch(out.imageURL).then(response => response.blob()).then(blob => {
             uploadBytes(userImageRef, blob);
             });
@@ -134,7 +134,7 @@ export default observer(
             model.users[model.user.uid].drafts = draftArray;
         
             // Reference to the user's draft in storage
-            const userImageRef = sRef(storage, 'users/' + userID + '/drafts/' + img.title);
+            const userImageRef = sRef(storage, 'images/'+ img.id);
         
             // Delete the image from Firebase Storage
             deleteObject(userImageRef)
@@ -144,7 +144,7 @@ export default observer(
                     if (draftArray.length === 0) {
                         // After successful storage deletion, delete the database entry
                         const db = getDatabase(app);
-                        const draftRef = dbRef(db, 'pixeModel/users/' + userID + '/drafts/' + img.title);
+                        const draftRef = dbRef(db, 'pixeModel/users/' + userID + '/drafts/' + img.id);
                         
                         remove(draftRef)
                             .then(() => {

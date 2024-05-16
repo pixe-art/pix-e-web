@@ -3,10 +3,12 @@ import { useState, useEffect } from "react";
 import ProfileView from "./profileView.jsx";
 import { auth, storage } from "@/firebaseModel";
 import { getDatabase, ref, get, update, onValue, off } from "firebase/database";
+import { app } from "/src/firebaseModel.js";
 import {
   ref as storageRef,
   uploadBytes,
   getDownloadURL,
+  getStorage,
 } from "firebase/storage";
 import { observer } from "mobx-react-lite";
 import { useModel } from "../model-provider.js";
@@ -129,6 +131,104 @@ export default observer(function Profile() {
       });
   };
 
+  const downloadImage = (url, filename) => {
+    const storage = getStorage(app);
+    const imageRef = storageRef(storage, url);
+    console.log(url);
+    if (url.startsWith('data:image/')) {
+      const byteCharacters = atob(url.split(',')[1]);
+      const byteNumbers = new Array(byteCharacters.length);
+      for (let i = 0; i < byteCharacters.length; i++) {
+        byteNumbers[i] = byteCharacters.charCodeAt(i);
+      }
+      const byteArray = new Uint8Array(byteNumbers);
+      const blob = new Blob([byteArray], { type: 'image/png' });
+      const blobUrl = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = blobUrl;
+      a.download = filename;
+      a.click();
+      URL.revokeObjectURL(blobUrl);
+    } else {
+      getDownloadURL(imageRef)
+        .then((downloadURL) => {
+          console.log('File available at', downloadURL);
+          fetch(downloadURL)
+            .then(response => response.blob())
+            .then(blob => {
+              const blobUrl = URL.createObjectURL(blob);
+              const a = document.createElement('a');
+              a.href = blobUrl;
+              a.download = filename;
+              a.click();
+              URL.revokeObjectURL(blobUrl);
+            });
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    }
+  }
+
+  const displayImage = (id) => {
+    const db = getDatabase(app);
+    const dbRef = ref(db, 'pixeModel/screens/pixedemodevice/');
+    update(dbRef, { activeImage: id });
+  }
+
+  function removeImageFromPrivateFolder(id) {
+    const imgArray = [];
+    for (const element of model.users[model.user.uid].images) {
+      if (id === element.id){
+        continue;
+      }
+      imgArray.push(element);
+    }
+    model.users[model.user.uid].images = imgArray;
+
+    if(imgArray.length === 0){
+    const db = getDatabase(app);
+    const imgRef = ref(db, 'pixeModel/users/' + model.user.uid + '/images/' + id); 
+  
+    return remove(imgRef)
+        .then(() => {
+            console.log(`Removed image with name: ${id}`);
+        })
+        .catch((error) => {
+            console.error(`Error removing image: ${error}`);
+        });
+    }
+  }
+
+  function removeImageFromImagesFolder(id) {
+    const imgArray = [];
+    for (const element of model.images) {
+      if (id === element.id){
+        continue;
+      }
+      imgArray.push(element);
+    }
+    model.images = imgArray;
+
+    if(imgArray.length === 0){
+    const db = getDatabase(app);
+    const imgRef = ref(db, 'pixeModel/images/' + id); 
+  
+    return remove(imgRef)
+        .then(() => {
+            console.log(`Removed image with name: ${id}`);
+        })
+        .catch((error) => {
+            console.error(`Error removing image: ${error}`);
+        });
+    }
+  }
+
+  function removeImage(id){
+    removeImageFromPrivateFolder(id);
+    removeImageFromImagesFolder(id);
+  }
+
   if (!model.userReady || !model.ready) {
     return (
       <div>
@@ -144,6 +244,9 @@ export default observer(function Profile() {
       saveBioToFirebase={saveBioToFirebase}
       saveAvatarToFirebase={saveAvatarToFirebase}
       isOwnProfile={true}
+      displayImage={displayImage}
+      downloadImage={downloadImage}
+      removeImage={removeImage}
     />
   );
 });

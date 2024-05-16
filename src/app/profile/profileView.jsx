@@ -6,19 +6,24 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faHeart as solidHeart,
   faDownload,
-  faQuestion,
+  faTrash,
+  faImage,
   faPen,
   faCamera,
 } from "@fortawesome/free-solid-svg-icons";
 import { faHeart as outlineHeart } from "@fortawesome/free-regular-svg-icons";
 import { getDatabase, ref, get } from "firebase/database";
+import { observer } from "mobx-react-lite";
 
-export default function ProfileView({
+export default observer(function ProfileView({
   pictures,
   profile,
   saveBioToFirebase,
   saveAvatarToFirebase,
   isOwnProfile,
+  displayImage,
+  downloadImage,
+  removeImage,
 }) {
   const [isEditingBio, setEditingBio] = useState(false);
   const [newBio, setNewBio] = useState(profile.bio);
@@ -27,6 +32,10 @@ export default function ProfileView({
   const [searchResults, setSearchResults] = useState([]);
   const [isMenuOpen, setMenuOpen] = useState(false);
   const [allUsernames, setAllUsernames] = useState([]);
+
+  useEffect(() => {
+    setNewBio(profile.bio);
+  }, [profile.bio]);
 
   useEffect(() => {
     const fetchUsernames = async () => {
@@ -64,7 +73,7 @@ export default function ProfileView({
     window.location.href = `/profile/${username}`;
   };
 
-  const ImageComponent = ({ picture, index }) => {
+  function ImageComponent({ image, index, isOwnProfile, removeImage }) {
     const [isDropdownOpen, setDropdownOpen] = useState(false);
     const [isFavourite, setFavourite] = useState(false);
 
@@ -75,7 +84,7 @@ export default function ProfileView({
     return (
       <div className="relative rounded shadow-lg p-4 bg-cream transform transition duration-500 hover:scale-110 hover:z-10">
         <img
-          src={picture.imageURL}
+          src={image.imageURL}
           alt={`Picture ${index + 1}`}
           className="w-full h-auto object-cover image-pixelated bg-black border-4 border-brown"
         />
@@ -92,42 +101,52 @@ export default function ProfileView({
             <BsThreeDots />
           </Dropdown.Toggle>
           <Dropdown.Menu className="bg-cream text-black rounded-md shadow-lg text-sm flex flex-col p-2">
-            <Dropdown.Item
-              className={`hover:bg-gray-400 hover:text-white hover:rounded-md flex items-center p-1 ${
-                isFavourite ? "text-red-500" : ""
-              }`}
-              onClick={toggleFavourite}
-            >
-              <FontAwesomeIcon
-                icon={isFavourite ? solidHeart : outlineHeart}
-                className="mr-2"
-              />
-              {isFavourite ? "Unfavorite" : "Favorite"}
-            </Dropdown.Item>
+            {isOwnProfile ? (
+              <Dropdown.Item
+                className={`hover:bg-gray-400 hover:text-white hover:rounded-md flex items-center p-1`}
+                onClick={() => removeImage(image.id)}
+              >
+                <FontAwesomeIcon icon={faTrash} className={"mr-2"} />
+                Remove
+              </Dropdown.Item>
+            ) : (
+              <Dropdown.Item
+                className={`hover:bg-gray-400 hover:text-white hover:rounded-md flex items-center p-1`}
+                onClick={toggleFavourite}
+              >
+                <FontAwesomeIcon
+                  icon={isFavourite ? solidHeart : outlineHeart}
+                  className={"mr-2"}
+                />
+                {isFavourite ? "Unfavorite" : "Favorite"}
+              </Dropdown.Item>
+            )}
             <Dropdown.Item className="hover:bg-gray-400 hover:text-white hover:rounded-md flex items-center p-1">
               <FontAwesomeIcon icon={faDownload} className="mr-2" />
               Download
             </Dropdown.Item>
+            
             <Dropdown.Item
               className="hover:bg-gray-400 hover:text-white hover:rounded-md p-1"
+              onClick={() => displayImage(image.id)}
               href="#/"
             >
-              <FontAwesomeIcon icon={faQuestion} className="mr-2" />
-              Something
+              <FontAwesomeIcon icon={faImage} className="mr-2" />
+              Display
             </Dropdown.Item>
           </Dropdown.Menu>
         </Dropdown>
         <div className="px-6 py-4">
           <h3 className="font-bold text-lg mb-2">
-            {picture.title || `Picture ${index + 1}`}
+            {image.title || `Picture ${index + 1}`}
           </h3>
           <p className="text-gray-700 text-base">
-            Created by: {picture.creator || "Unknown"}
+            Created by: {image.creator || "Unknown"}
           </p>
         </div>
       </div>
     );
-  };
+  }
 
   // Hamburger line style
   const genericHamburgerLine = `h-1 w-6 my-1 rounded-full bg-cream transition ease transform duration-300`;
@@ -177,7 +196,10 @@ export default function ProfileView({
             >
               Dashboard
             </Link>
-            <Link href="/profile" className="text-white no-underline hover:underline">
+            <Link
+              href="/profile"
+              className="text-white no-underline hover:underline"
+            >
               My Profile
             </Link>
             <Link
@@ -198,10 +220,12 @@ export default function ProfileView({
             >
               Create a Picture
             </Link>
-            <Link 
-            href="/drafts" 
-            className="text-white no-underline hover:underline">My Drafts</Link>
-
+            <Link
+              href="/drafts"
+              className="text-white no-underline hover:underline"
+            >
+              My Drafts
+            </Link>
           </>
         )}
       </div>
@@ -299,13 +323,13 @@ export default function ProfileView({
                 />
                 <div className="flex justify-end mt-2">
                   <button
-                    class="mr-2 px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded"
+                    className="mr-2 px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded"
                     onClick={() => setEditingBio(false)}
                   >
                     Discard
                   </button>
                   <button
-                    class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded"
+                    className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded"
                     onClick={() => {
                       saveBioToFirebase(newBio);
                       setEditingBio(false);
@@ -324,7 +348,13 @@ export default function ProfileView({
           {pictures.length ? (
             <div className="grid grid-cols-3 gap-4 w-full">
               {pictures.map((picture, index) => (
-                <ImageComponent key={index} picture={picture} index={index} />
+                <ImageComponent
+                  key={index}
+                  image={picture}
+                  index={index}
+                  isOwnProfile={isOwnProfile}
+                  removeImage={removeImage}
+                />
               ))}
             </div>
           ) : (
@@ -334,4 +364,4 @@ export default function ProfileView({
       </div>
     </div>
   );
-}
+});
