@@ -12,7 +12,7 @@ import { faHeart as outlineHeart } from "@fortawesome/free-regular-svg-icons";
 import { downloadImage, displayImage } from "../publicGallery/galleryPresenter";
 import { observer } from "mobx-react-lite";
 
-function ImageComponent({ image, model, addToFavourites, removeFavourite }) {
+function ImageComponent({image, model, addToFavourites, removeFavourite }) {
   const [isDropdownOpen, setDropdownOpen] = useState(false);
   const [isFavourite, setIsFavourite] = useState(false);
   const [onDisplay, setOnDisplay] = useState(false);
@@ -201,7 +201,6 @@ export default observer(function DraftsView(props) {
               {props.model.users[props.model.user.uid]?.drafts.length > 0 ? (
                 props.model.users[props.model.user.uid].drafts.map((image) => (
                   <ImageComponent
-                    key={image.id}
                     model={props.model}
                     image={image}
                     addToFavourites={props.addToFavourites}
