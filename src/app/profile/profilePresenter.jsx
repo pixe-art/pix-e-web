@@ -12,6 +12,7 @@ import {
 } from "firebase/storage";
 import { observer } from "mobx-react-lite";
 import { useModel } from "../model-provider.js";
+import { TW_center } from "../art-tool/tailwindClasses.js";
 
 export default observer(function Profile() {
   const model = useModel();
@@ -163,7 +164,7 @@ function removeFavourite(id) {
   if (!model.userReady || !model.ready) {
     return (
       <div>
-        <img src="https://brfenergi.se/iprog/loading.gif" alt="Loading gif" />
+        <img className={TW_center} src="https://brfenergi.se/iprog/loading.gif" alt="Loading gif" />
       </div>
     );
   }

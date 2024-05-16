@@ -8,6 +8,7 @@ import DraftsView from "./draftsView.jsx";
 import { auth } from "@/firebaseModel";
 import { getDatabase, ref, get, update, onValue, off } from "firebase/database";
 import { ref as storageRef, uploadBytes, getDownloadURL, getStorage } from "firebase/storage";
+import { TW_center } from "../art-tool/tailwindClasses.js";
 
 export function downloadImage(url, filename) {
     const storage = getStorage(app);
@@ -144,7 +145,7 @@ export default observer(
 
     if (!model.userReady || !model.ready) {
       return <div>
-               <img src="https://brfenergi.se/iprog/loading.gif" alt="Loading gif"></img>
+               <img className={TW_center} src="https://brfenergi.se/iprog/loading.gif" alt="Loading gif"></img>
              </div>
     }
 

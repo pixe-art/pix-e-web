@@ -12,6 +12,7 @@ import { app } from "/src/firebaseModel.js";
 import { getStorage, ref as sRef , getDownloadURL, uploadBytesResumable } from "firebase/storage";
 import { getDatabase, ref as dbRef , set, push, update, remove, delete as deleteFile  } from "firebase/database";
 import { deleteObject, uploadBytes  } from "firebase/storage";
+import { TW_center } from "./tailwindClasses";
 
 export default observer(
     function Tool() {
@@ -38,7 +39,7 @@ export default observer(
 
         if (!model.userReady || !model.ready) {
             return <div>
-                     <img src="https://brfenergi.se/iprog/loading.gif" alt="Loading gif"></img>
+                     <img className={TW_center} src="https://brfenergi.se/iprog/loading.gif" alt="Loading gif"></img>
                    </div>
         }
 

@@ -6,6 +6,7 @@ import { getDatabase, ref, onValue, off, update} from "firebase/database";
 import {ref as storageRef, uploadBytes, getDownloadURL} from "firebase/storage";
 import ProfileView from '../profileView.jsx'; 
 import { useModel } from '@/app/model-provider.js';
+import { TW_center } from '@/app/art-tool/tailwindClasses.js';
 
 export default function UserProfilePage() {
     const model = useModel();
@@ -102,7 +103,7 @@ export default function UserProfilePage() {
     if (loading) {
         return (
             <div>
-                <img src="https://brfenergi.se/iprog/loading.gif" alt="Loading gif" />
+                <img className={TW_center} src="https://brfenergi.se/iprog/loading.gif" alt="Loading gif" />
             </div>
         );
     }

@@ -9,6 +9,7 @@ import { getStorage, ref as sRef , getDownloadURL, uploadBytes } from "firebase/
 
 import GalleryView from "./galleryView.jsx";
 import { useRouter } from "next/navigation.js";
+import { TW_center } from "../art-tool/tailwindClasses.js";
 
 
 
@@ -63,7 +64,7 @@ export default observer(
         const router = useRouter();
         if (!model.userReady || !model.ready) {
             return <div>
-                     <img src="https://brfenergi.se/iprog/loading.gif" alt="Loading gif"></img>
+                     <img className={TW_center} src="https://brfenergi.se/iprog/loading.gif" alt="Loading gif"></img>
                    </div>
         }
 

@@ -6,6 +6,7 @@ import { useModel } from "../model-provider.js";
 import FavouritesView from "./favouritesView.jsx";
 import { getDatabase, ref, update, remove } from "firebase/database";
 import { ref as storageRef, getDownloadURL, getStorage } from "firebase/storage";
+import { TW_center } from "../art-tool/tailwindClasses.js";
 
 export function downloadImage(url, filename) {
   const storage = getStorage(app);
@@ -82,7 +83,7 @@ export default observer(
 
     if (!model.userReady || !model.ready) {
       return <div>
-               <img src="https://brfenergi.se/iprog/loading.gif" alt="Loading gif"></img>
+               <img className={TW_center} src="https://brfenergi.se/iprog/loading.gif" alt="Loading gif"></img>
              </div>
     }
 

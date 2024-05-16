@@ -3,6 +3,7 @@ import { useModel } from "../model-provider.js";
 import { observer } from "mobx-react-lite";
 
 import DashboardView from "./dashboardView.jsx";
+import { TW_center } from "../art-tool/tailwindClasses.js";
 
 export default observer(
  function Dashboard(){
@@ -21,7 +22,7 @@ export default observer(
 
     if (!model.userReady || !model.ready) {
         return <div>
-                 <img src="https://brfenergi.se/iprog/loading.gif" alt="Loading gif"></img>
+                 <img className={TW_center} src="https://brfenergi.se/iprog/loading.gif" alt="Loading gif"></img>
                </div>
     }
 

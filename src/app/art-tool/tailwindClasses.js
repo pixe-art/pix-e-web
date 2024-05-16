@@ -7,3 +7,4 @@ export const TW_button_plain = " bg-white border-brown md:hover:bg-gray-200 md:h
 export const TW_button_plainA = " active:text-white active:bg-gray-200 md:active:text-white md:active:bg-gray-400 "
 export const TW_centered = " top-[15%] left-[12.5%] w-[75%] h-[75%] z-30 "
 export const TW_titleText = " text-center text-4xl font-bold "
+export const TW_center = " md:ml-[48%] md:mt-[20%] "
