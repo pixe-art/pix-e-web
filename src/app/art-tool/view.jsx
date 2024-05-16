@@ -259,6 +259,7 @@ function ArtTool(props) {
         //assign onLoad event
         reader.onload = ((e) => {
             overwriteCanvas(e.target.result)            
+            props.persistCanvas(e.target.result)
         });
         //give reader img, triggers onLoad event
         reader.readAsDataURL(img)

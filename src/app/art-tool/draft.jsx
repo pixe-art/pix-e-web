@@ -99,7 +99,7 @@ function Draft(props) {
         const isSelected = selectedImage && img.id === selectedImage.id;
         return (
             <div key={img.id} className={`flex flex-col items-center w-full h-auto mb-4 img-hover-effect ${isSelected ? 'selected-image' : ''}`} onClick={() => imgClick(img)}>
-                <img src={img.imageURL} alt="" className="w-full mb-2 image-pixelated" />
+                <img src={img.imageURL} alt="" className="w-full mb-2 image-pixelated bg-black border-4 border-brown" />
                 <div className="text-center w-full">
                 <p className="break-words" title={`${img.title} Created by: ${img.creator}`}>
                     {img.title}<br /> Created by: {img.creator}
