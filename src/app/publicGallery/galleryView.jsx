@@ -3,11 +3,11 @@ import  Link  from 'next/link';
 import { Dropdown } from 'react-bootstrap';
 import { BsThreeDots } from 'react-icons/bs';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHeart as solidHeart, faDownload, faImage } from '@fortawesome/free-solid-svg-icons';
+import { faHeart as solidHeart, faDownload, faImage, faEdit } from '@fortawesome/free-solid-svg-icons';
 import { faHeart as outlineHeart } from '@fortawesome/free-regular-svg-icons';
 import { downloadImage, displayImage } from './galleryPresenter';
 
-function ImageComponent({ model, image, addToFavourites, removeFavourite }) {
+function ImageComponent({ model, image, addToFavourites, removeFavourite, editImage }) {
     const [isDropdownOpen, setDropdownOpen] = useState(false);
     const [isFavourite, setIsFavourite] = useState(false);
     const [onDisplay, setOnDisplay] = useState(false);
@@ -59,6 +59,10 @@ function ImageComponent({ model, image, addToFavourites, removeFavourite }) {
                     >
                         <FontAwesomeIcon icon={isFavourite || animate ? solidHeart : outlineHeart} className={`mr-2 ${animate ? 'animate-pulse' : ''}`} />
                         Favourite
+                    </Dropdown.Item>
+                    <Dropdown.Item className="hover:bg-gray-400 hover:text-white hover:rounded-md flex items-center p-1" onClick={() => editImage(image.imageURL)}>
+                        <FontAwesomeIcon icon={faEdit} className="mr-2" />
+                        Edit
                     </Dropdown.Item>
                     <Dropdown.Item className="hover:bg-gray-400 hover:text-white hover:rounded-md flex items-center p-1" onClick={() => downloadImage(image.imageURL, image.title)}>
                         <FontAwesomeIcon icon={faDownload} className="mr-2" />
@@ -141,7 +145,7 @@ export default function GalleryView(props) {
                 <h1 className="text-2xl mb-2">Gallery</h1>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
                     {props.model.images.map((image) => (
-                        <ImageComponent key={image.id} model={props.model} image={image} addToFavourites={props.addToFavourites} removeFavourite={props.removeFavourite}  />
+                        <ImageComponent key={image.id} model={props.model} image={image} addToFavourites={props.addToFavourites} removeFavourite={props.removeFavourite} editImage={props.editImage} />
                     ))}
                 </div>
             </div>

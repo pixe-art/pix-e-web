@@ -8,6 +8,9 @@ import { app } from "/src/firebaseModel.js";
 import { getStorage, ref as sRef , getDownloadURL, uploadBytes } from "firebase/storage";
 
 import GalleryView from "./galleryView.jsx";
+import { useRouter } from "next/navigation.js";
+
+
 
 export function downloadImage(url, filename) {
     const storage = getStorage(app);
@@ -57,19 +60,24 @@ export function displayImage(id){
 export default observer(
     function Gallery(){
         const model = useModel();
+        const router = useRouter();
         if (!model.userReady || !model.ready) {
             return <div>
                      <img src="https://brfenergi.se/iprog/loading.gif" alt="Loading gif"></img>
                    </div>
         }
 
-        return <GalleryView model={model} addToFavourites={addToFavourites} removeFavourite={removeFavourite} downloadImage={downloadImage} />
+        return <GalleryView model={model} addToFavourites={addToFavourites} removeFavourite={removeFavourite} downloadImage={downloadImage} editImage={editImage}/>
 
         function addToFavourites(image) {
             const userId = model.user.uid;
             model.users[userId].favorites = [...model.users[userId].favorites, image];
         }
-
+        function editImage(url) {
+            model.users[model.user.uid].canvasCurrent = url;
+            router.push("/art-tool")
+            return
+        }
         function removeFavourite(id) {
             const favArray = [];
             for (const element of model.users[model.user.uid].favorites) {
