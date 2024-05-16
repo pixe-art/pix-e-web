@@ -29,6 +29,10 @@ export default function ProfileView({
   const [allUsernames, setAllUsernames] = useState([]);
 
   useEffect(() => {
+    setNewBio(profile.bio);
+  }, [profile.bio]);
+
+  useEffect(() => {
     const fetchUsernames = async () => {
       try {
         const db = getDatabase();
@@ -299,13 +303,13 @@ export default function ProfileView({
                 />
                 <div className="flex justify-end mt-2">
                   <button
-                    class="mr-2 px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded"
+                    className="mr-2 px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded"
                     onClick={() => setEditingBio(false)}
                   >
                     Discard
                   </button>
                   <button
-                    class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded"
+                    className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded"
                     onClick={() => {
                       saveBioToFirebase(newBio);
                       setEditingBio(false);
