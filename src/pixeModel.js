@@ -1,10 +1,13 @@
-// import { auth } from "./firebaseModel";
-// const user = auth.currentUser;
+import { auth } from "./firebaseModel";
+const user = auth.currentUser;
 
 export default {
     ready: false,
-    user: {},
-    color: "",
+    userReady: false,
+    users: {},
+    images: [],
+    screens: [],
+    pairingCodes: [],
     // canvasCurrent: "",
 
     // Add more image objects as needed

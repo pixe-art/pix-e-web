@@ -43,7 +43,3 @@ next-env.d.ts
 
 # environment variables
 .env
-
-# ignore disabled files
-*.disable
-*.old

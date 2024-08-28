@@ -2,7 +2,7 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import { observable, configure } from "mobx";
 import pixeModel from "@/pixeModel";
-// import {connectToFirebase } from "@/firebaseModel"
+import {connectToFirebase } from "@/firebaseModel"
 
 configure({ enforceActions: "never", });
 const reactiveModel = observable(pixeModel);
@@ -19,4 +19,4 @@ export function ModelProvider({ children })  {
 
 export const useModel = () => useContext(ModelContext);
 //console.log(reactiveModel);
-// connectToFirebase(reactiveModel);
+connectToFirebase(reactiveModel);
