@@ -5,17 +5,17 @@ import { React, useEffect, useState } from "react";
 import { SketchPicker } from 'react-color';
 import Draft from "./draft";
 import { buildModelPicture, canvasToData } from "@/utilities";
-import { auth } from "@/firebaseModel";
 import SaveMenu from "./save";
 import SaveDraft from "./saveDraft";
 import { TW_button, TW_button_plain, TW_button_plainA } from "./tailwindClasses";
 import Link from "next/link";
+// import { auth } from "@/firebaseModel";
 
 export default
 function ArtTool(props) {
     const [isMounted, setIsMounted] = useState(false);
-    const [draftUpdate, setDraftUpdate] = useState(false);
-    const [isDraft, setIsDraft] = useState(false);
+    // const [draftUpdate, setDraftUpdate] = useState(false);
+    // const [isDraft, setIsDraft] = useState(false);
 
 
     useEffect(() => {
@@ -24,8 +24,10 @@ function ArtTool(props) {
 
     useEffect(() => {
         if (isMounted) {    
-            console.log("overwriting canvas with data from db:", props.model.users[props.model.user.uid].canvasCurrent);
-            overwriteCanvas(props.model.users[props.model.user.uid].canvasCurrent);
+            const colorDisplay = document.getElementById("color-d");
+            const newColor = "#ffffff";
+            const colorVar = props.handleColorChange(newColor);
+            colorDisplay.value = colorVar;
         }
     }, [isMounted]);
 
@@ -57,7 +59,7 @@ function ArtTool(props) {
         if (props.checkReset() === true && isMounted) {
             const canvas = document.getElementById("drawing-area");
             console.log("giving model canvas data:", canvas.toDataURL("image/png"));
-            props.persistCanvas(canvas.toDataURL("image/png"))
+            // props.persistCanvas(canvas.toDataURL("image/png"))
         }
         props.checkReset(false)    
     };
@@ -130,7 +132,7 @@ function ArtTool(props) {
     const clearCanvas = () => {
         const element = document.getElementById("drawing-area");
         props.unshiftUndoHistory(element);
-        props.model.users[props.model.user.uid].canvasCurrent = ""
+        // props.model.user = "";
         props.clearCanvas();
     };
 
@@ -144,6 +146,7 @@ function ArtTool(props) {
         img.onload = () => {
             if (img.width !== element.width || img.height !== element.height) {
                 console.error("Preventing Canvas overwrite due to img with incorrect dimensions (" + img.width + "x" + img.height + ")\n" + "\tImg should be equal to Canvas (" + element.width + "x" + element.height + ")");
+                window.alert("Preventing Canvas overwrite due to image with incorrect size (" + img.width + "x" + img.height + ")\n" + "\tImage size should be equal to Canvas' (" + element.width + "x" + element.height + ")")
                 return;
             }
             props.clearCanvas();
@@ -158,7 +161,7 @@ function ArtTool(props) {
             const canvas = document.getElementById("drawing-area");
             props.unshiftRedoHistory(canvas);
             overwriteCanvas(last);
-            props.persistCanvas(last)
+            // props.persistCanvas(last)
         }
     };
 
@@ -167,7 +170,7 @@ function ArtTool(props) {
         if (last) {
             saveCurrent();
             overwriteCanvas(last);
-            props.persistCanvas(last)
+            // props.persistCanvas(last)
         }
     };
 
@@ -260,7 +263,7 @@ function ArtTool(props) {
         //assign onLoad event
         reader.onload = ((e) => {
             overwriteCanvas(e.target.result)            
-            props.persistCanvas(e.target.result)
+            // props.persistCanvas(e.target.result)
         });
         //give reader img, triggers onLoad event
         reader.readAsDataURL(img)
@@ -271,16 +274,16 @@ function ArtTool(props) {
             <div id="parent" className="inset-0 bg-cover bg-cream touch-none max-h-screen overflow-hidden" onMouseUp={mouseUp}>
                 <div id="topbar" className="hidden align-middle bg-brown text-pretty justify-center py-2 md:flex hmd:hidden">
                     <div>
-                    <Link href="/dashboard" className="text-white no-underline hover:underline">Dashboard</Link>
+                    {/* <Link href="/dashboard" className="text-white no-underline hover:underline">Dashboard</Link> */}
                 </div>
                 <div id="instrutions" className="flex justify-center w-screen self-center text-center *:mx-1 *:px-1 flex-row">
                         <h1>Left-Click to draw</h1>
                         <h1>Right-Click to erase</h1>
-                        <h1>Middle-Click to place a single pixel</h1>
+                        <h1>Middle-Click for drawing with no strokes</h1>
                         {/* <button id="debug" className="mx-2 border rounded max-w-fit self-center" onClick={debugEvent} type="button">Click here for debug info</button> */}
                     </div>
                 </div>
-                <div id="draft" className="hidden">
+                {/* <div id="draft" className="hidden">
                     <Draft model={props.model} overwriteCanvas={overwriteCanvas} persistCanvas={props.persistCanvas} deleteDraft={props.deleteDraft} value={"draft"} toggleDraft={toggleMenu}></Draft>
                 </div>
                 <div id="save" className="hidden">
@@ -288,8 +291,8 @@ function ArtTool(props) {
                 </div>
                 <div id="save-draft" className="hidden">
                     <SaveDraft user={props.model.users[props.model.user.uid]?.profile?.username} isCanvasEmpty={props.isCanvasEmpty} addToDrafts={props.addToDrafts} setDraftUpdate={setDraftUpdate} closeMenus={closeMenus}></SaveDraft>
-                </div>
-                <div id="content" className="h-screen flex flex-col md:flex-row justify-between items-center mx-4" onMouseDown={closeMenus} onTouchStart={closeMenus}>
+                </div> */}
+                <div id="content" className="h-screen flex flex-col md:flex-row justify-between items-center mx-4">
                     
                     <div id="color-picker" className="">
                         <div className="flex flex-col items-center justify-center">
@@ -303,13 +306,13 @@ function ArtTool(props) {
                             onTouchStart={touchDrawEvent} onMouseDown={mouseClickEvent}  onMouseMove={mouseDragEvent} onMouseLeave={resetLastCoords} onTouchMove={touchDragEvent}/>
                     </div>
                     <div id="tools" className="mt-0 hmd:mt-20 grid hmd:md:mt-0 hmd:md:ml-4 md:flex md:flex-col items-stretch">
-                        <button id="show-draft-save" className={TW_button + TW_button_plain + TW_button_plainA} value={"save-draft"} onClick={toggleMenu} /* onClick={() => setToDraft(props.model.images)} */>Save to Draft</button>
+                        {/* <button id="show-draft-save" className={TW_button + TW_button_plain + TW_button_plainA} value={"save-draft"} onClick={toggleMenu} onClick={() => setToDraft(props.model.images)} >Save to Draft</button> */ }
                         <form action="" className="flex flex-col *:m-0 *:p-0 *:y-0" onChange={handleSubmit}>
                             <label htmlFor="upload" className={TW_button + TW_button_plain + TW_button_plainA + "text-center"}>Upload Image</label>
                             <input id="upload" className="hidden" type="file" name="img" accept="image/*" />
                         </form>
-                        <button id="show-draft" className={TW_button + TW_button_plain + TW_button_plainA + "w-auto"} value={"draft"} onClick={toggleMenu}>Draft Menu</button>
-                        <button id="show-save" className={TW_button + TW_button_plain + TW_button_plainA + "w-auto"} value={"save"} onClick={toggleMenu}>Save</button>
+                        {/* <button id="show-draft" className={TW_button + TW_button_plain + TW_button_plainA + "w-auto"} value={"draft"} onClick={toggleMenu}>Draft Menu</button>
+                        <button id="show-save" className={TW_button + TW_button_plain + TW_button_plainA + "w-auto"} value={"save"} onClick={toggleMenu}>Save</button> */}
                         <button id="download" className={TW_button + TW_button_plain + TW_button_plainA} onClick={props.downloadCanvas} type="button">Download</button>
                         {/* <button id="bg" className={TW_button + TW_button_plain + TW_button_plainA} onClick={toggleBg}>Background Color</button> */}
                         <div className="select-none cursor-default hmd:hidden">&nbsp;</div>

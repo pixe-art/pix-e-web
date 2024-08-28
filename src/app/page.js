@@ -3,9 +3,10 @@
 import Head from 'next/head';
 
 export default function Home() {
+  window.location.href = "/art-tool";
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-cream">
-      <Head>
+      {/* <Head>
         <title>Pix-E | Pixel Art Display</title>
         <meta name="description" content="Display and create beautiful pixel art with Pix-E." />
         <link rel="icon" href="/favicon.ico" />
@@ -21,7 +22,7 @@ export default function Home() {
         </div>
       </main>
 
-      <footer className="mt-8 text-gray-500">Pix-E</footer>
+      <footer className="mt-8 text-gray-500">Pix-E</footer> */}
     </div>
   );
 }

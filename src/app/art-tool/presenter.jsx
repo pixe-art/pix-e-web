@@ -4,14 +4,14 @@
 import ArtTool from "./view";
 import { observer } from "mobx-react-lite"; //? observer
 import React, { useState, useRef, useEffect } from "react";
-import { useModel } from "../model-provider.js";
-import { auth, getAuth } from "@/firebaseModel";
-import { onAuthStateChanged } from "firebase/auth";
 import { buildModelPicture, canvasToData } from "@/utilities";
-import { app } from "/src/firebaseModel.js";
-import { getStorage, ref as sRef , getDownloadURL, uploadBytesResumable } from "firebase/storage";
-import { getDatabase, ref as dbRef , set, push, update, remove, delete as deleteFile  } from "firebase/database";
-import { deleteObject, uploadBytes  } from "firebase/storage";
+import { useModel } from "../model-provider.js";
+// import { auth, getAuth } from "@/firebaseModel";
+// import { onAuthStateChanged } from "firebase/auth";
+// import { app } from "/src/firebaseModel.js";
+// import { getStorage, ref as sRef , getDownloadURL, uploadBytesResumable } from "firebase/storage";
+// import { getDatabase, ref as dbRef , set, push, update, remove, delete as deleteFile  } from "firebase/database";
+// import { deleteObject, uploadBytes  } from "firebase/storage";
 import { TW_center } from "./tailwindClasses";
 
 export default observer(
@@ -31,135 +31,135 @@ export default observer(
         const showPicker = useRef(false);
 
         useEffect(() => {
-            if (model.user) {
-                setColor(model.users[model.user.uid].colorCurrent);   // update color if color changes in model
+            if (model) {
+                setColor(model.color);   // update color if color changes in model
                 updateCanvasColor();    // change draw color for canvas
             }
-        }, [color, model.user && model.users[model.user.uid].colorCurrent]);
+        }, [color, model.color]);
 
-        if (!model.userReady || !model.ready) {
-            return <div>
-                     <img className={TW_center} src="https://brfenergi.se/iprog/loading.gif" alt="Loading gif"></img>
-                   </div>
-        }
+        // if (!model.userReady || !model.ready) {
+        //     return <div>
+        //              <img className={TW_center} src="https://brfenergi.se/iprog/loading.gif" alt="Loading gif"></img>
+        //            </div>
+        // }
 
         function generateUniqueId(){
             return Date.now().toString(36) + Math.random().toString(36).substring(2, 12).padStart(12, "");
         }
 
-        function uploadCanvasStateToFirebase(canvas, title, makePublic) {
-            const storage = getStorage(app);
-            const username = model.users[model.user.uid].profile.username;
-            console.log("auth: ", model.user.uid);
-            const data = canvasToData(canvas);
-            const imageId = generateUniqueId();
-            console.log("got data from canvas:", data);
-            console.log(imageId);
-            const out = buildModelPicture(username, imageId, Date.now(), data, (title || "Untitled"));
-            //checks for duplicates in firebase
-            for (const element of model.images) {
-                if (data === element.imageURL) {
-                    console.log("You already have a duplicate saved at model.images[", element, "]");
-                    return false; 
-                }
-            } 
-            for (const element of model.users[model.user.uid].images) {
-                if (data === element.imageURL) {
-                    console.log("You already have a duplicate saved at model.users[model.user.uid].images[", element, "]");
-                    return false; 
-                } 
-            }
+        // function uploadCanvasStateToFirebase(canvas, title, makePublic) {
+        //     const storage = getStorage(app);
+        //     const username = model.users[model.user.uid].profile.username;
+        //     console.log("auth: ", model.user.uid);
+        //     const data = canvasToData(canvas);
+        //     const imageId = generateUniqueId();
+        //     console.log("got data from canvas:", data);
+        //     console.log(imageId);
+        //     const out = buildModelPicture(username, imageId, Date.now(), data, (title || "Untitled"));
+        //     //checks for duplicates in firebase
+        //     for (const element of model.images) {
+        //         if (data === element.imageURL) {
+        //             console.log("You already have a duplicate saved at model.images[", element, "]");
+        //             return false; 
+        //         }
+        //     } 
+        //     for (const element of model.users[model.user.uid].images) {
+        //         if (data === element.imageURL) {
+        //             console.log("You already have a duplicate saved at model.users[model.user.uid].images[", element, "]");
+        //             return false; 
+        //         } 
+        //     }
 
-            const userImageRef = sRef(storage, 'images/' + out.id);
-            fetch(out.imageURL).then(response => response.blob()).then(blob => {
-            uploadBytes(userImageRef, blob);
-            });
+        //     const userImageRef = sRef(storage, 'images/' + out.id);
+        //     fetch(out.imageURL).then(response => response.blob()).then(blob => {
+        //     uploadBytes(userImageRef, blob);
+        //     });
 
-            console.log("data: ", data);
-            if (makePublic){
-                model.images = [...model.images, out];
-            }
+        //     console.log("data: ", data);
+        //     if (makePublic){
+        //         model.images = [...model.images, out];
+        //     }
             
-            model.users[model.user.uid].images = [...model.users[model.user.uid].images, out];
-            return true;
-        }
+        //     model.users[model.user.uid].images = [...model.users[model.user.uid].images, out];
+        //     return true;
+        // }
 
 
-        function addToDrafts(canvas, title) {
-            const storage = getStorage(app);
-            const username = model.users[model.user.uid].profile.username;
-            console.log("auth: ", model.user.uid);
-            const data = canvasToData(canvas);
-            const imageId = generateUniqueId();
-            console.log("got data from canvas:", data);
-            console.log(imageId);
-            console.log("title: ", title);
-            const out = buildModelPicture(username, imageId, Date.now(), data, (title || "Untitled"));
-            //checks for duplicates in firebase
-            for (const element of model.images) {
-                if (data === element.imageURL) {
-                    console.log("You already have a duplicate saved at model.images[", element, "]");
-                    return false; 
-                }
-            } 
-            for (const element of model.users[model.user.uid].drafts) {
-                if (data === element.imageURL) {
-                    console.log("You already have a duplicate saved at model.users[model.user.uid].drafts[", element, "]");
-                    return false; 
-                } 
-            }
+        // function addToDrafts(canvas, title) {
+        //     const storage = getStorage(app);
+        //     const username = model.users[model.user.uid].profile.username;
+        //     console.log("auth: ", model.user.uid);
+        //     const data = canvasToData(canvas);
+        //     const imageId = generateUniqueId();
+        //     console.log("got data from canvas:", data);
+        //     console.log(imageId);
+        //     console.log("title: ", title);
+        //     const out = buildModelPicture(username, imageId, Date.now(), data, (title || "Untitled"));
+        //     //checks for duplicates in firebase
+        //     for (const element of model.images) {
+        //         if (data === element.imageURL) {
+        //             console.log("You already have a duplicate saved at model.images[", element, "]");
+        //             return false; 
+        //         }
+        //     } 
+        //     for (const element of model.users[model.user.uid].drafts) {
+        //         if (data === element.imageURL) {
+        //             console.log("You already have a duplicate saved at model.users[model.user.uid].drafts[", element, "]");
+        //             return false; 
+        //         } 
+        //     }
 
-            const userImageRef = sRef(storage, 'images/' + out.id);
-            fetch(out.imageURL).then(response => response.blob()).then(blob => {
-            uploadBytes(userImageRef, blob);
-            });
+        //     const userImageRef = sRef(storage, 'images/' + out.id);
+        //     fetch(out.imageURL).then(response => response.blob()).then(blob => {
+        //     uploadBytes(userImageRef, blob);
+        //     });
 
-            console.log("data: ", data);
+        //     console.log("data: ", data);
             
-            model.users[model.user.uid].drafts = [...model.users[model.user.uid].drafts, out];
-            return true;
-        }
+        //     model.users[model.user.uid].drafts = [...model.users[model.user.uid].drafts, out];
+        //     return true;
+        // }
 
-        function deleteDraft(img) {
-            const userID = model.user.uid;
-            const storage = getStorage(app);    
-            console.log("img: ", img);
+        // function deleteDraft(img) {
+        //     const userID = model.user.uid;
+        //     const storage = getStorage(app);    
+        //     console.log("img: ", img);
 
-            const draftArray = [];
-            for (const element of model.users[model.user.uid].drafts) {
-                if (img.id === element.id){
-                    continue;
-            }
-                draftArray.push(element);
-            }
-            model.users[model.user.uid].drafts = draftArray;
+        //     const draftArray = [];
+        //     for (const element of model.users[model.user.uid].drafts) {
+        //         if (img.id === element.id){
+        //             continue;
+        //     }
+        //         draftArray.push(element);
+        //     }
+        //     model.users[model.user.uid].drafts = draftArray;
         
-            // Reference to the user's draft in storage
-            const userImageRef = sRef(storage, 'images/'+ img.id);
+        //     // Reference to the user's draft in storage
+        //     const userImageRef = sRef(storage, 'images/'+ img.id);
         
-            // Delete the image from Firebase Storage
-            deleteObject(userImageRef)
-                .then(() => {
-                    console.log('Draft image deleted from storage');
+        //     // Delete the image from Firebase Storage
+        //     deleteObject(userImageRef)
+        //         .then(() => {
+        //             console.log('Draft image deleted from storage');
 
-                    if (draftArray.length === 0) {
-                        // After successful storage deletion, delete the database entry
-                        const db = getDatabase(app);
-                        const draftRef = dbRef(db, 'pixeModel/users/' + userID + '/drafts/' + img.id);
+        //             if (draftArray.length === 0) {
+        //                 // After successful storage deletion, delete the database entry
+        //                 const db = getDatabase(app);
+        //                 const draftRef = dbRef(db, 'pixeModel/users/' + userID + '/drafts/' + img.id);
                         
-                        remove(draftRef)
-                            .then(() => {
-                                console.log('Draft data deleted from database');
-                            })
-                            .catch((error) => {
-                                console.error('Error deleting draft data from database:', error);
-                            });
-                        }
-                    })
-                .catch((error) => {
-                    console.error('Error deleting image from storage:', error);
-                });
-        }
+        //                 remove(draftRef)
+        //                     .then(() => {
+        //                         console.log('Draft data deleted from database');
+        //                     })
+        //                     .catch((error) => {
+        //                         console.error('Error deleting draft data from database:', error);
+        //                     });
+        //                 }
+        //             })
+        //         .catch((error) => {
+        //             console.error('Error deleting image from storage:', error);
+        //         });
+        // }
 
         function printDebugInfo(canvas) {
             const foo = canvas.getBoundingClientRect();
@@ -173,8 +173,8 @@ export default observer(
             console.log("canvas edges:\nlft = " + foo.left + "\nrgt = " + foo.right + "\ntop = " + foo.top + "\nbot = " + foo.bottom);
             console.log("border = " + style.border + "\n(needs offset of " + style.border.split(" ")[0] + ")");
             console.log("padding = " + style.padding + "\n(needs offset of " + style.padding.split(" ")[0] + ")");
-            console.log("model = ", model);
-            console.log("user = ", auth.currentUser);
+            // console.log("model = ", model);
+            // console.log("user = ", auth.currentUser);
         }
     
         function mouseChecker(state) {
@@ -272,8 +272,8 @@ export default observer(
         }
         const handleColorChange = (newColor) => {
             setColor(newColor);  // Update the color state, useEffect runs to updateCanvasColor once color is set
-            if (model.users[model.user.uid].colorCurrent !== newColor) {
-                model.users[model.user.uid].colorCurrent = newColor; // update color in model
+            if (model.color !== newColor) {
+                model.color = newColor; // update color in model
             }
             return newColor;
         }
@@ -286,9 +286,9 @@ export default observer(
             }
         }
 
-        function persistCanvas(canvasURL) {
-            model.users[model.user.uid].canvasCurrent = canvasURL
-        }
+        // function persistCanvas(canvasURL) {
+        //     model.users[model.user.uid].canvasCurrent = canvasURL
+        // }
         
         function drawRect(x, y, canvas) {
             const ctx = canvas.getContext("2d");
@@ -374,7 +374,6 @@ export default observer(
                 checkReset = {mouseChecker}
                 grabLastImage = {grabLastImage}
                 restoreLastImage = {restoreLastImage}
-                persistCanvas = {persistCanvas}
                 unshiftUndoHistory = {unshiftUndoHistory}
                 unshiftRedoHistory = {unshiftRedoHistory}
                 changePenSize = {setPenSize}
@@ -386,10 +385,11 @@ export default observer(
                 eraserToggle = {eraserToggle}
                 downloadCanvas = {downloadCanvas}
                 clearCanvas = {clearCanvas}
-                uploadToFirebase = {uploadCanvasStateToFirebase}
                 isCanvasEmpty = {isCanvasEmpty}
-                addToDrafts = {addToDrafts}
-                deleteDraft = {deleteDraft}
+                // persistCanvas = {persistCanvas}
+                // uploadToFirebase = {uploadCanvasStateToFirebase}
+                // addToDrafts = {addToDrafts}
+                // deleteDraft = {deleteDraft}
             />
         )
     }
